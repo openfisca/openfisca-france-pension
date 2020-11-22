@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
-
 from setuptools import find_packages, setup
 
 setup(
     name = "OpenFisca-France-Pension",
-    version = "3.10.0",
+    version = "0.0.1",
     author = "OpenFisca Team",
     author_email = "contact@openfisca.org",
     classifiers=[
@@ -17,16 +15,16 @@ setup(
     description = "OpenFisca tax and benefit system for France-Pension",
     keywords = "benefit microsimulation social tax",
     license ="http://www.fsf.org/licensing/licenses/agpl-3.0.html",
-    url = "https://github.com/openfisca/country-template",
+    # url = "https://github.com/openfisca/country-template",
     include_package_data = True,  # Will read MANIFEST.in
     data_files = [
         (
-            "share/openfisca/openfisca-country-template",
+            "share/openfisca/openfisca-france-pension",
             ["CHANGELOG.md", "LICENSE", "README.md"],
             ),
         ],
     install_requires = [
-        "OpenFisca-Core[web-api] >=27.0,<35.0",
+        "OpenFisca-Core >=27.0,<35.0",
         ],
     extras_require = {
         "dev": [
