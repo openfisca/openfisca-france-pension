@@ -6,7 +6,7 @@ from openfisca_core.periods import MONTH, ETERNITY
 from openfisca_core.variables import Variable
 
 # Import the Entities specifically defined for this tax and benefit system
-from openfisca_france-pension.entities import Household, Person
+from openfisca_france_pension.entities import Household, Person
 
 
 class Regime(object):
