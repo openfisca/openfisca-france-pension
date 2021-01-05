@@ -3,35 +3,32 @@ from openfisca_core.model_api import max_
 from openfisca_core.periods import MONTH, ETERNITY
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Household, Person
-name = None
-prefix = None
-parameters = None
 
-class regime_salaire_brut(Variable):
+class regime_de_base_salaire_brut(Variable):
     value_type = float
     entity = Person
     definition_period = MONTH
     label = 'Salaire brut'
 
-class regime_surcote_debut_date(Variable):
+class regime_de_base_surcote_debut_date(Variable):
     value_type = date
     entity = Person
     definition_period = ETERNITY
     label = 'Date du début de la surcote'
 
-class regime_decote_annulation_date(Variable):
+class regime_de_base_decote_annulation_date(Variable):
     value_type = date
     entity = Person
     definition_period = ETERNITY
     label = "Date d'annulation de la décote'"
 
-class regime_taux_plein_date(Variable):
+class regime_de_base_taux_plein_date(Variable):
     value_type = date
     entity = Person
     definition_period = ETERNITY
     label = 'Date du taux plein'
 
-class regime_taux_de_liquidation(Variable):
+class regime_de_base_taux_de_liquidation(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
@@ -43,7 +40,7 @@ class regime_taux_de_liquidation(Variable):
         taux_plein = parameters(period).plein.taux
     return taux_plein * (1 - decote + surcote)
 
-class regime_cotisation_retraite(Variable):
+class regime_de_base_cotisation_retraite(Variable):
     value_type = float
     entity = Person
     definition_period = MONTH
@@ -53,9 +50,6 @@ class regime_cotisation_retraite(Variable):
         salaire_brut = individu('salaire_brut', period)
         taux = parameters(period).cotisation.taux
         return salaire_brut * taux
-name = 'Régime de base'
-prefix = 'regime_de_base'
-parameters = 'parameters/regime_de_base'
 
 class regime_de_base_salaire_de_reference(Variable):
     value_type = float
@@ -98,6 +92,3 @@ class regime_de_base_pension_brute(Variable):
         salaire_de_reference = individu('salaire_de_reference', period)
         taux_de_liquidation = individu('taux_de_liquidation', period)
         return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
-
-def pension(individu, period):
-    return individu('pension_brute', period) + individu('majoration_pension', period)
