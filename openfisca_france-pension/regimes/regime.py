@@ -105,7 +105,7 @@ class RegimeDeBase(Regime):
 
         def formula(individu, period, parameters):
             taux = parameters(period).decote.taux
-            trimestres_debut = parameters(period).decote.trimestres_debut
+            trimestres_debut = parameters(period).regime_name.decote.trimestres_debut
             trimestres = individu('trimestres', period)
             return decote * max_(trimestres - trimestres, 0)
 
@@ -124,11 +124,11 @@ class RegimeDeBase(Regime):
             return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
 
 
-    def pension(individu, period,):
-        return (
-            individu('pension_brute', period)
-            + individu('majoration_pension', period)
-            )
+        def pension(individu, period,):
+            return (
+                individu('pension_brute', period)
+                + individu('majoration_pension', period)
+                )
 
 
 # class RegimeComplementaires(Regime):
