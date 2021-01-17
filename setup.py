@@ -1,4 +1,8 @@
+"""An openfisca based model of French Pension system."""
+
+
 from setuptools import find_packages, setup
+
 
 setup(
     name = "OpenFisca-France-Pension",
