@@ -124,7 +124,13 @@ class RegimeDeBase(Regime):
             return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
 
 
-        def pension(individu, period,):
+    class pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
+
+        def formula(individu, period):
             return (
                 individu('pension_brute', period)
                 + individu('majoration_pension', period)
