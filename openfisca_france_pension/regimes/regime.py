@@ -2,7 +2,7 @@ from datetime import date
 
 
 from openfisca_core.model_api import max_
-from openfisca_core.periods import MONTH, ETERNITY
+from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 
 # Import the Entities specifically defined for this tax and benefit system
@@ -51,12 +51,12 @@ class Regime(object):
         def formula(individu, period, parameters):
             # liquidation_age = individu('liquidation_age', period)
             # date_de_naissance = individu('date_de_naissance', period)
-            decote = individu('decote', period)
-            surcote = individu('surcote', period)
+            decote = individu('regime_name_decote', period)
+            surcote = individu('regime_name_surcote', period)
 
             taux_plein = parameters(period).plein.taux
 
-        return taux_plein * (1 - decote + surcote)
+            return taux_plein * (1 - decote + surcote)
 
 
     class cotisation_retraite(Variable):
@@ -67,7 +67,7 @@ class Regime(object):
 
         def formula(individu, period, parameters):
             salaire_brut = individu('salaire_brut', period)
-            taux = parameters(period).cotisation.taux
+            taux = parameters(period).regime_name.cotisation.taux
             return salaire_brut * taux
 
 
@@ -104,10 +104,10 @@ class RegimeDeBase(Regime):
         label = "Décote"
 
         def formula(individu, period, parameters):
-            taux = parameters(period).decote.taux
+            taux = parameters(period).regime_name.decote.taux
             trimestres_debut = parameters(period).regime_name.decote.trimestres_debut
-            trimestres = individu('trimestres', period)
-            return decote * max_(trimestres - trimestres, 0)
+            trimestres = individu('regime_name_trimestres', period)
+            return taux * max_(trimestres - trimestres_debut, 0)
 
 
     class pension_brute(Variable):
@@ -117,9 +117,9 @@ class RegimeDeBase(Regime):
         label = "Décote"
 
         def formula(individu, period, parameters):
-            coefficent_de_proratisation = individu('coefficent_de_proratisation', period)
-            salaire_de_reference = individu('salaire_de_reference', period)
-            taux_de_liquidation = individu('taux_de_liquidation', period)
+            coefficent_de_proratisation = individu('regime_name_coefficent_de_proratisation', period)
+            salaire_de_reference = individu('regime_name_salaire_de_reference', period)
+            taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
 
             return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
 
@@ -132,8 +132,8 @@ class RegimeDeBase(Regime):
 
         def formula(individu, period):
             return (
-                individu('pension_brute', period)
-                + individu('majoration_pension', period)
+                individu('regime_name_pension_brute', period)
+                + individu('regime_name_majoration_pension', period)
                 )
 
 
