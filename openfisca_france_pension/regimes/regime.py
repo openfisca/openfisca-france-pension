@@ -51,17 +51,9 @@ class Regime(object):
         def formula(individu, period, parameters):
             # liquidation_age = individu('liquidation_age', period)
             # date_de_naissance = individu('date_de_naissance', period)
-<<<<<<< HEAD
-            decote = individu('regime_name_decote', period)
-            surcote = individu('regime_name_surcote', period)
-
-            taux_plein = parameters(period).plein.taux
-
-=======
             decote = individu('decote', period)
             surcote = individu('surcote', period)
             taux_plein = parameters(period).regime_name.plein.taux
->>>>>>> unify format for pension function in the pension_brute class
             return taux_plein * (1 - decote + surcote)
 
 
@@ -123,26 +115,6 @@ class RegimeDeBase(Regime):
         label = "Décote"
 
         def formula(individu, period, parameters):
-<<<<<<< HEAD
-            coefficent_de_proratisation = individu('regime_name_coefficent_de_proratisation', period)
-            salaire_de_reference = individu('regime_name_salaire_de_reference', period)
-            taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
-
-            return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
-
-
-    class pension(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Pension"
-
-        def formula(individu, period):
-            return (
-                individu('regime_name_pension_brute', period)
-                + individu('regime_name_majoration_pension', period)
-                )
-=======
             coefficent_de_proratisation = individu('coefficent_de_proratisation', period)
             salaire_de_reference = individu('salaire_de_reference', period)
             taux_de_liquidation = individu('taux_de_liquidation', period)
@@ -154,7 +126,6 @@ class RegimeDeBase(Regime):
             majoration_pension = individu('majoration_pension', period)
             return pension_brute + majoration_pension
                 
->>>>>>> unify format for pension function in the pension_brute class
 
 
 # class RegimeComplementaires(Regime):
