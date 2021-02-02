@@ -10,19 +10,19 @@ import os
 import pkg_resources
 
 
-france_pension_root =  pkg_resources.get_distribution("openfisca-france-pension").location
+
+# france_pension_root =  pkg_resources.get_distribution("openfisca-france-pension").location
 input_filename = os.path.join(
-    france_pension_root,
-    "openfisca_france_pension",
+    # france_pension_root,
+    #"openfisca_france_pension",
     "regimes",
     "regime.py"
     )
 
-output_filename = os.path.join(
-    france_pension_root,
-    "openfisca_france_pension",
-    "scripts_ast",
-    "result_output_with_modify_formula.py",
+output_path = os.path.join(
+    # france_pension_root,
+    #"openfisca_france_pension",
+    "scripts_ast"
     )
 
 with open(input_filename, encoding='utf-8') as file:
@@ -30,41 +30,42 @@ with open(input_filename, encoding='utf-8') as file:
 
 # parser le texte du fichier en structure logique de type AST
 input_ast_tree = ast.parse(input_string)
+
 # pour afficher un arbre AST faire une commande
 # print(ast.dump(input_ast_tree, indent=4))
 
 # créer un nouveau arbre AST vide qui va contenir le nouveau code
 output_ast_tree = ast.Module(body=[], type_ignores=[])
 
+######################################################################################################
+# Creer une fonction pour modifier les formules
+######################################################################################################
 
 def modify_formula_function (node_body_element, regime_name):
-    # Créer une fonction pour modifier les formules choisies
     el = copy.deepcopy(node_body_element)
-    if type(el)== ast.ClassDef and "decote" in el.name :
-        for component in el.body:
-            if type(component) == ast.FunctionDef and "formula" in component.name:
-                component.body[1].value.value.value.attr = regime_name
-                component.body[2].value.args[0].value = regime_name +"_"+ component.body[2].value.args[0].value
-                # print(component.body[2].value.args[0].value)
-    if type(el) == ast.ClassDef and "pension_brute" in el.name:
-        for component in el.body:
-            if type(component) == ast.FunctionDef and "formula" in component.name:
-                for j in range (0, 3):
-                    component.body[j].value.args[0].value = regime_name +"_"+ component.body[j].value.args[0].value
-                    # print(component.body[j].value.args[0].value)
-    if type(el) == ast.ClassDef and "cotisation_retraite" in el.name:
-        for component in el.body:
-            if type(component) == ast.FunctionDef and "formula" in component.name:
-                component.body[0].value.args[0].value = regime_name +"_"+ component.body[0].value.args[0].value
-    if type(el) == ast.ClassDef and "taux_de_liquidation" in el.name:
-        for component in el.body:
-            if type(component) == ast.FunctionDef and "formula" in component.name:
-                for j in range (0, 2):
-                    component.body[j].value.args[0].value = regime_name +"_"+ component.body[j].value.args[0].value
-                    # print(component.body[j].value.args[0].value)
-
+    if type(el)== ast.ClassDef :
+        for i in range (0, len(el.body)):
+            if type(el.body[i]) == ast.FunctionDef:
+            #if type(el.body[i]) == ast.FunctionDef and "individu" in el.body[i].args:
+            #if type(el.body[i]) == ast.FunctionDef and "formula" in el.body[i].name:
+                print("found function: ", el.body[i].name)
+                for j in range (0, len(el.body[i].body)):
+                    if type(el.body[i].body[j]) == ast.Assign :
+                        valeur = el.body[i].body[j].value
+                        while type(valeur) != ast.Call and valeur != None:
+                            valeur = valeur.value
+                            if type(valeur)== ast.Attribute and valeur.attr == "regime_name":
+                                print("found regime_name to replace: ", valeur.attr,"=>", regime_name)
+                                valeur.attr = regime_name
+                        if type(valeur) == ast.Call:
+                            arguments = valeur.args
+                            for arg in arguments:
+                                if type(arg) == ast.Constant : # and str(arg).startswith("_"):
+                                    new_arg_value = regime_name + "_" + arg.value
+                                    print("found argument to modify:", str(arg.value), "=>", new_arg_value )
+                                    arg.value = new_arg_value
+                
     return el
-
 ######################################################################################################
 # Créer un dictionnaire de l'heritage pour tous les régimes pour pouvoir recopier les classes heritées
 ######################################################################################################
@@ -91,7 +92,7 @@ for i in range(0, len(input_ast_tree.body)):
 ##############################################################################
 # Remplir le nouveau arbre AST avec les classes applatties
 ##############################################################################
-
+regime_name = "regime"
 # Pour tous les Régimes (les elements du code de type class dont le nom contient le mot Regime) et si la classe n'est pas "abstraite"
 for node in input_ast_tree.body:
     if type(node) == ast.ClassDef and "Regime" in node.name :
@@ -101,29 +102,35 @@ for node in input_ast_tree.body:
         extends = inheritance_dict[regime.name]['extends']
         print(regime.name, "extends", extends)
         if extends != "object" :
-            # tanque la classe étend une autre (et ainsi de suite recursivement)
+            # tant que la classe étend une autre (et ainsi de suite recursivement)
             while extends != "object":
                 superRegime = inheritance_dict[extends]
                 inheritedClasses = superRegime['variables']
                 for key, value in inheritedClasses.items():
-                    print("inherited class =", key)
                     # copier le contenu de la classe
                     el =  copy.deepcopy(value)
-                    el = modify_formula_function (el, regime_name)
                     # modifier le nom de la classe en ajoutant le prefix avec le nom du regime
                     el.name = str(inflection.underscore(node.name) + "_" + el.name)
+                    print("\nINHERITED class new name: ", key, "=>", el.name)
+                    el = modify_formula_function (el, regime_name)
                     output_ast_tree.body.append(el)
                 extends = inheritance_dict[extends]['extends']
             # copier ses propres classes
             for j in range (0, len(regime.body)):
                 el = copy.deepcopy(regime.body[j])
                 if type(el)== ast.ClassDef:
+                    new_class_name = str(inflection.underscore(node.name) + "_" + el.name)
+                    print("\nOWN CLASS new name: ", el.name, "=>", new_class_name)
+                    el.name = new_class_name
                     el = modify_formula_function (el, regime_name)
-                    el.name = str(inflection.underscore(node.name) + "_" + el.name)
                     output_ast_tree.body.append(el)
-    # copier tous les autres element du code dans l'ordre d'apparution (dont les imports), sans les modifier
-    # else :
-            #output_ast_tree.body.append(node)
+                    
+                # copier les attributs de la classe (pas copier si pas besoin)
+                #else:
+                    #output_ast_tree.body.append(el)
+    # copier les imports du fichier
+    else : 
+        output_ast_tree.body.append(node)
 
 # pour afficher le nouveau arbre AST faire une commande
 # print(ast.dump(output_ast_tree, indent=4))
@@ -131,6 +138,10 @@ for node in input_ast_tree.body:
 # convertir la structure logique de l'arbre AST en code python formatté (type string)
 output_string = ast.unparse(output_ast_tree)
 
+output_filename = os.path.join(
+    output_path,
+    "result_file_"+regime_name+".py",
+    )
 # sauvegarder
 with open (output_filename, "w") as file:
     file.write(output_string)
