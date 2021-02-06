@@ -4,7 +4,7 @@ from openfisca_core.periods import MONTH, ETERNITY
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Household, Person
 
-class regime_de_base_salaire_brut(Variable):
+class regime_de_base_salaire_de_base(Variable):
     value_type = float
     entity = Person
     definition_period = MONTH
@@ -47,9 +47,9 @@ class regime_de_base_cotisation_retraite(Variable):
     label = 'cotisation retraite'
 
     def formula(individu, period, parameters):
-        salaire_brut = individu('salaire_brut', period)
+        salaire_de_base = individu('salaire_de_base', period)
         taux = parameters(period).cotisation.taux
-        return salaire_brut * taux
+        return salaire_de_base * taux
 
 class regime_de_base_salaire_de_reference(Variable):
     value_type = float

@@ -14,13 +14,6 @@ class Regime(object):
     prefix = None
     parameters = None
 
-    class salaire_brut(Variable):
-        value_type = float
-        entity = Person
-        definition_period = MONTH
-        label = "Salaire brut"
-
-
     class surcote_debut_date(Variable):
         value_type = date
         entity = Person
@@ -51,8 +44,8 @@ class Regime(object):
         def formula(individu, period, parameters):
             # liquidation_age = individu('liquidation_age', period)
             # date_de_naissance = individu('date_de_naissance', period)
-            decote = individu('decote', period)
-            surcote = individu('surcote', period)
+            decote = individu('regime_name_decote', period)
+            surcote = individu('regime_name_surcote', period)
             taux_plein = parameters(period).regime_name.plein.taux
             return taux_plein * (1 - decote + surcote)
 
@@ -64,9 +57,9 @@ class Regime(object):
         label = "cotisation retraite"
 
         def formula(individu, period, parameters):
-            salaire_brut = individu('salaire_brut', period)
+            salaire_de_base = individu('salaire_de_base', period)
             taux = parameters(period).regime_name.cotisation.taux
-            return salaire_brut * taux
+            return salaire_de_base * taux
 
 
 class RegimeDeBase(Regime):
@@ -112,20 +105,25 @@ class RegimeDeBase(Regime):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Décote"
+        label = "Pension brute"
 
         def formula(individu, period, parameters):
-            coefficent_de_proratisation = individu('coefficent_de_proratisation', period)
-            salaire_de_reference = individu('salaire_de_reference', period)
-            taux_de_liquidation = individu('taux_de_liquidation', period)
+            coefficent_de_proratisation = individu('regime_name_coefficent_de_proratisation', period)
+            salaire_de_reference = individu('regime_name_salaire_de_reference', period)
+            taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
             return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
 
+    class pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
 
-        def pension(individu, period,):
-            pension_brute = individu('pension_brute', period)
-            majoration_pension = individu('majoration_pension', period)
+        def formula(individu, period):
+            pension_brute = individu('regime_name_pension_brute', period)
+            majoration_pension = individu('regime_name_majoration_pension', period)
             return pension_brute + majoration_pension
-                
+
 
 
 # class RegimeComplementaires(Regime):

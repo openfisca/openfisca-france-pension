@@ -1,10 +1,10 @@
 from datetime import date
 from openfisca_core.model_api import max_
-from openfisca_core.periods import MONTH, ETERNITY
+from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Household, Person
 
-class regime_de_base_salaire_brut(Variable):
+class regime_de_base_salaire_de_base(Variable):
     value_type = float
     entity = Person
     definition_period = MONTH
@@ -47,9 +47,9 @@ class regime_de_base_cotisation_retraite(Variable):
     label = 'cotisation retraite'
 
     def formula(individu, period, parameters):
-        salaire_brut = individu('regime_de_base_salaire_brut', period)
+        salaire_de_base = individu('salaire_de_base', period)
         taux = parameters(period).regime_de_base.cotisation.taux
-        return salaire_brut * taux
+        return salaire_de_base * taux
 
 class regime_de_base_salaire_de_reference(Variable):
     value_type = float
@@ -79,13 +79,13 @@ class regime_de_base_decote(Variable):
         taux = parameters(period).regime_de_base.decote.taux
         trimestres_debut = parameters(period).regime_de_base.decote.trimestres_debut
         trimestres = individu('regime_de_base_trimestres', period)
-        return decote * max_(trimestres - trimestres, 0)
+        return taux * max_(trimestres - trimestres_debut, 0)
 
 class regime_de_base_pension_brute(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Décote'
+    label = 'Pension brute'
 
     def formula(individu, period, parameters):
         coefficent_de_proratisation = individu('regime_de_base_coefficent_de_proratisation', period)
@@ -93,7 +93,13 @@ class regime_de_base_pension_brute(Variable):
         taux_de_liquidation = individu('regime_de_base_taux_de_liquidation', period)
         return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
 
-    def pension(individu, period):
+class regime_de_base_pension(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension'
+
+    def formula(individu, period):
         pension_brute = individu('regime_de_base_pension_brute', period)
         majoration_pension = individu('regime_de_base_majoration_pension', period)
         return pension_brute + majoration_pension
