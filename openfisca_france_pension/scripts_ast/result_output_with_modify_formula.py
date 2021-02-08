@@ -31,7 +31,7 @@ class regime_de_base_taux_de_liquidation(Variable):
     def formula(individu, period, parameters):
         decote = individu('regime_de_base_decote', period)
         surcote = individu('regime_de_base_surcote', period)
-        taux_plein = parameters(period).plein.taux
+        taux_plein = parameters(period).taux_plein
     return taux_plein * (1 - decote + surcote)
 
 class regime_de_base_cotisation_retraite(Variable):
