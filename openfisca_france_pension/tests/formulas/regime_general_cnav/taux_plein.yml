@@ -1,0 +1,20 @@
+- name: Taux plein avant 1971
+  absolute_error_margin: .001
+  period: 1968
+  input:
+    date_de_naissance: 1903-11-19
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_pension_brute: 1000 * .4
+
+
+- name: Taux plein après 1971
+  absolute_error_margin: .001
+  period: 2010
+  input:
+    date_de_naissance: 1935-11-19
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_pension_brute: 1000 * .5

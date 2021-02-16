@@ -1,8 +1,10 @@
 - name: test
   description: test
-  absolute_error_margin: 1
   period: 2010
   input:
+    date_de_naissance: 1947-11-19
     salaire_de_base: 1000
   output:
+    date_de_naissance: 1947-11-19
     salaire_de_base: 1000
+    age_au_31_decembre: 63

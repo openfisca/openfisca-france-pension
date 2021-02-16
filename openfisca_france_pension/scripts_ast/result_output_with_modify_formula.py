@@ -82,10 +82,10 @@ class regime_de_base_pension_brute(Variable):
     label = 'Décote'
 
     def formula(individu, period, parameters):
-        coefficent_de_proratisation = individu('regime_de_base_coefficent_de_proratisation', period)
+        coefficient_de_proratisation = individu('regime_de_base_coefficient_de_proratisation', period)
         salaire_de_reference = individu('regime_de_base_salaire_de_reference', period)
         taux_de_liquidation = individu('regime_de_base_taux_de_liquidation', period)
-        return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
+        return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
     def pension(individu, period):
         return individu('pension_brute', period) + individu('majoration_pension', period)

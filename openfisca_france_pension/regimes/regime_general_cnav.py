@@ -1,18 +1,24 @@
-from openfisca_france_pension.regimes.regime import RegimeDeBase
+"""Régime de base du secteur privé: régime général de la CNAV."""
+
+from datetime import timedelta
+import numpy as np
+
+from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
+from openfisca_core.model_api import *
 
 # Import the Entities specifically defined for this tax and benefit system
 from openfisca_france_pension.entities import Household, Person
 
 
-class RegimePrive(RegimeDeBase):
+class RegimePrive(AbstractRegimeDeBase):
     name = "Régime de base du secteur privé: régime général de la Cnav"
-    prefix = "regime_general_cnav"
-    parameters = "parameters.secteur_prive.regime_general_cnav"
+    variable_prefix = "regime_general_cnav"
+    parameters_prefix = "secteur_prive.regime_general_cnav"
 
-    class trimestres_cotises(Variable):
+    class trimestres(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
@@ -117,8 +123,6 @@ class RegimePrive(RegimeDeBase):
         definition_period = ETERNITY
         label = "Coefficient de proratisation"
 
-        # ''' Calcul du coefficient de proratisation '''
-
         # def _assurance_corrigee(trim_regime, agem):
         #     '''
         #     Deux types de corrections :
@@ -147,13 +151,115 @@ class RegimePrive(RegimeDeBase):
         # # disposition pour montée en charge de la loi Boulin (ne s'applique qu'entre 72 et 74) :
         # if P.prorat.application_plaf == 1:
         #     trim_regime = minimum(trim_regime, P.prorat.plaf)
-        # CP = minimum(1, divide(trim_regime, P.prorat.n_trim))
-        # return CP
+
+        def formula_1983_04_01(individu, period, parameters):
+            duree_de_proratisation = (
+                parameters(period).regime_name.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
+                )
+            # TODO
+            aad = 65
+            coefficient_minoration_par_trimetre = parameters(period).regime_name.decote_rg.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_01_01_1944
+            age = individu('age_au_31_decembre', period)
+            trimestres = individu('regime_name_trimestres', period)
+            duree_assurance_corrigee = min_(
+                duree_de_proratisation,
+                trimestres * (
+                    1
+                    + 4 * max_(0, age - aad) * coefficient_minoration_par_trimetre
+                    )
+                )
+            coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
+            return coefficient
+
+        def formula_1948(individu, period, parameters):
+            trimestres = individu('regime_name_trimestres', period)
+            duree_de_proratisation = (
+                parameters(period).regime_name.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
+                )
+            duree_assurance_corrigee = (
+                trimestres
+                + (trimestres - duree_de_proratisation) / duree_de_proratisation
+                )
+            coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
+            return coefficient
+
+        def formula_1946(individu, period, parameters):
+            duree_de_proratisation = (
+                parameters(period).regime_name.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
+                )
+            trimestres = individu('regime_name_trimestres', period)
+            coefficient = min_(1, trimestres / duree_de_proratisation)
+            return coefficient
+
+
+    class decote(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Décote"
+
+        def formula_1983_04_01(individu, period, parameters):
+            # TODO add as a parameter
+            aad = 65
+            coefficient_minoration_par_trimetre = parameters(period).regime_name.decote_rg.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_01_01_1944
+            duree_de_proratisation = (
+                parameters(period).regime_name.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
+                )
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            age_en_mois_a_la_liquidation = (
+                liquidation_date -
+                individu('date_de_naissance', period)
+                ).astype("timedelta64[M]").astype(int)
+            trimestres_avant_add = np.trunc(
+                    (aad * 12 - age_en_mois_a_la_liquidation) / 3
+                    )
+            trimestres = individu('regime_name_trimestres', period)
+            decote = coefficient_minoration_par_trimetre * max_(
+                0,
+                min_(
+                    trimestres - duree_de_proratisation,
+                    trimestres_avant_add
+                    )
+                )
+            return decote
+
+        def formula_1945(individu, period, parameters):
+            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote_rg.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_01_01_1944
+            # TODO extract age by generation
+            aad = 65
+            # (
+            #     parameters(period).regime_name.age_annulation_decote_en_fonction_date_naissance.ne_avant_1951_07_01
+            #     )
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            age_en_mois_a_la_liquidation = (
+                liquidation_date -
+                individu('date_de_naissance', period)
+                ).astype("timedelta64[M]").astype(int)
+            # TODO definition exacte trimestres ?
+            trimestres_avant_add = max_(
+                0,
+                np.trunc(
+                    (aad * 12 - age_en_mois_a_la_liquidation) / 3
+                    )
+                )
+            return coefficient_minoration_par_trimestre * trimestres_avant_add
+
+
+    class liquidation_date(Variable):
+        value_type = date
+        entity = Person
+        definition_period = ETERNITY
+        label = "Date de liquidation"
 
 
     class surcote(Variable):
-        def formulat(individu, period, parmaters):
-            pass
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Surcote"
+
+        # def formulat(individu, period, parmaters):
+        #     pass
     # def surcote(self, data, trimesters, trimesters_tot, date_start_surcote):
     #     ''' Détermination de la surcote à appliquer aux pensions.'''
     #     P = reduce(getattr, self.param_name.split('.'), self.P)
@@ -196,18 +302,22 @@ class RegimePrive(RegimeDeBase):
     #             P2.taux_maj_age * maj_age_trim
     #     return surcote
 
-    def trimestres_excess_taux_plein(self, data, trimesters, trimesters_tot):
-        ''' Détermination nb de trimestres au delà du taux plein.'''
-        P = reduce(getattr, self.param_name.split('.'), self.P)
-        # dispositif de type 0
-        n_trim = array(P.plein.n_trim, dtype=float)
-        trim_tot = trimesters_tot.sum(axis=1)
-        return (trim_tot - n_trim) * (trim_tot > n_trim)
+    # def trimestres_excess_taux_plein(self, data, trimesters, trimesters_tot):
+    #     ''' Détermination nb de trimestres au delà du taux plein.'''
+    #     P = reduce(getattr, self.param_name.split('.'), self.P)
+    #     # dispositif de type 0
+    #     n_trim = array(P.plein.n_trim, dtype=float)
+    #     trim_tot = trimesters_tot.sum(axis=1)
+    #     return (trim_tot - n_trim) * (trim_tot > n_trim)
 
     class pension_minimale(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension minimale"
 
-        def formula(indiivdu, period, paramaters):
-            pass
+        # def formula(indiivdu, period, paramaters):
+        #     pass
 
         # ''' MICO du régime général : allocation différentielle
         # RQ :
@@ -243,8 +353,13 @@ class RegimePrive(RegimeDeBase):
         #     return (mico - pension_brute) * (mico > pension_brute) * (pension_brute > 0)
 
     class pension_maximale(Variable):
-        def formula(indiivdu, period, paramaters):
-            pass
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension maximale"
+
+        # def formula(indiivdu, period, paramaters):
+        #     pass
 
         # ''' plafonnement à 50% du PSS
         # TODO: gérer les plus de 65 ans au 1er janvier 1983'''

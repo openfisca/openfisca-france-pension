@@ -1,37 +1,34 @@
-from datetime import date
+"""Abstract regimesdefinition."""
 
-
-from openfisca_core.model_api import max_
-from openfisca_core.periods import ETERNITY, MONTH, YEAR
-from openfisca_core.variables import Variable
+from openfisca_core.model_api import *
 
 # Import the Entities specifically defined for this tax and benefit system
 from openfisca_france_pension.entities import Household, Person
 
 
-class Regime(object):
+class AbstractRegime(object):
     name = None
-    prefix = None
+    variable_prefix = None
     parameters = None
 
     class surcote_debut_date(Variable):
         value_type = date
         entity = Person
-        definition_period = ETERNITY
+        definition_period = YEAR
         label = "Date du début de la surcote"
 
 
     class decote_annulation_date(Variable):
         value_type = date
         entity = Person
-        definition_period = ETERNITY
+        definition_period = YEAR
         label = "Date d'annulation de la décote'"
 
 
     class taux_plein_date(Variable):
         value_type = date
         entity = Person
-        definition_period = ETERNITY
+        definition_period = YEAR
         label = "Date du taux plein"
 
 
@@ -62,9 +59,9 @@ class Regime(object):
             return salaire_de_base * taux
 
 
-class RegimeDeBase(Regime):
+class AbstractRegimeDeBase(AbstractRegime):
     name = "Régime de base"
-    prefix = "regime_de_base"
+    variable_prefix = "regime_de_base"
     parameters = "parameters/regime_de_base"
 
     class salaire_de_reference(Variable):
@@ -94,11 +91,12 @@ class RegimeDeBase(Regime):
         definition_period = YEAR
         label = "Décote"
 
-        def formula(individu, period, parameters):
-            taux = parameters(period).regime_name.decote.taux
-            trimestres_debut = parameters(period).regime_name.decote.trimestres_debut
-            trimestres = individu('regime_name_trimestres', period)
-            return taux * max_(trimestres - trimestres_debut, 0)
+
+    class decote_date_annulation(Variable):
+        value_type = date
+        entity = Person
+        definition_period = YEAR
+        label = "Décote"
 
 
     class pension_brute(Variable):
@@ -108,10 +106,10 @@ class RegimeDeBase(Regime):
         label = "Pension brute"
 
         def formula(individu, period, parameters):
-            coefficent_de_proratisation = individu('regime_name_coefficent_de_proratisation', period)
+            coefficient_de_proratisation = individu('regime_name_coefficient_de_proratisation', period)
             salaire_de_reference = individu('regime_name_salaire_de_reference', period)
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
-            return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
+            return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
     class pension(Variable):
         value_type = float

@@ -1,0 +1,79 @@
+- name: Décote avant 1971 pour une personne de 64 ans
+  absolute_error_margin: .001
+  period: 1968
+  input:
+    date_de_naissance: 1904-11-19
+    regime_general_cnav_liquidation_date: 1968-10-31
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_liquidation_date: 1968-10-31
+    regime_general_cnav_decote: .1
+    regime_general_cnav_pension_brute: 1000 * .36
+
+
+- name: Décote avant 1971 pour une personne de 60 ans
+  absolute_error_margin: .001
+  period: 1964
+  input:
+    date_de_naissance: 1904-11-19
+    regime_general_cnav_liquidation_date: 1964-11-19
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_decote: .5
+    regime_general_cnav_pension_brute: 1000 * .2
+
+
+- name: Décote avant 1971 pour une personne de 63 ans
+  absolute_error_margin: .001
+  period: 1967
+  input:
+    date_de_naissance: 1904-11-19
+    regime_general_cnav_liquidation_date: 1967-11-18
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_decote: .2
+    regime_general_cnav_pension_brute: 1000 * .32
+
+
+- name: Décote entre 1971 et 1982 pour une personne de 60 ans
+  absolute_error_margin: .001
+  period: 1975
+  input:
+    date_de_naissance: 1915-11-19
+    regime_general_cnav_liquidation_date: 1975-11-18
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_liquidation_date: 1975-11-18
+    regime_general_cnav_decote: .5
+    regime_general_cnav_pension_brute: 1000 * (.25)
+
+
+- name: Décote entre 1971 et 1982 pour une personne de 63 ans
+  absolute_error_margin: .001
+  period: 1978
+  input:
+    date_de_naissance: 1915-11-19
+    regime_general_cnav_liquidation_date: 1978-11-18
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_liquidation_date: 1978-11-18
+    regime_general_cnav_pension_brute: 1000 * (.4)
+    regime_general_cnav_decote: .2
+
+- name: Décote entre 1971 et 1982 pour une personne de 65 ans
+  absolute_error_margin: .001
+  period: 1980
+  input:
+    date_de_naissance: 1915-11-19
+    regime_general_cnav_liquidation_date: 1980-11-18
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_liquidation_date: 1980-11-18
+    regime_general_cnav_pension_brute: 1000 * (.5)
+    regime_general_cnav_decote: 0

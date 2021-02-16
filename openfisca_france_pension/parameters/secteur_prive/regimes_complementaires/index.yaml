@@ -1,0 +1,16 @@
+description: Régimes complémentaires
+metadata:
+  order:
+  - pt_arrco
+  - salref_arrco
+  - coeff_mino_arrco
+  - pt_agirc
+  - salref_agirc
+  - coeff_mino_agirc
+  - pt_unirs_arrco
+  - salref_unirs
+  - pt_probtp_arrco
+  - salref_probtp
+  - gmp
+  - coeff_temp
+  description_en: Complementary schemes

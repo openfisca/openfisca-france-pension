@@ -4,12 +4,6 @@ from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Household, Person
 
-class regime_de_base_salaire_de_base(Variable):
-    value_type = float
-    entity = Person
-    definition_period = MONTH
-    label = 'Salaire brut'
-
 class regime_de_base_surcote_debut_date(Variable):
     value_type = date
     entity = Person
@@ -88,10 +82,10 @@ class regime_de_base_pension_brute(Variable):
     label = 'Pension brute'
 
     def formula(individu, period, parameters):
-        coefficent_de_proratisation = individu('regime_de_base_coefficent_de_proratisation', period)
+        coefficient_de_proratisation = individu('regime_de_base_coefficient_de_proratisation', period)
         salaire_de_reference = individu('regime_de_base_salaire_de_reference', period)
         taux_de_liquidation = individu('regime_de_base_taux_de_liquidation', period)
-        return coefficent_de_proratisation * salaire_de_reference * taux_de_liquidation
+        return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
 class regime_de_base_pension(Variable):
     value_type = float

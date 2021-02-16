@@ -1,0 +1,17 @@
+description: Régime général (CNAV)
+metadata:
+  order:
+  - reval_p
+  - reval_s
+  - reval_s_49
+  - salval
+  - aod_rg
+  - aad_rg
+  - montant_mico
+  - plafond_mico
+  - prorat_rg
+  - trimtp_rg
+  - sam
+  - decote_rg
+  - surcote_rg
+  description_en: Main pension scheme (ie "régime général" or CNAV)
