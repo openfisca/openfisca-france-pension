@@ -135,24 +135,27 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
     label = 'Coefficient de proratisation'
 
     def formula_1983_04_01(individu, period, parameters):
-        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
+        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat_rg.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.ne_avant_01_01_1944
         aad = 65
         coefficient_minoration_par_trimetre = parameters(period).secteur_prive.regime_general_cnav.decote_rg.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_01_01_1944
+        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
+        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
+        trimestres_avant_add = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad * 12) / 3))
         age = individu('age_au_31_decembre', period)
         trimestres = individu('regime_general_cnav_trimestres', period)
-        duree_assurance_corrigee = min_(duree_de_proratisation, trimestres * (1 + 4 * max_(0, age - aad) * coefficient_minoration_par_trimetre))
+        duree_assurance_corrigee = min_(duree_de_proratisation, trimestres * (1 + trimestres_avant_add * coefficient_minoration_par_trimetre))
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
         return coefficient
 
     def formula_1948(individu, period, parameters):
         trimestres = individu('regime_general_cnav_trimestres', period)
-        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
-        duree_assurance_corrigee = trimestres + (trimestres - duree_de_proratisation) / duree_de_proratisation
+        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat_rg.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.ne_avant_01_01_1944
+        duree_assurance_corrigee = trimestres + (duree_de_proratisation - trimestres) / 2
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
         return coefficient
 
     def formula_1946(individu, period, parameters):
-        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
+        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat_rg.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.ne_avant_01_01_1944
         trimestres = individu('regime_general_cnav_trimestres', period)
         coefficient = min_(1, trimestres / duree_de_proratisation)
         return coefficient
@@ -166,12 +169,12 @@ class regime_general_cnav_decote(Variable):
     def formula_1983_04_01(individu, period, parameters):
         aad = 65
         coefficient_minoration_par_trimetre = parameters(period).secteur_prive.regime_general_cnav.decote_rg.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_01_01_1944
-        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat_rg.duree_de_proratisation_pris_en_compte_proratisation_par_generation.ne_avant_1944
+        trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp_rg.nombre_trimestres_cibles_par_generation.ne_avant_01_01_1934
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_add = np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3)
         trimestres = individu('regime_general_cnav_trimestres', period)
-        decote = coefficient_minoration_par_trimetre * max_(0, min_(trimestres - duree_de_proratisation, trimestres_avant_add))
+        decote = coefficient_minoration_par_trimetre * max_(0, min_(trimestres_cibles_taux_plein - trimestres, trimestres_avant_add))
         return decote
 
     def formula_1945(individu, period, parameters):

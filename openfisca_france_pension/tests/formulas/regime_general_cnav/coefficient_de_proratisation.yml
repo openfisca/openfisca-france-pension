@@ -1,0 +1,83 @@
+- name: Coeffiicent de proratisation avant 1948
+  absolute_error_margin: .001
+  period: 1946
+  input:
+    regime_general_cnav_trimestres: 120
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+
+
+- name: Coeffiicent de proratisation avant 1948
+  absolute_error_margin: .001
+  period: 1946
+  input:
+    regime_general_cnav_trimestres: 100
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 100 / 120
+
+
+- name: Coeffiicent de proratisation 1948 - 1971 avec 100 trimestres
+  absolute_error_margin: .001
+  period: 1950
+  input:
+    regime_general_cnav_trimestres: 100
+  output:
+    regime_general_cnav_coefficient_de_proratisation: (100 + (120 - 100) / 2) / 120
+
+
+- name: Coeffiicent de proratisation 1948 - 1971 avec 120 trimestres
+  absolute_error_margin: .001
+  period: 1950
+  input:
+    regime_general_cnav_trimestres: 120
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+
+
+- name: Coeffiicent de proratisation 1948 - 1971 avec 130 trimestres
+  absolute_error_margin: .001
+  period: 1950
+  input:
+    regime_general_cnav_trimestres: 130
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+
+
+- name: Coeffiicent de proratisation 1972 - 1983 avec 120 trimestres
+  absolute_error_margin: .001
+  period: 1975
+  input:
+    regime_general_cnav_trimestres: 120
+  output:
+    regime_general_cnav_coefficient_de_proratisation: (120 + (150 - 120) / 2) / 150
+
+
+- name: Coeffiicent de proratisation 1972 - 1983 avec 150 trimestres
+  absolute_error_margin: .001
+  period: 1975
+  input:
+    regime_general_cnav_trimestres: 150
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+
+
+- name: Coeffiicent de proratisation après 1983 avec 150 trimestres
+  absolute_error_margin: .001
+  period: 1985
+  input:
+    date_de_naissance: 1919-12-25
+    regime_general_cnav_liquidation_date: 1985-01-01
+    regime_general_cnav_trimestres: 150
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+
+
+- name: Coeffiicent de proratisation après 1983 avec 120 trimestres et 70 ans
+  absolute_error_margin: .001
+  period: 1987
+  input:
+    date_de_naissance: 1919-12-25
+    regime_general_cnav_liquidation_date: 1987-01-01
+    regime_general_cnav_trimestres: 100
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 120 / 150
