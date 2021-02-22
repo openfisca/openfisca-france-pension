@@ -28,6 +28,7 @@ setup(
             ),
         ],
     install_requires = [
+        "bottleneck >=1.3.2,<=2.0.0",
         "OpenFisca-Core >=27.0,<35.0",
         ],
     extras_require = {

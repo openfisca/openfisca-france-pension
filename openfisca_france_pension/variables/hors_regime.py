@@ -22,6 +22,7 @@ class salaire_de_base(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Salaire de base (salaire brut)'
+    set_input = set_input_divide_by_period
 
 
 class date_de_naissance(Variable):

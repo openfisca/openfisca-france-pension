@@ -1,8 +1,8 @@
 """Régime de base du secteur privé: régime général de la CNAV."""
 
+import functools
 import numpy as np
 
-from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
@@ -10,6 +10,10 @@ from openfisca_core.model_api import *
 
 # Import the Entities specifically defined for this tax and benefit system
 from openfisca_france_pension.entities import Household, Person
+
+
+from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 
 
 class RegimePrive(AbstractRegimeDeBase):
@@ -44,18 +48,6 @@ class RegimePrive(AbstractRegimeDeBase):
     #     return trim_maj
 
 
-    class age_ouverture_des_droits(Variable):
-        value_type = float
-        entity = Person
-        definition_period = ETERNITY
-        label = "Age d'ouverture des droits"
-
-
-    # def age_min_retirement(self):
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     return P.age_min
-
-
     # def salref(self, data, sal_regime):
     #     ''' SAM : Calcul du salaire annuel moyen de référence :
     #     notamment application du plafonnement à un PSS et de la revalorisation sur les prix
@@ -88,23 +80,59 @@ class RegimePrive(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Salaire annuel moyen de base dit salaire de référence"
 
+        def formula_1994(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+            annees_de_naissance_distinctes = np.unique(annee_de_naissance)
+            salaire_de_refererence = 0
+            for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
+                n = int(
+                    parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
+                        date_de_naissance
+                        ]
+                    )
+                mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
+                # revalorisation = {
+                #     year: np.cumprod(
+                #         np.array([
+                #             parameters(period).secteur_prive.regime_general_cnav.reval_s.coefficient
+                #             ])
+                #         )
+                #     }
+                salaire_de_refererence = where(
+                    annee_de_naissance == _annee_de_naissance,
+                    np.apply_along_axis(
+                        mean_over_largest,
+                        axis = 0,
+                        arr = np.vstack([
+                            min_(
+                                individu('salaire_de_base', period = year),
+                                parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+                                )
+                            for year in range(period.start.year, _annee_de_naissance, -1)
+                            ]),
+                        ),
+                    salaire_de_refererence,
+                    )
+            return salaire_de_refererence
 
-    # def trim_decote(self, data, trimesters_tot, trim_maj_enf_tot):
-    #     ''' Détermination de la décote à appliquer aux pensions '''
-    #     # TODO: Imagine a better way to include external sources
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     agem = data.info_ind['agem']
-    #     duree_assurance_from_external = data.info_ind['duree_assurance_tot_RG']
-    #     if P.decote.dispositif == 1:
-    #         age_annulation = P.decote.age_null
-    #         trim_decote = max(divide(age_annulation - agem, 3), 0)
-    #     elif P.decote.dispositif == 2:
-    #         if (duree_assurance_from_external == 0).all():
-    #             trim_decote = nb_trim_decote(trimesters_tot, trim_maj_enf_tot, agem, P)
-    #         else:
-    #             trim_tot_ref = maximum(duree_assurance_from_external, trimesters_tot.sum(axis=1))
-    #             trim_decote = nb_trim_decote_from_external(trim_tot_ref, agem, P)
-    #     return trim_decote
+        def formula_1972(individu, period, parameters):
+            n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01
+            mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
+            annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
+            salaire_de_refererence = np.apply_along_axis(
+                mean_over_largest,
+                axis = 0,
+                arr = np.vstack([
+                    min_(
+                        individu('salaire_de_base', period = year),
+                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+                        )
+                    for year in range(period.start.year, annee_initiale, -1)
+                    ]),
+                )
+            return salaire_de_refererence
+
 
     class coefficient_de_proratisation(Variable):
         value_type = float
@@ -295,7 +323,6 @@ class RegimePrive(AbstractRegimeDeBase):
             taux_surcote = (
                 parameters(period).regime_name.surcote_rg.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['partir_65_ans']
                 )
-
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
@@ -380,8 +407,11 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             trimestres_surcote_au_dela_de_65_ans = min_(
                 trimestres_surcote,
-                np.trunc(
-                    (age_en_mois_a_la_liquidation - 65 * 12) / 3
+                max_(
+                    0,
+                        np.trunc(
+                        (age_en_mois_a_la_liquidation - 65 * 12) / 3
+                        )
                     )
                 )
             trimestres_surcote_en_deca_de_65_ans = max_(

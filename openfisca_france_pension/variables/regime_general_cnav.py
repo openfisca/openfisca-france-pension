@@ -2,12 +2,14 @@
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Household, Person
 'Régime de base du secteur privé: régime général de la CNAV.'
+import functools
 import numpy as np
-from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Household, Person
+from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
@@ -109,17 +111,29 @@ class regime_general_cnav_trimestres(Variable):
     definition_period = YEAR
     label = 'Trimestres cotisés au régime général'
 
-class regime_general_cnav_age_ouverture_des_droits(Variable):
-    value_type = float
-    entity = Person
-    definition_period = ETERNITY
-    label = "Age d'ouverture des droits"
-
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
     label = 'Salaire annuel moyen de base dit salaire de référence'
+
+    def formula_1994(individu, period, parameters):
+        date_de_naissance = individu('date_de_naissance', period)
+        annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+        annees_de_naissance_distinctes = np.unique(annee_de_naissance)
+        salaire_de_refererence = 0
+        for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
+            n = int(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[date_de_naissance])
+            mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
+            salaire_de_refererence = where(annee_de_naissance == _annee_de_naissance, np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) for year in range(period.start.year, _annee_de_naissance, -1)])), salaire_de_refererence)
+        return salaire_de_refererence
+
+    def formula_1972(individu, period, parameters):
+        n = parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01
+        mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
+        annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
+        salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) for year in range(period.start.year, annee_initiale, -1)]))
+        return salaire_de_refererence
 
 class regime_general_cnav_coefficient_de_proratisation(Variable):
     value_type = float
@@ -246,7 +260,7 @@ class regime_general_cnav_surcote(Variable):
         trimestres = individu('regime_general_cnav_trimestres', period)
         trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp_rg.nombre_trimestres_cibles_par_generation[date_de_naissance]
         trimestres_surcote = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), trimestres - trimestres_cibles_taux_plein))
-        trimestres_surcote_au_dela_de_65_ans = min_(trimestres_surcote, np.trunc((age_en_mois_a_la_liquidation - 65 * 12) / 3))
+        trimestres_surcote_au_dela_de_65_ans = min_(trimestres_surcote, max_(0, np.trunc((age_en_mois_a_la_liquidation - 65 * 12) / 3)))
         trimestres_surcote_en_deca_de_65_ans = max_(0, trimestres_surcote - trimestres_surcote_au_dela_de_65_ans)
         surcote = taux_surcote_par_trimestre_1_4_trimestres * min_(4, trimestres_surcote_en_deca_de_65_ans) + taux_surcote_par_trimestre_partir_5_trimestres * max_(0, trimestres_surcote_en_deca_de_65_ans - 4) + taux_surcote_par_trimestre_partir_65_ans * trimestres_surcote_au_dela_de_65_ans
         return surcote
