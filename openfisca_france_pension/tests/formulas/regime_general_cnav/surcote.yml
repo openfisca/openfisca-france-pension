@@ -1,0 +1,81 @@
+- name: Pas de surcote avant 1984 pour une personne de 64 ans
+  absolute_error_margin: .001
+  period: 1970
+  input:
+    date_de_naissance: 1906-11-19
+    regime_general_cnav_liquidation_date: 1970-11-30
+    regime_general_cnav_salaire_de_reference: 1000
+  output:
+    regime_general_cnav_liquidation_date: 1970-11-30
+    regime_general_cnav_surcote: 0
+
+
+- name: Surcote avant 1984 pour une personne de 66 ans
+  absolute_error_margin: .001
+  period: 1970
+  input:
+    date_de_naissance: 1904-11-19
+    regime_general_cnav_liquidation_date: 1970-11-30
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_liquidation_date: 1970-11-30
+    regime_general_cnav_surcote: .1
+    regime_general_cnav_pension_brute: 1000 * .44
+
+
+- name: Surcote entre 1984 et 2003 pour une personne de 66 ans
+  absolute_error_margin: .001
+  period: 1985
+  input:
+    date_de_naissance: 1919-11-19
+    regime_general_cnav_liquidation_date: 1985-11-30
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    regime_general_cnav_surcote: 0
+    regime_general_cnav_pension_brute: 1000 * (.5)
+
+- name: Surcote entre 2004 et 2007 pour une personne de 66 ans et 160 trimestres
+  absolute_error_margin: .001
+  period: 2005
+  input:
+    date_de_naissance: 1939-11-19
+    regime_general_cnav_liquidation_date: 2005-11-21
+    regime_general_cnav_trimestres: 160
+    regime_general_cnav_salaire_de_reference: 1000
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+    regime_general_cnav_decote: 0
+    regime_general_cnav_surcote: .03
+    regime_general_cnav_pension_brute: 1000 * .5 * (1 + 0.03)
+
+
+- name: Surcote entre 2007 et 2009 pour une personne de 66 ans et 170 trimestres
+  absolute_error_margin: .001
+  period: 2008
+  input:
+    date_de_naissance: 1942-11-19
+    regime_general_cnav_liquidation_date: 2008-11-21
+    regime_general_cnav_trimestres: 170
+    regime_general_cnav_salaire_de_reference: 1000
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+    regime_general_cnav_decote: 0
+    regime_general_cnav_surcote: .05
+    regime_general_cnav_pension_brute: 1000 * .5 * (1 + 0.05)
+
+
+- name: Surcote entre après 2009 pour une personne de 66 ans et 160 trimestres
+  absolute_error_margin: .001
+  period: 2010
+  input:
+    date_de_naissance: 1944-11-19
+    regime_general_cnav_liquidation_date: 2010-11-21
+    regime_general_cnav_trimestres: 175
+    regime_general_cnav_salaire_de_reference: 1000
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+    regime_general_cnav_decote: 0
+    regime_general_cnav_surcote: .05
+    regime_general_cnav_pension_brute: 1000 * .5 * (1 + 0.05)

@@ -3,7 +3,7 @@ coefficient_minoration_par_trimestres_manquants:
   description: Coefficient de minoration par trimestres manquants
   taux_minore_taux_plein_1_decote_nombre_trimestres_manquants:
     description: taux minoré = taux plein * (1 - decote * (nombre de trimestres manquants))
-    ne_avant_01_01_1944:
+    ne_avant_1944_01_01:
       description: Avant 1944
       values:
         1946-01-01:
@@ -11,7 +11,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_base
         unit: /1
-    ne_apres_01_01_1944:
+    ne_apres_1944_01_01:
       description: 1944-01-01
       values:
         2004-01-01:
@@ -21,7 +21,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0144
         unit: /1
-    ne_apres_01_01_1945:
+    ne_apres_1945_01_01:
       description: 1945-01-01
       values:
         2004-01-01:
@@ -31,7 +31,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0145
         unit: /1
-    ne_apres_01_01_1946:
+    ne_apres_1946_01_01:
       description: 1946-01-01
       values:
         2004-01-01:
@@ -41,7 +41,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0146
         unit: /1
-    ne_apres_01_01_1947:
+    ne_apres_1947_01_01:
       description: 1947-01-01
       values:
         2004-01-01:
@@ -51,7 +51,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0147
         unit: /1
-    ne_apres_01_01_1948:
+    ne_apres_1948_01_01:
       description: 1948-01-01
       values:
         2004-01-01:
@@ -61,7 +61,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0148
         unit: /1
-    ne_apres_01_01_1949:
+    ne_apres_1949_01_01:
       description: 1949-01-01
       values:
         2004-01-01:
@@ -71,7 +71,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0149
         unit: /1
-    ne_apres_17_01_1950:
+    ne_apres_1950_01_17:
       description: 1950-01-17
       values:
         2004-01-01:
@@ -81,7 +81,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0150
         unit: /1
-    ne_apres_01_01_1951:
+    ne_apres_1951_01_01:
       description: 1951-01-01
       values:
         2004-01-01:
@@ -91,7 +91,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0151
         unit: /1
-    ne_apres_01_01_1952:
+    ne_apres_1952_01_01:
       description: 1952-01-01
       values:
         2004-01-01:
@@ -101,7 +101,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0152
         unit: /1
-    ne_apres_01_01_1953:
+    ne_apres_1953_01_01:
       description: 1953-01-01
       values:
         2004-01-01:
@@ -113,17 +113,17 @@ coefficient_minoration_par_trimestres_manquants:
         unit: /1
     metadata:
       order:
-      - ne_avant_01_01_1944
-      - ne_apres_01_01_1944
-      - ne_apres_01_01_1945
-      - ne_apres_01_01_1946
-      - ne_apres_01_01_1947
-      - ne_apres_01_01_1948
-      - ne_apres_01_01_1949
-      - ne_apres_17_01_1950
-      - ne_apres_01_01_1951
-      - ne_apres_01_01_1952
-      - ne_apres_01_01_1953
+      - ne_avant_1944_01_01
+      - ne_apres_1944_01_01
+      - ne_apres_1945_01_01
+      - ne_apres_1946_01_01
+      - ne_apres_1947_01_01
+      - ne_apres_1948_01_01
+      - ne_apres_1949_01_01
+      - ne_apres_1950_01_17
+      - ne_apres_1951_01_01
+      - ne_apres_1952_01_01
+      - ne_apres_1953_01_01
 metadata:
   order:
   - coefficient_minoration_par_trimestres_manquants

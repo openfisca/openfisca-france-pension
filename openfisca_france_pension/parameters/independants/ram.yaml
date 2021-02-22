@@ -1,14 +1,14 @@
 description: Nombre d'années prises en compte dans le calcul du RAM
 nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
   description: Nombre d'années entrant en jeu dans la détermination du revenu annuel moyen (RAM)
-  avant_1933:
-    description: Avant 1933
+  ne_avant_1934_01_01:
+    description: Avant 1934
     values:
       1972-01-01:
         value: 10.0
     metadata:
       ipp_csv_id: nbsam_base
-  '1934':
+  ne_apres_1934_01_01:
     description: '1934'
     values:
       1994-01-01:
@@ -17,7 +17,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0134
-  '1936':
+  ne_apres_1936_01_01:
     description: '1936'
     values:
       1994-01-01:
@@ -26,7 +26,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0136
-  '1938':
+  ne_apres_1938_01_01:
     description: '1938'
     values:
       1994-01-01:
@@ -35,7 +35,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0138
-  '1940':
+  ne_apres_1940_01_01:
     description: '1940'
     values:
       1994-01-01:
@@ -44,7 +44,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0140
-  '1942':
+  ne_apres_1942_01_01:
     description: '1942'
     values:
       1994-01-01:
@@ -53,7 +53,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0142
-  '1944':
+  ne_apres_1944_01_01:
     description: '1944'
     values:
       1994-01-01:
@@ -62,7 +62,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0144
-  '1945':
+  ne_apres_1945_01_01:
     description: '1945'
     values:
       1994-01-01:
@@ -71,7 +71,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0145
-  '1946':
+  ne_apres_1946_01_01:
     description: '1946'
     values:
       1994-01-01:
@@ -80,7 +80,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0146
-  '1947':
+  ne_apres_1947_01_01:
     description: '1947'
     values:
       1994-01-01:
@@ -89,7 +89,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0147
-  '1948':
+  ne_apres_1948_01_01:
     description: '1948'
     values:
       1994-01-01:
@@ -98,7 +98,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0148
-  '1949':
+  ne_apres_1949_01_01:
     description: '1949'
     values:
       1994-01-01:
@@ -107,7 +107,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0149
-  '1950':
+  ne_apres_1950_01_01:
     description: '1950'
     values:
       1994-01-01:
@@ -116,7 +116,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0150
-  '1951':
+  ne_apres_1951_01_01:
     description: '1951'
     values:
       1994-01-01:
@@ -125,7 +125,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0151
-  '1952':
+  ne_apres_1952_01_01:
     description: '1952'
     values:
       1994-01-01:
@@ -145,22 +145,22 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
       ipp_csv_id: nbsam_0153
   metadata:
     order:
-    - avant_1933
-    - '1934'
-    - '1936'
-    - '1938'
-    - '1940'
-    - '1942'
-    - '1944'
-    - '1945'
-    - '1946'
-    - '1947'
-    - '1948'
-    - '1949'
-    - '1950'
-    - '1951'
-    - '1952'
-    - apres_1953
+    - ne_avant_1934_01_01
+    - ne_apres_1934_01_01
+    - ne_apres_1936_01_01
+    - ne_apres_1938_01_01
+    - ne_apres_1940_01_01
+    - ne_apres_1942_01_01
+    - ne_apres_1944_01_01
+    - ne_apres_1945_01_01
+    - ne_apres_1946_01_01
+    - ne_apres_1947_01_01
+    - ne_apres_1948_01_01
+    - ne_apres_1949_01_01
+    - ne_apres_1950_01_01
+    - ne_apres_1951_01_01
+    - ne_apres_1952_01_01
+    - ne_apres_1953_01_01
 metadata:
   order:
   - nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram
