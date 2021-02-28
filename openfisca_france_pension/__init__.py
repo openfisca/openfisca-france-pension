@@ -5,9 +5,14 @@ import os
 from openfisca_core.taxbenefitsystems import TaxBenefitSystem
 
 from openfisca_france_pension import entities
+from openfisca_france_pension.scripts_ast import script_ast
 
 
 COUNTRY_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+# Convert regimes classes to OpenFisca variables.
+script_ast.main(verbose=True)
 
 
 # Our country tax and benefit class inherits from the general TaxBenefitSystem class.
