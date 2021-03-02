@@ -95,12 +95,13 @@ class RegimePrive(AbstractRegimeDeBase):
                 mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
                 revalorisation = dict()
                 revalorisation[period.start.year] = 1
-                for _annee in range(annee_de_naissance + OFFSET, period.start.year):
-                    revalorisation[_annee] = (
+                for annee_salaire in range(annee_de_naissance + OFFSET, period.start.year + 1):
+                    # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
+                    revalorisation[annee_salaire] = (
                         np.prod(
                             np.array([
-                                parameters(__annee).secteur_prive.regime_general_cnav.reval_s.coefficient
-                                for __annee in range(_annee, period.start.year)
+                                parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient
+                                for _annee in range(annee_salaire + 1, period.start.year + 1)
                                 ])
                             )
                         )

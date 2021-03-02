@@ -128,8 +128,10 @@ class regime_general_cnav_salaire_de_reference(Variable):
             mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
             revalorisation = dict()
             revalorisation[period.start.year] = 1
-            for _annee in range(annee_de_naissance + OFFSET, period.start.year):
-                revalorisation[_annee] = np.prod(np.array([parameters(__annee).secteur_prive.regime_general_cnav.reval_s.coefficient for __annee in range(_annee, period.start.year)]))
+            for annee_salaire in range(annee_de_naissance + OFFSET, period.start.year + 1):
+                revalorisation[annee_salaire] = np.prod(np.array([parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient for _annee in range(annee_salaire + 1, period.start.year + 1)]))
+            print(revalorisation)
+            print(np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[year] for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)]))
             salaire_de_refererence = where(annee_de_naissance == _annee_de_naissance, np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[year] for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])), salaire_de_refererence)
         return salaire_de_refererence
 

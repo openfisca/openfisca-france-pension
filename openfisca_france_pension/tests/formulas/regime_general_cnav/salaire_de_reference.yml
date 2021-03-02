@@ -1,9 +1,21 @@
 - name: Salaire de réference
   absolute_error_margin: .001
-  period: 2010
+  period: 2021
   input:
     date_de_naissance: 1940-11-19
     salaire_de_base:
-      year:1960:50: 12 * 1000 * 50
+      2020: 10000
   output:
-    regime_general_cnav_salaire_de_reference: 12000
+    regime_general_cnav_salaire_de_reference: 1.004 * 10000
+
+
+- name: Salaire de réference
+  absolute_error_margin: .001
+  period: 2021
+  input:
+    date_de_naissance: 1940-11-19
+    salaire_de_base:
+      2020: 10000
+      2019: 10000
+  output:
+    regime_general_cnav_salaire_de_reference: 10000 * (1.004  + 1.004 * 1.001) / 2
