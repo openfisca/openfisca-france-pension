@@ -28,13 +28,3 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         param_path = os.path.join(COUNTRY_DIR, 'parameters')
 
         self.load_parameters(param_path)
-        # print(self.parameters)
-
-        from openfisca_core.parameters import Parameter
-        taux_plein = Parameter("taux_plein", data = {
-            "1972-01-01": .5,
-            "1946-01-01": .4
-            })
-        self.parameters.secteur_prive.regime_general_cnav.add_child("taux_plein", taux_plein)
-        print(self.parameters.secteur_prive.regime_general_cnav.taux_plein)
-        print(self.variables.keys())

@@ -6,6 +6,7 @@ from setuptools import find_packages, setup
 
 setup(
     name = "OpenFisca-France-Pension",
+    python_requires='>3.9',
     version = "0.0.1",
     author = "OpenFisca Team",
     author_email = "contact@openfisca.org",

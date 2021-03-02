@@ -19,7 +19,7 @@ taux_surcote_par_trimestre_cotise_selon_date_cotisation:
       unit: /1
   apres_01_01_2004:
     description: 2004-01-01
-    1_4_trimestres:
+    moins_de_4_trimestres:
       description: De 1 à 4 trimestres
       values:
         2004-01-01:
@@ -27,7 +27,7 @@ taux_surcote_par_trimestre_cotise_selon_date_cotisation:
       metadata:
         ipp_csv_id: surcote_0104_14
         unit: /1
-    partir_5_trimestres:
+    plus_de_5_trimestres:
       description: A partir de 5 trimestres
       values:
         2007-01-01:
@@ -49,8 +49,8 @@ taux_surcote_par_trimestre_cotise_selon_date_cotisation:
         unit: /1
     metadata:
       order:
-      - 1_4_trimestres
-      - partir_5_trimestres
+      - moins_de_4_trimestres
+      - plus_de_5_trimestres
       - partir_65_ans
   apres_01_01_2009:
     description: 2009-01-01
