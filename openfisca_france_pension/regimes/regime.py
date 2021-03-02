@@ -43,7 +43,7 @@ class AbstractRegime(object):
             # date_de_naissance = individu('date_de_naissance', period)
             decote = individu('regime_name_decote', period)
             surcote = individu('regime_name_surcote', period)
-            taux_plein = parameters(period).regime_name.taux_plein
+            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
             return taux_plein * (1 - decote + surcote)
 
 

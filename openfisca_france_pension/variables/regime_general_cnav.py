@@ -91,7 +91,7 @@ class regime_general_cnav_taux_de_liquidation(Variable):
     def formula(individu, period, parameters):
         decote = individu('regime_general_cnav_decote', period)
         surcote = individu('regime_general_cnav_surcote', period)
-        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein
+        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
 
 class regime_general_cnav_cotisation_retraite(Variable):
