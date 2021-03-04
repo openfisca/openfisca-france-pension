@@ -246,10 +246,9 @@ class RegimePrive(AbstractRegimeDeBase):
             trimestres_cibles_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
                 )
-            liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                individu('regime_name_liquidation_date', period)
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             trimestres_apres_add = np.trunc(
                 (aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3
