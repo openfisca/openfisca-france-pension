@@ -5,13 +5,13 @@ import copy
 import logging
 import os
 import pkg_resources
-from pprint import pprint
+# from pprint import pprint
 import sys
 
 log = logging.getLogger(__name__)
 
 
-france_pension_root =  pkg_resources.get_distribution("openfisca-france-pension").location
+france_pension_root = pkg_resources.get_distribution("openfisca-france-pension").location
 
 
 def modify_formula_function(node_body_element, parameters_prefix, variable_prefix):
@@ -25,7 +25,7 @@ def modify_formula_function(node_body_element, parameters_prefix, variable_prefi
         [type]: The modified formula
     """
     el = copy.deepcopy(node_body_element)
-    if type(el)== ast.ClassDef :
+    if type(el) == ast.ClassDef:
         for node in el.body:
             if isinstance(node, ast.FunctionDef) and node.name.startswith('formula'):
                 log.debug(f"found formula: {node.name}")
@@ -72,6 +72,7 @@ def get_regime_attribute(regime_node, attribute):
 
     return None
 
+
 def create_regime_variables(input_string, output_filename):
     """Creates regime variables.
 
@@ -99,8 +100,8 @@ def create_regime_variables(input_string, output_filename):
             inheritance_dict[node.name] = {}
             inheritance_dict[node.name]['variables'] = {}
             for el in node.body:
-                if type(el)== ast.ClassDef:
-                    inheritance_dict[node.name]['variables'][el.name]= copy.deepcopy(el)
+                if type(el) == ast.ClassDef:
+                    inheritance_dict[node.name]['variables'][el.name] = copy.deepcopy(el)
             # identifier la classe superieure et la sauvegarder sous la cle "extends"
             inheritance_dict[node.name]['extends'] = node.bases[0].id
 
@@ -120,14 +121,14 @@ def create_regime_variables(input_string, output_filename):
             # si la classe étend une autre classe
             extends = inheritance_dict[regime.name]['extends']
             log.debug(regime.name, "extends", extends)
-            if extends != "object" :
+            if extends != "object":
                 # tant que la classe étend une autre (et ainsi de suite recursivement)
                 while extends != "object":
                     superRegime = inheritance_dict[extends]
                     inheritedClasses = superRegime['variables']
                     for key, value in inheritedClasses.items():
                         # copier le contenu de la classe
-                        el =  copy.deepcopy(value)
+                        el = copy.deepcopy(value)
                         # modifier le nom de la classe en ajoutant le variable_prefix avec le nom du regime
                         parameters_prefix = get_regime_attribute(regime, "parameters_prefix")
                         variable_prefix = get_regime_attribute(regime, "variable_prefix")
@@ -137,9 +138,9 @@ def create_regime_variables(input_string, output_filename):
                         output_ast_tree.body.append(el)
                     extends = inheritance_dict[extends]['extends']
                 # copier ses propres classes
-                for j in range (0, len(regime.body)):
+                for j in range(0, len(regime.body)):
                     el = copy.deepcopy(regime.body[j])
-                    if type(el)== ast.ClassDef:
+                    if type(el) == ast.ClassDef:
                         parameters_prefix = get_regime_attribute(regime, "parameters_prefix")
                         variable_prefix = get_regime_attribute(regime, "variable_prefix")
                         new_class_name = variable_prefix + "_" + el.name
@@ -149,10 +150,10 @@ def create_regime_variables(input_string, output_filename):
                         output_ast_tree.body.append(el)
 
                     # copier les attributs de la classe (pas copier si pas besoin)
-                    #else:
-                        #output_ast_tree.body.append(el)
+                    # else:
+                        # output_ast_tree.body.append(el)
         # copier les imports du fichier
-        else :
+        else:
             output_ast_tree.body.append(node)
 
     # pour afficher le nouveau arbre AST faire une commande
@@ -162,7 +163,7 @@ def create_regime_variables(input_string, output_filename):
     output_string = ast.unparse(output_ast_tree)
 
     # sauvegarder
-    with open (output_filename, "w") as file:
+    with open(output_filename, "w") as file:
         file.write(output_string)
 
     print("Result saved as ", output_filename)
@@ -183,7 +184,6 @@ def main(verbose = False):
         "regime_general_cnav.py"
         )
 
-
     input_file_names = [
         regime_de_base,
         regime_general_cnav,
@@ -203,7 +203,6 @@ def main(verbose = False):
 
     logging.basicConfig(level = logging.DEBUG if verbose else logging.WARNING, stream = sys.stdout)
     create_regime_variables(input_string, output_filename)
-
 
 
 if __name__ == "__main__":
