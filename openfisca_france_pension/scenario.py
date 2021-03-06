@@ -14,10 +14,10 @@ from openfisca_france_pension import CountryTaxBenefitSystem as FrancePensionTax
 
 
 
-log = logging.getLogger(__file__)
+log = logging.getLogger(__name__)
 
 
-config_parser = configparser.SafeConfigParser()
+config_parser = configparser.ConfigParser()
 config_parser.read(os.path.join(config_files_directory, 'raw_data.ini'))
 
 
@@ -50,7 +50,7 @@ class DestinieSurveyScenario(AbstractSurveyScenario):
         self.init_from_data(data = data)
 
 
-def create_input_data():
+def create_input_data(sample_size = None):
     """Creates input data from liam2 output to use in DestinieSurveyScenario
 
     Returns:
@@ -67,12 +67,30 @@ def create_input_data():
     emp_file_name = "emp_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
     fam_file_name = "fam_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
 
-    ech = pyreadr.read_r(os.path.join(destinie_path, ech_file_name))['ech']
-    emp = pyreadr.read_r(os.path.join(destinie_path, emp_file_name))['emp']
-    fam = pyreadr.read_r(os.path.join(destinie_path, fam_file_name))['fam']
+    ech = (pyreadr.read_r(os.path.join(destinie_path, ech_file_name))['ech']
+        .rename(columns = dict(Id = "person_id"))
+        .eval('person_id = person_id - 1')
+        )
+    emp = (pyreadr.read_r(os.path.join(destinie_path, emp_file_name))['emp']
+        .rename(columns = dict(Id = "person_id"))
+        .eval('person_id = person_id - 1')
+        )
+    fam = (pyreadr.read_r(os.path.join(destinie_path, fam_file_name))['fam']
+        .rename(columns = dict(Id = "person_id"))
+        .eval('person_id = person_id - 1')
+        )
+    assert set(ech.person_id.unique()) >= set(emp.person_id.unique())
+    assert set(ech.person_id.unique()) == set(fam.person_id.unique())
 
-    assert set(ech.Id.unique()) >= set(emp.Id.unique())
-    assert set(ech.Id.unique()) == set(fam.Id.unique())
+    if sample_size is not None:
+        if sample_size >= ech.person_id.max() + 1:
+            log.info('Sample size argument is larger than orginal data. Use originale data')
+        else:
+            # TODO if statistic significane is needed use resampling and seed
+            log.info(f'Sample size is {sample_size}')
+            ech = ech.query('person_id < @sample_size')
+            emp = emp.query('person_id < @sample_size')
+            fam = fam.query('person_id < @sample_size')
 
     ech["date_de_naissance"] = pd.to_datetime(
         ech[['anaiss', 'moisnaiss']]
@@ -81,17 +99,8 @@ def create_input_data():
             .eval("month = month + 1")
         ).values.astype('datetime64[D]')
 
-    ech = (ech
-        .drop(["anaiss", "moisnaiss"], axis = 1)
-        .rename(columns = dict(Id = "person_id"))
-        .eval('person_id = person_id - 1')
-        )
-
-    emp = (emp
-        .rename(columns = dict(Id = "person_id"))
-        .eval('person_id = person_id - 1')
-        .merge(ech[["person_id", 'date_de_naissance']], on = "person_id")
-        )
+    ech = ech.drop(["anaiss", "moisnaiss"], axis = 1)
+    emp = emp.merge(ech[["person_id", 'date_de_naissance']], on = "person_id")
     emp['period'] = emp.date_de_naissance.dt.year + emp.age
 
     def int_dtype_from_values(values):
@@ -163,6 +172,7 @@ def create_input_data():
 
 
 if __name__ == "__main__":
-    input_data_frame_by_entity_by_period = create_input_data()
+    input_data_frame_by_entity_by_period = create_input_data(sample_size = None)
     data = dict(input_data_frame_by_entity_by_period = input_data_frame_by_entity_by_period)
     survey_secnario = DestinieSurveyScenario(data = data)
+    salaire_de_reference = survey_secnario.calculate_variable('regime_general_cnav_salaire_de_reference', period = 2000)

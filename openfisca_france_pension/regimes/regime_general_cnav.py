@@ -82,19 +82,24 @@ class RegimePrive(AbstractRegimeDeBase):
         def formula_1994(individu, period, parameters):
             OFFSET = 10  # do not start working before 10 year
             date_de_naissance = individu('date_de_naissance', period)
-            annee_de_naissance = int(individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970)
+            annee_de_naissance = (
+                individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+                )
             annees_de_naissance_distinctes = np.unique(annee_de_naissance)
             salaire_de_refererence = 0
             for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
-                n = int(
+                n = np.unique(
                     parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
                         date_de_naissance
                         ]
+                    .astype(int)
                     )
-                mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
+                assert len(n) == 1
+
+                mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n[0])
                 revalorisation = dict()
                 revalorisation[period.start.year] = 1
-                for annee_salaire in range(annee_de_naissance + OFFSET, period.start.year + 1):
+                for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
                     # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
                     revalorisation[annee_salaire] = (
                         np.prod(
@@ -123,6 +128,7 @@ class RegimePrive(AbstractRegimeDeBase):
             return salaire_de_refererence
 
         def formula_1972(individu, period, parameters):
+            # TODO test and adapt like 1994 formula
             n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01
             mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
             annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()

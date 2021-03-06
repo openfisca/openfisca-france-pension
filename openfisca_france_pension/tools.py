@@ -21,9 +21,8 @@ def mean_over_k_nonzero_largest(vector, k):
         return 0
 
     nonzeros = (vector > 0.0).sum()
-
     if k >= nonzeros:
-        return vector.sum() / nonzeros
+        return vector.sum() / (nonzeros + (nonzeros == 0))
 
     z = -bottleneck.partition(-vector, kth = k)
     upper_bound = min(k, nonzeros)

@@ -120,15 +120,16 @@ class regime_general_cnav_salaire_de_reference(Variable):
     def formula_1994(individu, period, parameters):
         OFFSET = 10
         date_de_naissance = individu('date_de_naissance', period)
-        annee_de_naissance = int(individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970)
+        annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         annees_de_naissance_distinctes = np.unique(annee_de_naissance)
         salaire_de_refererence = 0
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
-            n = int(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[date_de_naissance])
-            mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
+            n = np.unique(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[date_de_naissance].astype(int))
+            assert len(n) == 1
+            mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n[0])
             revalorisation = dict()
             revalorisation[period.start.year] = 1
-            for annee_salaire in range(annee_de_naissance + OFFSET, period.start.year + 1):
+            for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
                 revalorisation[annee_salaire] = np.prod(np.array([parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient for _annee in range(annee_salaire + 1, period.start.year + 1)]))
             salaire_de_refererence = where(annee_de_naissance == _annee_de_naissance, np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[year] for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])), salaire_de_refererence)
         return salaire_de_refererence
