@@ -39,6 +39,10 @@ setup(
             "flake8-import-order",
             "flake8-print",
             "pycodestyle >=2.6.0",
+            ],
+        "scenario": [
+            "OpenFisca-Survey-Manager",
+            "pyreadr",
             ]
         },
     packages=find_packages(),

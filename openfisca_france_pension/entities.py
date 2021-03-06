@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # This file defines the entities needed by our legislation.
 from openfisca_core.entities import build_entity
 
@@ -56,4 +54,5 @@ Person = build_entity(
     is_person = True,
     )
 
-entities = [Household, Person]
+# entities = [Household, Person]
+entities = [Person]
