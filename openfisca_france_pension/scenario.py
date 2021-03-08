@@ -25,19 +25,25 @@ class DestinieSurveyScenario(AbstractSurveyScenario):
     """OpenFisca survey scenario to compute French Pensions"""
 
     def __init__(self, tax_benefit_system = None, baseline_tax_benefit_system = None, year = None,
-            data = None):
+            data = None, comportement_de_depart = None):
         super(DestinieSurveyScenario, self).__init__()
 
         if tax_benefit_system is None:
             tax_benefit_system = FrancePensionTaxBenefitSystem()
+
+        if comportement_de_depart is not None:
+            tax_benefit_system = comportement_de_depart(tax_benefit_system)
+            if baseline_tax_benefit_system is not None:
+                baseline_tax_benefit_system = comportement_de_depart(baseline_tax_benefit_system)
+
         self.set_tax_benefit_systems(
             tax_benefit_system = tax_benefit_system,
             baseline_tax_benefit_system = baseline_tax_benefit_system,
             )
 
         assert 'input_data_frame_by_entity_by_period' in data
-        period = max(list(data['input_data_frame_by_entity_by_period'].keys()))
-        self.year = periods.period(2000)
+        period = min(list(data['input_data_frame_by_entity_by_period'].keys()))
+        self.year = period
         dataframe_variables = set()
         for entity_dataframe in data['input_data_frame_by_entity_by_period'][period].values():
             if not isinstance(entity_dataframe, pd.DataFrame):
@@ -83,7 +89,7 @@ def create_input_data(sample_size = None):
     assert set(ech.person_id.unique()) == set(fam.person_id.unique())
 
     if sample_size is not None:
-        if sample_size >= ech.person_id.max() + 1:
+        if sample_size >= len(ech.person_id.unique()):
             log.info('Sample size argument is larger than orginal data. Use originale data')
         else:
             # TODO if statistic significane is needed use resampling and seed
@@ -132,10 +138,17 @@ def create_input_data(sample_size = None):
         .copy()
         .rename(columns = dict(salaire = "salaire_de_base"))
         )
+
+    emp2 = (emp
+        .set_index(["person_id", 'period'])
+        .reindex(complete_multiindex)
+        .fillna(method = 'ffill')
+        )
+    print(emp2)
     emp = (emp
         .set_index(["person_id", 'period'])
         .reindex(complete_multiindex)
-        # .fillna({"decede": True})
+        ## .fillna({"decede": True})
         .fillna(method = 'ffill')
         .reset_index()
         )
@@ -172,7 +185,13 @@ def create_input_data(sample_size = None):
 
 
 if __name__ == "__main__":
-    input_data_frame_by_entity_by_period = create_input_data(sample_size = None)
+    from openfisca_france_pension.reforms.comportement_de_depart.age_fixe import create_departt_a_age_fixe
+    input_data_frame_by_entity_by_period = create_input_data(sample_size = 20)
     data = dict(input_data_frame_by_entity_by_period = input_data_frame_by_entity_by_period)
-    survey_secnario = DestinieSurveyScenario(data = data)
-    salaire_de_reference = survey_secnario.calculate_variable('regime_general_cnav_salaire_de_reference', period = 2000)
+    survey_secnario = DestinieSurveyScenario(
+        comportement_de_depart = create_departt_a_age_fixe(65),
+        data = data
+        )
+    date_de_naissance = survey_secnario.calculate_variable('date_de_naissance', period = 2000)
+    date_de_liquidation = survey_secnario.calculate_variable('regime_general_cnav_liquidation_date', period = 2000)
+    salaire_de_reference = survey_secnario.calculate_variable('regime_general_cnav_salaire_de_reference', period = 2020)

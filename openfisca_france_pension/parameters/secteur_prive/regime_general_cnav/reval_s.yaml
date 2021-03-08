@@ -178,6 +178,9 @@ coefficient:
       value: 1.32
     1949-01-01:
       value: 1.2
+    # TODO remove me below this date
+    1900-01-01:
+      value: 1
   metadata:
     ipp_csv_id: revalospc
 associe:
@@ -368,7 +371,7 @@ metadata:
   - associe
   reference:
     2021-01-01: Circ. interministérielle DSS/SD3A/2020/230  du  23/12/2020
-    2020-01-01: Circ. interministérielle DSS/SD3A/2019/266  du  27/12/2019     
+    2020-01-01: Circ. interministérielle DSS/SD3A/2019/266  du  27/12/2019
     2019-01-01: Article 68 de la loi de financement de la sécurité sociale pour 2019
     2017-10-01: Circ. interministérielle DSS/SD3A/2017/272 du 15/09/2017
     2016-10-01: Pas de revalorisation au 01/10/2015

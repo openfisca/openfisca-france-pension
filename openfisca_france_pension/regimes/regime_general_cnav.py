@@ -88,15 +88,12 @@ class RegimePrive(AbstractRegimeDeBase):
             annees_de_naissance_distinctes = np.unique(annee_de_naissance)
             salaire_de_refererence = 0
             for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
-                n = np.unique(
+                k = int(
                     parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
-                        date_de_naissance
+                        np.array(str(_annee_de_naissance), dtype="datetime64[Y]")
                         ]
-                    .astype(int)
                     )
-                assert len(n) == 1
-
-                mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n[0])
+                mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = k)
                 revalorisation = dict()
                 revalorisation[period.start.year] = 1
                 for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
@@ -109,6 +106,7 @@ class RegimePrive(AbstractRegimeDeBase):
                                 ])
                             )
                         )
+                print(period.start.year, _annee_de_naissance + OFFSET)
                 salaire_de_refererence = where(
                     annee_de_naissance == _annee_de_naissance,
                     np.apply_along_axis(
