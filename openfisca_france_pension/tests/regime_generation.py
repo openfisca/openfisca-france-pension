@@ -5,7 +5,7 @@ import filecmp
 import os
 import pkg_resources
 
-france_pension_root =  pkg_resources.get_distribution("openfisca-france-pension").location
+france_pension_root = pkg_resources.get_distribution("openfisca-france-pension").location
 
 
 def test_regime_de_base():

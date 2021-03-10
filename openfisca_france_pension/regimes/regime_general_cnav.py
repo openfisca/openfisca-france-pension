@@ -47,7 +47,6 @@ class RegimePrive(AbstractRegimeDeBase):
     #         trim_maj = trim_maj_mda
     #     return trim_maj
 
-
     # def salref(self, data, sal_regime):
     #     ''' SAM : Calcul du salaire annuel moyen de référence :
     #     notamment application du plafonnement à un PSS et de la revalorisation sur les prix
@@ -81,7 +80,7 @@ class RegimePrive(AbstractRegimeDeBase):
         label = "Salaire annuel moyen de base dit salaire de référence"
 
         def formula_1994(individu, period, parameters):
-            OFFSET = 10 # do not start working before 10 year
+            OFFSET = 10  # do not start working before 10 year
             date_de_naissance = individu('date_de_naissance', period)
             annee_de_naissance = int(individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970)
             annees_de_naissance_distinctes = np.unique(annee_de_naissance)
@@ -140,7 +139,6 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             return salaire_de_refererence
 
-
     class coefficient_de_proratisation(Variable):
         value_type = float
         entity = Person
@@ -157,8 +155,8 @@ class RegimePrive(AbstractRegimeDeBase):
             coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
             trimestres_apres_add = max_(
@@ -179,7 +177,6 @@ class RegimePrive(AbstractRegimeDeBase):
             coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
             return coefficient
 
-
         def formula_1983_04_01(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             duree_de_proratisation = (
@@ -189,8 +186,8 @@ class RegimePrive(AbstractRegimeDeBase):
             coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
             trimestres_apres_add = max_(
@@ -230,7 +227,6 @@ class RegimePrive(AbstractRegimeDeBase):
             trimestres = individu('regime_name_trimestres', period)
             coefficient = min_(1, trimestres / duree_de_proratisation)
             return coefficient
-
 
     class decote(Variable):
         value_type = float
@@ -273,12 +269,12 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             trimestres_apres_add = np.trunc(
-                    (aad * 12 - age_en_mois_a_la_liquidation) / 3
-                    )
+                (aad * 12 - age_en_mois_a_la_liquidation) / 3
+                )
             trimestres = individu('regime_name_trimestres', period)
             decote = coefficient_minoration_par_trimestre * max_(
                 0,
@@ -298,8 +294,8 @@ class RegimePrive(AbstractRegimeDeBase):
             #     )
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
             trimestres_apres_add = max_(
@@ -310,13 +306,11 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             return coefficient_minoration_par_trimestre * trimestres_apres_add
 
-
     class liquidation_date(Variable):
         value_type = date
         entity = Person
         definition_period = ETERNITY
         label = "Date de liquidation"
-
 
     class surcote(Variable):
         value_type = float
@@ -332,8 +326,8 @@ class RegimePrive(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
             trimestres_apres_aod = max_(
@@ -380,8 +374,8 @@ class RegimePrive(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
             trimestres_apres_aod = max_(
@@ -415,8 +409,8 @@ class RegimePrive(AbstractRegimeDeBase):
                 trimestres_surcote,
                 max_(
                     0,
-                        np.trunc(
-                        (age_en_mois_a_la_liquidation - 65 * 12) / 3
+                    np.trunc(
+                            (age_en_mois_a_la_liquidation - 65 * 12) / 3
                         )
                     )
                 )
@@ -442,8 +436,8 @@ class RegimePrive(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
             trimestres_apres_aod = max_(
@@ -475,7 +469,6 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             return taux_surcote_par_trimestre_moins_de_4_trimestres * trimestres_surcote
 
-
         def formula_1983_04_01(individu, period):
             return individu.empty_array()
 
@@ -485,8 +478,8 @@ class RegimePrive(AbstractRegimeDeBase):
             aad = 65
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date -
-                individu('date_de_naissance', period)
+                liquidation_date
+                - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
             trimestres_apres_add = max_(
@@ -608,4 +601,4 @@ class RegimePrive(AbstractRegimeDeBase):
         # taux_PSS = P.plafond
         # pension_surcote_RG = taux_plein * salref * coeff_proratisation * surcote
         # return minimum(pension_brute - pension_surcote_RG, taux_PSS * PSS) + \
-            # pension_surcote_RG
+        # pension_surcote_RG

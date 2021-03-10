@@ -17,20 +17,17 @@ class AbstractRegime(object):
         definition_period = YEAR
         label = "Date du début de la surcote"
 
-
     class decote_annulation_date(Variable):
         value_type = date
         entity = Person
         definition_period = YEAR
         label = "Date d'annulation de la décote'"
 
-
     class taux_plein_date(Variable):
         value_type = date
         entity = Person
         definition_period = YEAR
         label = "Date du taux plein"
-
 
     class taux_de_liquidation(Variable):
         value_type = float
@@ -45,7 +42,6 @@ class AbstractRegime(object):
             surcote = individu('regime_name_surcote', period)
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
             return taux_plein * (1 - decote + surcote)
-
 
     class cotisation_retraite(Variable):
         value_type = float
@@ -70,13 +66,11 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = ETERNITY
         label = "Salaire de référence"
 
-
     class trimestres(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
         label = "Trimestres"
-
 
     class majoration_pension(Variable):
         value_type = int
@@ -84,20 +78,17 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = MONTH
         label = "Majoration de pension"
 
-
     class decote(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
         label = "Décote"
 
-
     class decote_date_annulation(Variable):
         value_type = date
         entity = Person
         definition_period = YEAR
         label = "Décote"
-
 
     class pension_brute(Variable):
         value_type = float
@@ -121,7 +112,6 @@ class AbstractRegimeDeBase(AbstractRegime):
             pension_brute = individu('regime_name_pension_brute', period)
             majoration_pension = individu('regime_name_majoration_pension', period)
             return pension_brute + majoration_pension
-
 
 
 # class RegimeComplementaires(Regime):
