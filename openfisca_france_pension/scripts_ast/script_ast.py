@@ -13,7 +13,29 @@ log = logging.getLogger(__name__)
 france_pension_root = pkg_resources.get_distribution("openfisca-france-pension").location
 
 
-class RewriteFormulaBody(ast.NodeTransformer):
+class RewriteRegimeClass(ast.NodeTransformer):
+    parameters_prefix = None
+    variable_prefix = None
+
+    def __init__(self, parameters_prefix, variable_prefix):
+        self.parameters_prefix = parameters_prefix
+        self.variable_prefix = variable_prefix
+
+    def visit_ClassDef(self, node):
+        node.name = self.variable_prefix + "_" + node.name
+        node = self.generic_visit(node)
+        return node
+
+    def visit_FunctionDef(self, node):
+        if node.name.startswith("formula"):
+            log.debug(f"Found formula: {node.name}")
+            node = RewriteRegimeFormula(self.parameters_prefix, self.variable_prefix).visit(node)
+        else:
+            node = self.generic_visit(node)
+        return node
+
+
+class RewriteRegimeFormula(ast.NodeTransformer):
     parameters_prefix = None
     variable_prefix = None
 
@@ -26,38 +48,17 @@ class RewriteFormulaBody(ast.NodeTransformer):
         if type(node.attr) == str and node.attr.startswith("regime_name"):
             new_attr = node.attr.replace("regime_name", self.variable_prefix)
             log.debug(f"Found attribute to replace: {node.attr} => {new_attr}")
-            node = copy.copy(node)
             node.attr = new_attr
         return node
 
     def visit_Constant(self, node):
-        # Useless: node = self.generic_visit(node)
+        # Useless: node = self.generic_visit(node), because a constant has no
+        # sub-tree to visit.
         if type(node.value) == str and node.value.startswith("regime_name"):
             new_value = node.value.replace("regime_name", self.parameters_prefix)
             log.debug(f"Found parameter to replace: {node.value} => {new_value}")
-            node = copy.copy(node)
             node.value = new_value
         return node
-
-
-def modify_formula_function(node_body_element, parameters_prefix, variable_prefix):
-    """Modifies the formula of Variable objects according to a regime name.
-
-    Args:
-        node_body_element ([type]): [description]
-        regime_name (str): The regime name
-
-    Returns:
-        [type]: The modified formula
-    """
-    el = copy.deepcopy(node_body_element)
-    if type(el) == ast.ClassDef:
-        for node in el.body:
-            if isinstance(node, ast.FunctionDef) and node.name.startswith('formula'):
-                log.debug(f"found formula: {node.name}")
-                node = ast.fix_missing_locations(RewriteFormulaBody(parameters_prefix, variable_prefix).visit(node))
-
-    return el
 
 
 def get_regime_attribute(regime_node, attribute):
@@ -128,7 +129,7 @@ def create_regime_variables(input_string, output_filename):
             if "Abstract" in node.name:
                 continue
             regime = copy.deepcopy(node)
-
+            parameters_prefix = get_regime_attribute(regime, "parameters_prefix")
             variable_prefix = get_regime_attribute(regime, "variable_prefix")
             # si la classe étend une autre classe
             extends = inheritance_dict[regime.name]['extends']
@@ -139,32 +140,16 @@ def create_regime_variables(input_string, output_filename):
                     superRegime = inheritance_dict[extends]
                     inheritedClasses = superRegime['variables']
                     for key, value in inheritedClasses.items():
-                        # copier le contenu de la classe
                         el = copy.deepcopy(value)
-                        # modifier le nom de la classe en ajoutant le variable_prefix avec le nom du regime
-                        parameters_prefix = get_regime_attribute(regime, "parameters_prefix")
-                        variable_prefix = get_regime_attribute(regime, "variable_prefix")
-                        el.name = variable_prefix + "_" + el.name
-                        log.debug(f"\nINHERITED class new name: {key} => {el.name}")
-                        el = modify_formula_function(el, parameters_prefix = parameters_prefix, variable_prefix = variable_prefix)
+                        el = ast.fix_missing_locations(RewriteRegimeClass(parameters_prefix, variable_prefix).visit(el))
                         output_ast_tree.body.append(el)
                     extends = inheritance_dict[extends]['extends']
                 # copier ses propres classes
-                for j in range(0, len(regime.body)):
-                    el = copy.deepcopy(regime.body[j])
+                for el in regime.body:
                     if type(el) == ast.ClassDef:
-                        parameters_prefix = get_regime_attribute(regime, "parameters_prefix")
-                        variable_prefix = get_regime_attribute(regime, "variable_prefix")
-                        new_class_name = variable_prefix + "_" + el.name
-                        log.debug(f"\nOWN CLASS new name: {el.name} => {new_class_name}")
-                        el.name = new_class_name
-                        el = modify_formula_function(el, parameters_prefix = parameters_prefix, variable_prefix = variable_prefix)
+                        el = copy.deepcopy(el)
+                        el = ast.fix_missing_locations(RewriteRegimeClass(parameters_prefix, variable_prefix).visit(el))
                         output_ast_tree.body.append(el)
-
-                    # copier les attributs de la classe (pas copier si pas besoin)
-                    # else:
-                        # output_ast_tree.body.append(el)
-        # copier les imports du fichier
         else:
             output_ast_tree.body.append(node)
 
