@@ -176,7 +176,7 @@ def create_regime_variables(input_string, output_filename):
     with open(output_filename, "w") as file:
         file.write(output_string)
 
-    log.info("Result saved as ", output_filename)
+    log.info(f"Result saved as {output_filename}")
 
 
 def main(verbose = False):
