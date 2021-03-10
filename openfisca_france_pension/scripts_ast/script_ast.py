@@ -5,13 +5,37 @@ import copy
 import logging
 import os
 import pkg_resources
-# from pprint import pprint
 import sys
 
 log = logging.getLogger(__name__)
 
 
 france_pension_root = pkg_resources.get_distribution("openfisca-france-pension").location
+
+
+class RewriteFormulaBody(ast.NodeTransformer):
+    parameters_prefix = None
+    variable_prefix = None
+
+    def __init__(self, parameters_prefix, variable_prefix):
+        self.parameters_prefix = parameters_prefix
+        self.variable_prefix = variable_prefix
+
+    def visit_Attribute(self, node):
+        node = self.generic_visit(node)
+        if type(node.attr) == str and node.attr.startswith("regime_name"):
+            log.debug(f"Found regime_name attribute to replace: {node.attr} => {node.attr.replace('regime_name', self.variable_prefix)}")
+            node = copy.deepcopy(node)
+            node.attr = node.attr.replace("regime_name", self.variable_prefix)
+        return node
+
+    def visit_Constant(self, node):
+        # Useless: node = self.generic_visit(node)
+        if type(node.value) == str and node.value.startswith("regime_name"):
+            log.debug(f"Found regime_name parameter to replace: {node.value} => {node.value.replace('regime_name', self.parameters_prefix)}")
+            node = copy.deepcopy(node)
+            node.value = node.value.replace("regime_name", self.parameters_prefix)
+        return node
 
 
 def modify_formula_function(node_body_element, parameters_prefix, variable_prefix):
@@ -29,21 +53,7 @@ def modify_formula_function(node_body_element, parameters_prefix, variable_prefi
         for node in el.body:
             if isinstance(node, ast.FunctionDef) and node.name.startswith('formula'):
                 log.debug(f"found formula: {node.name}")
-                for sub_node in node.body:
-                    if isinstance(sub_node, ast.Assign):
-                        valeur = sub_node.value
-                        while not isinstance(valeur, ast.Call) and valeur is not None and hasattr(valeur, "value"):
-                            valeur = valeur.value
-                            if isinstance(valeur, ast.Attribute) and valeur.attr == "regime_name":
-                                log.debug(f"found regime_name to replace: {valeur.attr} => {parameters_prefix}")
-                                valeur.attr = parameters_prefix
-                        if type(valeur) == ast.Call:
-                            arguments = valeur.args
-                            for arg in arguments:
-                                if type(arg) == ast.Constant and str(arg.value).startswith("regime_name"):
-                                    new_arg_value = arg.value.replace("regime_name", variable_prefix)
-                                    log.debug(f"found argument variable to modify: {arg.value} => {new_arg_value}")
-                                    arg.value = new_arg_value
+                node = ast.fix_missing_locations(RewriteFormulaBody(parameters_prefix, variable_prefix).visit(node))
 
     return el
 
@@ -120,7 +130,7 @@ def create_regime_variables(input_string, output_filename):
             variable_prefix = get_regime_attribute(regime, "variable_prefix")
             # si la classe étend une autre classe
             extends = inheritance_dict[regime.name]['extends']
-            log.debug(regime.name, "extends", extends)
+            # log.debug(regime.name, "extends", extends)
             if extends != "object":
                 # tant que la classe étend une autre (et ainsi de suite recursivement)
                 while extends != "object":
@@ -166,7 +176,7 @@ def create_regime_variables(input_string, output_filename):
     with open(output_filename, "w") as file:
         file.write(output_string)
 
-    print("Result saved as ", output_filename)
+    log.info("Result saved as ", output_filename)
 
 
 def main(verbose = False):
