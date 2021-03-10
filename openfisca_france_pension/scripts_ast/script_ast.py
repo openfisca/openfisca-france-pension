@@ -105,8 +105,7 @@ def create_regime_variables(input_string, output_filename):
     # Créer un dictionnaire de l'heritage pour tous les régimes pour pouvoir recopier les classes heritées
     inheritance_dict = {}
     # pour chaque element du body de l'arbre ast
-    for i in range(0, len(input_ast_tree.body)):
-        node = input_ast_tree.body[i]
+    for node in input_ast_tree.body:
         # si cet element est une classe et son nom contien le mot Regime
         if type(node) == ast.ClassDef and "Regime" in node.name:
             # copier les classes internes (variables)
