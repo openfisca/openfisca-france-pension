@@ -24,17 +24,19 @@ class RewriteFormulaBody(ast.NodeTransformer):
     def visit_Attribute(self, node):
         node = self.generic_visit(node)
         if type(node.attr) == str and node.attr.startswith("regime_name"):
-            log.debug(f"Found regime_name attribute to replace: {node.attr} => {node.attr.replace('regime_name', self.variable_prefix)}")
-            node = copy.deepcopy(node)
-            node.attr = node.attr.replace("regime_name", self.variable_prefix)
+            new_attr = node.attr.replace("regime_name", self.variable_prefix)
+            log.debug(f"Found attribute to replace: {node.attr} => {new_attr}")
+            node = copy.copy(node)
+            node.attr = new_attr
         return node
 
     def visit_Constant(self, node):
         # Useless: node = self.generic_visit(node)
         if type(node.value) == str and node.value.startswith("regime_name"):
-            log.debug(f"Found regime_name parameter to replace: {node.value} => {node.value.replace('regime_name', self.parameters_prefix)}")
-            node = copy.deepcopy(node)
-            node.value = node.value.replace("regime_name", self.parameters_prefix)
+            new_value = node.value.replace("regime_name", self.parameters_prefix)
+            log.debug(f"Found parameter to replace: {node.value} => {new_value}")
+            node = copy.copy(node)
+            node.value = new_value
         return node
 
 
