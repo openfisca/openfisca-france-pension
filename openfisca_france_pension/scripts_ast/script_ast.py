@@ -13,28 +13,6 @@ log = logging.getLogger(__name__)
 france_pension_root = pkg_resources.get_distribution("openfisca-france-pension").location
 
 
-class RewriteRegimeClass(ast.NodeTransformer):
-    parameters_prefix = None
-    variable_prefix = None
-
-    def __init__(self, parameters_prefix, variable_prefix):
-        self.parameters_prefix = parameters_prefix
-        self.variable_prefix = variable_prefix
-
-    def visit_ClassDef(self, node):
-        node.name = self.variable_prefix + "_" + node.name
-        node = self.generic_visit(node)
-        return node
-
-    def visit_FunctionDef(self, node):
-        if node.name.startswith("formula"):
-            log.debug(f"Found formula: {node.name}")
-            node = RewriteRegimeFormula(self.parameters_prefix, self.variable_prefix).visit(node)
-        else:
-            node = self.generic_visit(node)
-        return node
-
-
 class RewriteRegimeFormula(ast.NodeTransformer):
     parameters_prefix = None
     variable_prefix = None
@@ -58,6 +36,28 @@ class RewriteRegimeFormula(ast.NodeTransformer):
             new_value = node.value.replace("regime_name", self.parameters_prefix)
             log.debug(f"Found parameter to replace: {node.value} => {new_value}")
             node.value = new_value
+        return node
+
+
+class RewriteRegimeVariableClass(ast.NodeTransformer):
+    parameters_prefix = None
+    variable_prefix = None
+
+    def __init__(self, parameters_prefix, variable_prefix):
+        self.parameters_prefix = parameters_prefix
+        self.variable_prefix = variable_prefix
+
+    def visit_ClassDef(self, node):
+        node.name = self.variable_prefix + "_" + node.name
+        node = self.generic_visit(node)
+        return node
+
+    def visit_FunctionDef(self, node):
+        if node.name.startswith("formula"):
+            log.debug(f"Found formula: {node.name}")
+            node = RewriteRegimeFormula(self.parameters_prefix, self.variable_prefix).visit(node)
+        else:
+            node = self.generic_visit(node)
         return node
 
 
@@ -139,14 +139,14 @@ def create_regime_variables(input_string, output_filename):
                     inheritedClasses = superRegime['variables']
                     for key, value in inheritedClasses.items():
                         el = copy.deepcopy(value)
-                        el = ast.fix_missing_locations(RewriteRegimeClass(parameters_prefix, variable_prefix).visit(el))
+                        el = ast.fix_missing_locations(RewriteRegimeVariableClass(parameters_prefix, variable_prefix).visit(el))
                         output_ast_tree.body.append(el)
                     extends = inheritance_dict[extends]['extends']
                 # copier ses propres classes
                 for el in regime.body:
                     if type(el) == ast.ClassDef:
                         el = copy.deepcopy(el)
-                        el = ast.fix_missing_locations(RewriteRegimeClass(parameters_prefix, variable_prefix).visit(el))
+                        el = ast.fix_missing_locations(RewriteRegimeVariableClass(parameters_prefix, variable_prefix).visit(el))
                         output_ast_tree.body.append(el)
         else:
             output_ast_tree.body.append(node)
