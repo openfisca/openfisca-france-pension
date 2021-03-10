@@ -17,6 +17,7 @@ class age_au_31_decembre(Variable):
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         return period.start.year - annee_de_naissance
 
+
 class salaire_de_base(Variable):
     value_type = float
     entity = Person
