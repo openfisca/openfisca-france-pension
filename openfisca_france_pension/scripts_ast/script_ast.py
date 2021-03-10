@@ -127,7 +127,7 @@ def create_regime_variables(input_string, output_filename):
         if type(node) == ast.ClassDef and "Regime" in node.name:
             if "Abstract" in node.name:
                 continue
-            regime = copy.deepcopy(node)
+            regime = node
             parameters_prefix = get_regime_attribute(regime, "parameters_prefix")
             variable_prefix = get_regime_attribute(regime, "variable_prefix")
             # si la classe étend une autre classe
