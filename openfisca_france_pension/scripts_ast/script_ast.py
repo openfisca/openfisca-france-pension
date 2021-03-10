@@ -121,7 +121,6 @@ def create_regime_variables(input_string, output_filename):
     # pprint(inheritance_dict)
 
     # Remplir le nouveau arbre AST avec les classes applatties
-    variable_prefix = "regime"
     # Pour tous les Régimes (les elements du code de type class dont le nom contient le mot Regime) et si la classe n'est pas "abstraite"
     for node in input_ast_tree.body:
         if type(node) == ast.ClassDef and "Regime" in node.name:
