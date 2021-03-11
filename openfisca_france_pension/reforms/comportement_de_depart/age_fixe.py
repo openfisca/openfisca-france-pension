@@ -27,7 +27,7 @@ def create_departt_a_age_fixe(age_fixe):
             def formula(individu, period):
                 date_de_naissance = individu("date_de_naissance", period)
                 date_de_liquiation = (
-                    date_de_naissance.astype('datetime64[Y]') + 65
+                    date_de_naissance.astype('datetime64[Y]') + age_fixe
                     + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[Y]'))
                     )
                 return date_de_liquiation

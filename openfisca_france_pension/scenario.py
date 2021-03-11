@@ -1,3 +1,5 @@
+"""OpenFisca-France-Pension Survey Scenario."""
+
 import configparser
 import logging
 import os
@@ -22,7 +24,7 @@ config_parser.read(os.path.join(config_files_directory, 'raw_data.ini'))
 
 
 class DestinieSurveyScenario(AbstractSurveyScenario):
-    """OpenFisca survey scenario to compute French Pensions"""
+    """OpenFisca survey scenario to compute French Pensions."""
 
     def __init__(self, tax_benefit_system = None, baseline_tax_benefit_system = None, year = None,
             data = None, comportement_de_depart = None):
@@ -57,12 +59,11 @@ class DestinieSurveyScenario(AbstractSurveyScenario):
 
 
 def create_input_data(sample_size = None):
-    """Creates input data from liam2 output to use in DestinieSurveyScenario
+    """Creates input data from liam2 output to use in DestinieSurveyScenario.
 
     Returns:
         dict: Input data frames by entity by period
     """
-
     # https://framagit.org/ipp/retraites_ipp/-/blob/master/PENSIPP%200.2/Modele/Bios/BiosDestinie.R
 
     if not config_parser.has_section("destinie"):

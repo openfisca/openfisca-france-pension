@@ -163,7 +163,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
-            trimestres_apres_add = max_(
+            trimestres_apres_aad = max_(
                 0,
                 np.trunc(
                     (age_en_mois_a_la_liquidation - aad_annee * 12 - aad_mois) / 3
@@ -175,7 +175,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 duree_de_proratisation,
                 trimestres * (
                     1
-                    + trimestres_apres_add * coefficient_minoration_par_trimestre
+                    + trimestres_apres_aad * coefficient_minoration_par_trimestre
                     )
                 )
             coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
@@ -194,7 +194,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
-            trimestres_apres_add = max_(
+            trimestres_apres_aad = max_(
                 0,
                 np.trunc(
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
@@ -206,7 +206,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 duree_de_proratisation,
                 trimestres * (
                     1
-                    + trimestres_apres_add * coefficient_minoration_par_trimestre
+                    + trimestres_apres_aad * coefficient_minoration_par_trimestre
                     )
                 )
             coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
@@ -250,7 +250,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_apres_add = np.trunc(
+            trimestres_apres_aad = np.trunc(
                 (aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
@@ -258,7 +258,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
-                    trimestres_apres_add
+                    trimestres_apres_aad
                     )
                 )
             return decote
@@ -271,12 +271,11 @@ class RegimePrive(AbstractRegimeDeBase):
             trimestres_cibles_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
                 )
-            liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
-                liquidation_date
+                individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_apres_add = np.trunc(
+            trimestres_apres_aad = np.trunc(
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
@@ -284,7 +283,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
-                    trimestres_apres_add
+                    trimestres_apres_aad
                     )
                 )
             return decote
@@ -302,13 +301,13 @@ class RegimePrive(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
-            trimestres_apres_add = max_(
+            trimestres_apres_aad = max_(
                 0,
                 np.trunc(
                     (aad * 12 - age_en_mois_a_la_liquidation) / 3
                     )
                 )
-            return coefficient_minoration_par_trimestre * trimestres_apres_add
+            return coefficient_minoration_par_trimestre * trimestres_apres_aad
 
     class liquidation_date(Variable):
         value_type = date
@@ -486,13 +485,13 @@ class RegimePrive(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
-            trimestres_apres_add = max_(
+            trimestres_apres_aad = max_(
                 0,
                 np.trunc(
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )
-            return coefficient_majoration_par_trimestre * trimestres_apres_add
+            return coefficient_majoration_par_trimestre * trimestres_apres_aad
 
         # def formulat(individu, period, parmaters):
         #     pass
