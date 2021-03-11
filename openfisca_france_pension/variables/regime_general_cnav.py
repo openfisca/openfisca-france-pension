@@ -1,14 +1,15 @@
 """Abstract regimesdefinition."""
-from openfisca_france_pension.tools import mean_over_k_nonzero_largest
-from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
-from openfisca_core.variables import Variable
-from openfisca_core.periods import ETERNITY, MONTH, YEAR
-import numpy as np
-import functools
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Household, Person
 'Régime de base du secteur privé: régime général de la CNAV.'
-
+import functools
+import numpy as np
+from openfisca_core.periods import ETERNITY, MONTH, YEAR
+from openfisca_core.variables import Variable
+from openfisca_core.model_api import *
+from openfisca_france_pension.entities import Household, Person
+from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
@@ -16,13 +17,11 @@ class regime_general_cnav_salaire_de_reference(Variable):
     definition_period = ETERNITY
     label = 'Salaire de référence'
 
-
 class regime_general_cnav_trimestres(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
     label = 'Trimestres'
-
 
 class regime_general_cnav_majoration_pension(Variable):
     value_type = int
@@ -30,20 +29,17 @@ class regime_general_cnav_majoration_pension(Variable):
     definition_period = MONTH
     label = 'Majoration de pension'
 
-
 class regime_general_cnav_decote(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
     label = 'Décote'
 
-
 class regime_general_cnav_decote_date_annulation(Variable):
     value_type = date
     entity = Person
     definition_period = YEAR
     label = 'Décote'
-
 
 class regime_general_cnav_pension_brute(Variable):
     value_type = float
@@ -57,7 +53,6 @@ class regime_general_cnav_pension_brute(Variable):
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
         return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
-
 class regime_general_cnav_pension(Variable):
     value_type = float
     entity = Person
@@ -69,13 +64,11 @@ class regime_general_cnav_pension(Variable):
         majoration_pension = individu('regime_general_cnav_majoration_pension', period)
         return pension_brute + majoration_pension
 
-
 class regime_general_cnav_surcote_debut_date(Variable):
     value_type = date
     entity = Person
     definition_period = YEAR
     label = 'Date du début de la surcote'
-
 
 class regime_general_cnav_decote_annulation_date(Variable):
     value_type = date
@@ -83,13 +76,11 @@ class regime_general_cnav_decote_annulation_date(Variable):
     definition_period = YEAR
     label = "Date d'annulation de la décote'"
 
-
 class regime_general_cnav_taux_plein_date(Variable):
     value_type = date
     entity = Person
     definition_period = YEAR
     label = 'Date du taux plein'
-
 
 class regime_general_cnav_taux_de_liquidation(Variable):
     value_type = float
@@ -103,7 +94,6 @@ class regime_general_cnav_taux_de_liquidation(Variable):
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
 
-
 class regime_general_cnav_cotisation_retraite(Variable):
     value_type = float
     entity = Person
@@ -115,13 +105,11 @@ class regime_general_cnav_cotisation_retraite(Variable):
         taux = parameters(period).secteur_prive.regime_general_cnav.cotisation.taux
         return salaire_de_base * taux
 
-
 class regime_general_cnav_trimestres(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
     label = 'Trimestres cotisés au régime général'
-
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
@@ -151,7 +139,6 @@ class regime_general_cnav_salaire_de_reference(Variable):
         annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
         salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) for year in range(period.start.year, annee_initiale, -1)]))
         return salaire_de_refererence
-
 
 class regime_general_cnav_coefficient_de_proratisation(Variable):
     value_type = float
@@ -201,7 +188,6 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
         coefficient = min_(1, trimestres / duree_de_proratisation)
         return coefficient
 
-
 class regime_general_cnav_decote(Variable):
     value_type = float
     entity = Person
@@ -240,13 +226,11 @@ class regime_general_cnav_decote(Variable):
         trimestres_apres_add = max_(0, np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3))
         return coefficient_minoration_par_trimestre * trimestres_apres_add
 
-
 class regime_general_cnav_liquidation_date(Variable):
     value_type = date
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
-
 
 class regime_general_cnav_surcote(Variable):
     value_type = float
@@ -309,13 +293,11 @@ class regime_general_cnav_surcote(Variable):
         trimestres_apres_add = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad * 12) / 3))
         return coefficient_majoration_par_trimestre * trimestres_apres_add
 
-
 class regime_general_cnav_pension_minimale(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
     label = 'Pension minimale'
-
 
 class regime_general_cnav_pension_maximale(Variable):
     value_type = float
