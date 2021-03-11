@@ -24,7 +24,7 @@ class RewriteRegimeFormula(ast.NodeTransformer):
     def visit_Attribute(self, node):
         node = self.generic_visit(node)
         if type(node.attr) == str and node.attr.startswith("regime_name"):
-            new_attr = node.attr.replace("regime_name", self.variable_prefix)
+            new_attr = node.attr.replace("regime_name", self.parameters_prefix)
             log.debug(f"Found attribute to replace: {node.attr} => {new_attr}")
             node.attr = new_attr
         return node
@@ -33,7 +33,7 @@ class RewriteRegimeFormula(ast.NodeTransformer):
         # Useless: node = self.generic_visit(node), because a constant has no
         # sub-tree to visit.
         if type(node.value) == str and node.value.startswith("regime_name"):
-            new_value = node.value.replace("regime_name", self.parameters_prefix)
+            new_value = node.value.replace("regime_name", self.variable_prefix)
             log.debug(f"Found parameter to replace: {node.value} => {new_value}")
             node.value = new_value
         return node
