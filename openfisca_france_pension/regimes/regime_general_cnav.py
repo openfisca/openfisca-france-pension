@@ -82,12 +82,17 @@ class RegimePrive(AbstractRegimeDeBase):
         def formula_1994(individu, period, parameters):
             OFFSET = 10  # do not start working before 10 year
             date_de_naissance = individu('date_de_naissance', period)
+            liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_naissance = (
                 individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
                 )
-            annees_de_naissance_distinctes = np.unique(annee_de_naissance)
+            annees_de_naissance_distinctes = np.unique(
+                annee_de_naissance[liquidation_date >= np.datetime64(period.start)]
+                )
             salaire_de_refererence = 0
             for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
+                if _annee_de_naissance + OFFSET >= period.start.year:
+                    break
                 k = int(
                     parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
                         np.array(str(_annee_de_naissance), dtype="datetime64[Y]")
@@ -107,6 +112,7 @@ class RegimePrive(AbstractRegimeDeBase):
                             )
                         )
                 print(period.start.year, _annee_de_naissance + OFFSET)
+                # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
                 salaire_de_refererence = where(
                     annee_de_naissance == _annee_de_naissance,
                     np.apply_along_axis(
@@ -123,6 +129,7 @@ class RegimePrive(AbstractRegimeDeBase):
                         ),
                     salaire_de_refererence,
                     )
+
             return salaire_de_refererence
 
         def formula_1972(individu, period, parameters):

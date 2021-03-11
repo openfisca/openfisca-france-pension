@@ -120,10 +120,13 @@ class regime_general_cnav_salaire_de_reference(Variable):
     def formula_1994(individu, period, parameters):
         OFFSET = 10
         date_de_naissance = individu('date_de_naissance', period)
+        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
-        annees_de_naissance_distinctes = np.unique(annee_de_naissance)
+        annees_de_naissance_distinctes = np.unique(annee_de_naissance[liquidation_date >= np.datetime64(period.start)])
         salaire_de_refererence = 0
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
+            if _annee_de_naissance + OFFSET >= period.start.year:
+                break
             k = int(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[np.array(str(_annee_de_naissance), dtype='datetime64[Y]')])
             mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=k)
             revalorisation = dict()

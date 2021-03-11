@@ -132,7 +132,7 @@ def create_input_data(sample_size = None):
         ))
 
     _ids = list(sorted(emp.person_id.unique()))
-    _periods = list(sorted(emp.period.unique()))
+    _periods = list(range(emp.period.min(), emp.period.max() + 1))
     complete_multiindex = pd.MultiIndex.from_product([_ids, _periods], names = ["person_id", 'period'])
     emp = (
         emp[["person_id", 'period', 'salaire']]
@@ -140,12 +140,12 @@ def create_input_data(sample_size = None):
         .rename(columns = dict(salaire = "salaire_de_base"))
         )
 
-    emp2 = (emp
-        .set_index(["person_id", 'period'])
-        .reindex(complete_multiindex)
-        .fillna(method = 'ffill')
-        )
-    print(emp2)
+    # emp2 = (emp
+    #     .set_index(["person_id", 'period'])
+    #     .reindex(complete_multiindex)
+    #     .fillna(method = 'ffill')
+    #     )
+    # print(emp2)
     emp = (emp
         .set_index(["person_id", 'period'])
         .reindex(complete_multiindex)
@@ -187,7 +187,7 @@ def create_input_data(sample_size = None):
 
 if __name__ == "__main__":
     from openfisca_france_pension.reforms.comportement_de_depart.age_fixe import create_departt_a_age_fixe
-    input_data_frame_by_entity_by_period = create_input_data(sample_size = 20)
+    input_data_frame_by_entity_by_period = create_input_data(sample_size = None)
     data = dict(input_data_frame_by_entity_by_period = input_data_frame_by_entity_by_period)
     survey_secnario = DestinieSurveyScenario(
         comportement_de_depart = create_departt_a_age_fixe(65),
