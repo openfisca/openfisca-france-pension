@@ -2,6 +2,7 @@
 
 import configparser
 import logging
+import numpy as np
 import os
 import pandas as pd
 import pyreadr
@@ -56,6 +57,9 @@ class DestinieSurveyScenario(AbstractSurveyScenario):
             )
 
         self.init_from_data(data = data)
+        self.simulation.max_spiral_loops = np.infty
+        if self.baseline_simulation is not None:
+            self.baseline_simulation.max_spiral_loops = np.infty
 
 
 def create_input_data(sample_size = None):
@@ -73,6 +77,8 @@ def create_input_data(sample_size = None):
     ech_file_name = "ech_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
     emp_file_name = "emp_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
     fam_file_name = "fam_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
+
+
 
     ech = (pyreadr.read_r(os.path.join(destinie_path, ech_file_name))['ech']
         .rename(columns = dict(Id = "person_id"))
@@ -139,13 +145,6 @@ def create_input_data(sample_size = None):
         .copy()
         .rename(columns = dict(salaire = "salaire_de_base"))
         )
-
-    # emp2 = (emp
-    #     .set_index(["person_id", 'period'])
-    #     .reindex(complete_multiindex)
-    #     .fillna(method = 'ffill')
-    #     )
-    # print(emp2)
     emp = (emp
         .set_index(["person_id", 'period'])
         .reindex(complete_multiindex)
@@ -181,6 +180,8 @@ def create_input_data(sample_size = None):
             on = "person_id"
             )
         )
+    # Initialize regime_general_cnav_trimestres to avoid ininite loop
+    input_data_frame_by_entity_by_period[initial_period]['person']['regime_general_cnav_trimestres'] = 0
 
     return input_data_frame_by_entity_by_period
 
@@ -195,4 +196,30 @@ if __name__ == "__main__":
         )
     date_de_naissance = survey_secnario.calculate_variable('date_de_naissance', period = 2000)
     date_de_liquidation = survey_secnario.calculate_variable('regime_general_cnav_liquidation_date', period = 2000)
-    salaire_de_reference = survey_secnario.calculate_variable('regime_general_cnav_salaire_de_reference', period = 2020)
+    salaire_de_reference = survey_secnario.calculate_variable('regime_general_cnav_salaire_de_reference', period = 2000)
+
+    _periods = [2018, 2019, 2020]
+    for period in _periods:
+        salaire_de_base = survey_secnario.calculate_variable('salaire_de_base', period = period)
+        print(period, salaire_de_base)
+        trimestres = survey_secnario.calculate_variable('regime_general_cnav_trimestres', period = period)
+        print(period, trimestres)
+
+
+
+openfisca_by_destinie_name = {
+    "findet": "age_de_fin_d_etude",
+    # "typeFP" (0 état, 1teritoriale, 2 hospitalière)-> "categorie_salarie"
+    #   'prive_non_cadre'
+    #   'prive_cadre'
+    #   'public_titulaire_etat'
+    #   'public_titulaire_militaire'
+    #   'public_titulaire_territoriale'
+    #   'public_titulaire_hospitaliere'
+    #   'public_non_titulaire'
+    #   'non_pertinent'
+    # "taux_prim" -> "primes_fonction_publique"
+    # neFrance -> nationalite
+    # emigrant -> ?
+    #
+    }

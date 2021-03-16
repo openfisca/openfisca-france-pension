@@ -1,0 +1,26 @@
+- name: Trimestres
+  absolute_error_margin: .001
+  period: 1970
+  input:
+    date_de_naissance: 1906-11-19
+    salaire_de_base:
+      year:1970: 2000
+    regime_general_cnav_trimestres:
+      year:1969: 0
+
+  output:
+    regime_general_cnav_trimestres: 4
+
+
+- name: Trimestres
+  absolute_error_margin: .001
+  period: 1970
+  input:
+    date_de_naissance: 1906-11-19
+    salaire_de_base:
+      year:1970: 1500
+    regime_general_cnav_trimestres:
+      year:1969: 3
+
+  output:
+    regime_general_cnav_trimestres: 6
