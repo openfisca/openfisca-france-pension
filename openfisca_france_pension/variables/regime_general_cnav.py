@@ -8,7 +8,7 @@ import numpy as np
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
-from openfisca_france_pension.entities import Household, Person
+from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 
@@ -45,11 +45,11 @@ class regime_general_cnav_decote(Variable):
     definition_period = YEAR
     label = 'Décote'
 
-class regime_general_cnav_decote_date_annulation(Variable):
-    value_type = date
+class regime_general_cnav_surcote(Variable):
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Décote'
+    label = 'Surcote'
 
 class regime_general_cnav_pension_brute(Variable):
     value_type = float
@@ -119,7 +119,7 @@ class regime_general_cnav_trimestres(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = 'Trimestres cotisés au régime général'
+    label = 'Trimestres validés au régime général'
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
@@ -159,7 +159,7 @@ class regime_general_cnav_salaire_de_reference(Variable):
 class regime_general_cnav_coefficient_de_proratisation(Variable):
     value_type = float
     entity = Person
-    definition_period = ETERNITY
+    definition_period = YEAR
     label = 'Coefficient de proratisation'
 
     def formula_2011_07_01(individu, period, parameters):
@@ -171,7 +171,6 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aad = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad_annee * 12 - aad_mois) / 3))
-        age = individu('age_au_31_decembre', period)
         trimestres = individu('regime_general_cnav_trimestres', period)
         duree_assurance_corrigee = min_(duree_de_proratisation, trimestres * (1 + trimestres_apres_aad * coefficient_minoration_par_trimestre))
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
@@ -185,7 +184,6 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aad = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad * 12) / 3))
-        age = individu('age_au_31_decembre', period)
         trimestres = individu('regime_general_cnav_trimestres', period)
         duree_assurance_corrigee = min_(duree_de_proratisation, trimestres * (1 + trimestres_apres_aad * coefficient_minoration_par_trimestre))
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)

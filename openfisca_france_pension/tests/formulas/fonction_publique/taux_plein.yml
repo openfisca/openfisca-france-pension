@@ -1,0 +1,12 @@
+- name: Taux plein de la fonction publique
+  absolute_error_margin: .001
+  period: 2000
+  input:
+    fonction_publique_decote: 0
+    fonction_publique_surcote: 0
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_pension_brute: 1000 * .75
+
+

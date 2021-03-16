@@ -36,8 +36,6 @@ class AbstractRegime(object):
         label = "Taux de liquidation de la pension"
 
         def formula(individu, period, parameters):
-            # liquidation_age = individu('liquidation_age', period)
-            # date_de_naissance = individu('date_de_naissance', period)
             decote = individu('regime_name_decote', period)
             surcote = individu('regime_name_surcote', period)
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
@@ -58,7 +56,7 @@ class AbstractRegime(object):
 class AbstractRegimeDeBase(AbstractRegime):
     name = "Régime de base"
     variable_prefix = "regime_de_base"
-    parameters = "parameters/regime_de_base"
+    parameters = "regime_de_base"
 
     class salaire_de_reference(Variable):
         value_type = float
@@ -84,11 +82,11 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Décote"
 
-    class decote_date_annulation(Variable):
-        value_type = date
+    class surcote(Variable):
+        value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Décote"
+        label = "Surcote"
 
     class pension_brute(Variable):
         value_type = float

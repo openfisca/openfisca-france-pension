@@ -7,6 +7,9 @@ import os
 import pkg_resources
 import sys
 
+
+from openfisca_france_pension.regimes.regime import AbstractRegime, AbstractRegimeDeBase
+
 log = logging.getLogger(__name__)
 
 
@@ -172,32 +175,52 @@ def main(verbose = False):
         "regime.py"
         )
 
-    regime_general_cnav = os.path.join(
-        france_pension_root,
-        "openfisca_france_pension",
-        "regimes",
-        "regime_general_cnav.py"
-        )
+    regimes_files_by_name = {
+        name : {
+            "input": os.path.join(
+                france_pension_root,
+                "openfisca_france_pension",
+                "regimes",
+                f"{name}.py"
+                ),
+            "output": os.path.join(
+                france_pension_root,
+                "openfisca_france_pension",
+                "variables",
+                f"{name}.py"
+                )
+            }
+        for name in ['regime_general_cnav', 'fonction_publique']
+        }
 
-    input_file_names = [
-        regime_de_base,
-        regime_general_cnav,
-        ]
-    input_string = ""
+    # regime_general_cnav = os.path.join(
+    #     france_pension_root,
+    #     "openfisca_france_pension",
+    #     "regimes",
+    #     "regime_general_cnav.py"
+    #     )
 
-    for input_filename in input_file_names:
-        with open(input_filename, encoding='utf-8') as file:
-            input_string += "\n" + file.read()
+    # fonction_publique = os.path.join(
+    #     france_pension_root,
+    #     "openfisca_france_pension",
+    #     "regimes",
+    #     "fonction_publique.py"
+    #     )
 
-    output_filename = os.path.join(
-        france_pension_root,
-        "openfisca_france_pension",
-        "variables",
-        "regime_general_cnav.py"
-        )
+    for regime_name, regime_files in regimes_files_by_name.items():
+        print(regime_name)
+        print(regime_files)
+        input_file_names = [
+            regime_de_base,
+            regime_files['input'],
+            ]
+        input_string = ""
+        for input_filename in input_file_names:
+            with open(input_filename, encoding='utf-8') as file:
+                input_string += "\n" + file.read()
 
-    logging.basicConfig(level = logging.DEBUG if verbose else logging.WARNING, stream = sys.stdout)
-    create_regime_variables(input_string, output_filename)
+        logging.basicConfig(level = logging.DEBUG if verbose else logging.WARNING, stream = sys.stdout)
+        create_regime_variables(input_string, regime_files['output'])
 
 
 if __name__ == "__main__":

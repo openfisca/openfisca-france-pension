@@ -9,10 +9,8 @@ from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
 
-# Import the Entities specifically defined for this tax and benefit system
-from openfisca_france_pension.entities import Household, Person
 
-
+from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 
@@ -43,7 +41,7 @@ class RegimePrive(AbstractRegimeDeBase):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Trimestres cotisés au régime général"
+        label = "Trimestres validés au régime général"
 
         # assert self.P_longit is not None, 'self.P_longit is None'
         # P_long = reduce(getattr, self.param_name.split('.'), self.P_longit)
@@ -51,9 +49,6 @@ class RegimePrive(AbstractRegimeDeBase):
         # plafond = 4  # nombre de trimestres dans l'année
         # ratio = divide(sal_cot, salref).astype(int)
         # return minimum(ratio, plafond)
-
-    # def nb_trimesters(self, trimesters):
-    #     return trimesters.sum(axis=1)
 
     # def trim_maj_ini(self, trim_maj_mda_ini):  # sert à comparer avec pensipp
     #     return trim_maj_mda_ini
@@ -64,32 +59,6 @@ class RegimePrive(AbstractRegimeDeBase):
     #     else:
     #         trim_maj = trim_maj_mda
     #     return trim_maj
-
-    # def salref(self, data, sal_regime):
-    #     ''' SAM : Calcul du salaire annuel moyen de référence :
-    #     notamment application du plafonnement à un PSS et de la revalorisation sur les prix
-    #     des salaires portés aux comptes'''
-    #     P = reduce(getattr, self.param_name_bis.split('.'), self.P)
-    #     nb_best_years_to_take = P.nb_years
-    #     plafond = self.P_longit.common.plaf_ss
-    #     revalo = self.P_longit.prive.RG.revalo
-
-    #     revalo = array(revalo)
-    #     for i in range(1, len(revalo)):
-    #         revalo[:i] *= revalo[i]
-    #     sal_regime.translate_frequency(output_frequency='year', method='sum', inplace=True)
-    #     years_sali = (sal_regime != 0).sum(axis=1)
-    #     nb_best_years_to_take = array(nb_best_years_to_take)
-    #     nb_best_years_to_take[years_sali < nb_best_years_to_take] = \
-    #         years_sali[years_sali < nb_best_years_to_take]
-    #     if plafond is not None:
-    #         assert sal_regime.shape[1] == len(plafond)
-    #         sal_regime = minimum(sal_regime, plafond)
-    #     if revalo is not None:
-    #         assert sal_regime.shape[1] == len(revalo)
-    #         sal_regime = multiply(sal_regime, revalo)
-    #     salref = sal_regime.best_dates_mean(nb_best_years_to_take)
-    #     return salref.round(2)
 
     class salaire_de_reference(Variable):
         value_type = float
@@ -165,7 +134,7 @@ class RegimePrive(AbstractRegimeDeBase):
     class coefficient_de_proratisation(Variable):
         value_type = float
         entity = Person
-        definition_period = ETERNITY
+        definition_period = YEAR
         label = "Coefficient de proratisation"
 
         def formula_2011_07_01(individu, period, parameters):
@@ -188,7 +157,6 @@ class RegimePrive(AbstractRegimeDeBase):
                     (age_en_mois_a_la_liquidation - aad_annee * 12 - aad_mois) / 3
                     )
                 )
-            age = individu('age_au_31_decembre', period)
             trimestres = individu('regime_name_trimestres', period)
             duree_assurance_corrigee = min_(
                 duree_de_proratisation,
@@ -219,7 +187,6 @@ class RegimePrive(AbstractRegimeDeBase):
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )
-            age = individu('age_au_31_decembre', period)
             trimestres = individu('regime_name_trimestres', period)
             duree_assurance_corrigee = min_(
                 duree_de_proratisation,
@@ -512,57 +479,6 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             return coefficient_majoration_par_trimestre * trimestres_apres_aad
 
-        # def formulat(individu, period, parmaters):
-        #     pass
-    # def surcote(self, data, trimesters, trimesters_tot, date_start_surcote):
-    #     ''' Détermination de la surcote à appliquer aux pensions.'''
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     P_long = reduce(getattr, self.param_name.split('.'), self.P_longit)
-    #     # dispositif de type 0
-    #     n_trim = array(P.plein.n_trim, dtype=float)
-    #     trim_tot = trimesters_tot.sum(axis=1)
-    #     surcote = P.surcote.dispositif0.taux * (trim_tot - n_trim) * (trim_tot > n_trim)
-    #     # Note surcote = 0 après 1983
-    #     # dispositif de type 1
-    #     agem = data.info_ind['agem']
-    #     datesim = self.dateleg.liam
-    #     if P.surcote.dispositif1.taux > 0:
-    #         trick = P.surcote.dispositif1.date_trick
-    #         trick = str(int(trick))
-    #         selected_dates = getattr(P_long.surcote.dispositif1, 'dates' + trick)
-    #         if sum(selected_dates) > 0:
-    #             surcote += P.surcote.dispositif1.taux * \
-    #                 nb_trim_surcote(trimesters, selected_dates,
-    #                                 date_start_surcote)
-
-    #     # dispositif de type 2
-    #     P2 = P.surcote.dispositif2
-    #     if P2.taux0 > 0:
-    #         selected_dates = P_long.surcote.dispositif2.dates
-    #         basic_trim = nb_trim_surcote(trimesters, selected_dates,
-    #                                      date_start_surcote)
-    #         age_by_year = array([array(agem) - 12 * i for i in reversed(range(trimesters.shape[1]))])
-    #         nb_years_surcote_age = greater(age_by_year, P2.age_majoration * 12).T.sum(axis=1)
-    #         start_surcote_age = [datesim - nb_year * 100 if nb_year > 0 else 2100 * 100 + 1
-    #                              for nb_year in nb_years_surcote_age]
-    #         maj_age_trim = nb_trim_surcote(trimesters, selected_dates,
-    #                                        start_surcote_age)
-    #         basic_trim = basic_trim - maj_age_trim
-    #         trim_with_majo = (basic_trim - P2.trim_majoration) * \
-    #                          ((basic_trim - P2.trim_majoration) >= 0)
-    #         basic_trim = basic_trim - trim_with_majo
-    #         surcote += P2.taux0 * basic_trim + \
-    #             P2.taux_maj_trim * trim_with_majo + \
-    #             P2.taux_maj_age * maj_age_trim
-    #     return surcote
-
-    # def trimestres_excess_taux_plein(self, data, trimesters, trimesters_tot):
-    #     ''' Détermination nb de trimestres au delà du taux plein.'''
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     # dispositif de type 0
-    #     n_trim = array(P.plein.n_trim, dtype=float)
-    #     trim_tot = trimesters_tot.sum(axis=1)
-    #     return (trim_tot - n_trim) * (trim_tot > n_trim)
 
     class pension_minimale(Variable):
         value_type = float
