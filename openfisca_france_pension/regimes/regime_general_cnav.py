@@ -1,6 +1,7 @@
 """Régime de base du secteur privé: régime général de la CNAV."""
 
 import functools
+from numba import jit
 import numpy as np
 
 
@@ -15,6 +16,27 @@ from openfisca_france_pension.entities import Household, Person
 
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
+
+
+# @jit(nopython=True)
+def compute_salaire_de_reference(annee_de_naissance, _annee_de_naissance, mean_over_largest, arr, salaire_de_refererence):
+    return where(
+        annee_de_naissance == _annee_de_naissance,
+        np.apply_along_axis(
+            mean_over_largest,
+            axis = 0,
+            arr = arr,
+            ),
+        salaire_de_refererence,
+        )
+
+
+def make_mean_over_largest(k):
+    @jit(nopython=True)
+    def mean_over_largest(vector):
+        return mean_over_k_nonzero_largest(vector, k = k)
+
+    return mean_over_largest
 
 
 class RegimePrive(AbstractRegimeDeBase):
@@ -106,7 +128,7 @@ class RegimePrive(AbstractRegimeDeBase):
                         np.array(str(_annee_de_naissance), dtype="datetime64[Y]")
                         ]
                     )
-                mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = k)
+                mean_over_largest = make_mean_over_largest(k)
                 revalorisation = dict()
                 revalorisation[period.start.year] = 1
                 for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
@@ -121,22 +143,15 @@ class RegimePrive(AbstractRegimeDeBase):
                         )
                 print(period.start.year, _annee_de_naissance + OFFSET)
                 # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
-                salaire_de_refererence = where(
-                    annee_de_naissance == _annee_de_naissance,
-                    np.apply_along_axis(
-                        mean_over_largest,
-                        axis = 0,
-                        arr = np.vstack([
-                            min_(
-                                individu('salaire_de_base', period = year),
-                                parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
-                                )
-                            * revalorisation[year]
-                            for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
-                            ]),
-                        ),
-                    salaire_de_refererence,
-                    )
+                arr = np.vstack([
+                    min_(
+                        individu('salaire_de_base', period = year),
+                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+                        )
+                    * revalorisation[year]
+                    for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
+                    ])
+                salaire_de_refererence = compute_salaire_de_reference(annee_de_naissance, _annee_de_naissance, mean_over_largest, arr, salaire_de_refererence)
 
             return salaire_de_refererence
 

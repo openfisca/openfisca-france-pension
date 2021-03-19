@@ -1,6 +1,8 @@
 """Tools."""
 
 import bottleneck
+from numba import jit
+import numpy as np
 
 
 def mean_over_k_largest(vector, k):
@@ -15,6 +17,7 @@ def mean_over_k_largest(vector, k):
     return z[:k].sum() / k
 
 
+@jit(nopython=True)
 def mean_over_k_nonzero_largest(vector, k):
     '''Return the mean over the k largest values of a vector'''
     if k == 0:
@@ -24,6 +27,6 @@ def mean_over_k_nonzero_largest(vector, k):
     if k >= nonzeros:
         return vector.sum() / (nonzeros + (nonzeros == 0))
 
-    z = -bottleneck.partition(-vector, kth = k)
+    z = -np.partition(-vector, kth = k)
     upper_bound = min(k, nonzeros)
     return z[:upper_bound].sum() / upper_bound
