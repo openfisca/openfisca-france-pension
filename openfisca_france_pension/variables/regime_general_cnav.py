@@ -2,6 +2,7 @@
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Household, Person
 'Régime de base du secteur privé: régime général de la CNAV.'
+from datetime import datetime
 import functools
 from numba import jit
 import numpy as np
@@ -57,7 +58,7 @@ class regime_general_cnav_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
-    def formula(individu, period, parameters):
+    def formula(individu, period):
         coefficient_de_proratisation = individu('regime_general_cnav_coefficient_de_proratisation', period)
         salaire_de_reference = individu('regime_general_cnav_salaire_de_reference', period)
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
@@ -215,9 +216,9 @@ class regime_general_cnav_decote(Variable):
         coefficient_minoration_par_trimestre = parameters(period).secteur_prive.regime_general_cnav.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
         trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
         age_en_mois_a_la_liquidation = (individu('regime_general_cnav_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aad = np.trunc((aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3)
+        trimestres_avant_aad = np.trunc((aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3)
         trimestres = individu('regime_general_cnav_trimestres', period)
-        decote = coefficient_minoration_par_trimestre * max_(0, min_(trimestres_cibles_taux_plein - trimestres, trimestres_apres_aad))
+        decote = coefficient_minoration_par_trimestre * max_(0, min_(trimestres_cibles_taux_plein - trimestres, trimestres_avant_aad))
         return decote
 
     def formula_1983_04_01(individu, period, parameters):
@@ -226,9 +227,9 @@ class regime_general_cnav_decote(Variable):
         coefficient_minoration_par_trimestre = parameters(period).secteur_prive.regime_general_cnav.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
         trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
         age_en_mois_a_la_liquidation = (individu('regime_general_cnav_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aad = np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3)
+        trimestres_avant_aad = np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3)
         trimestres = individu('regime_general_cnav_trimestres', period)
-        decote = coefficient_minoration_par_trimestre * max_(0, min_(trimestres_cibles_taux_plein - trimestres, trimestres_apres_aad))
+        decote = coefficient_minoration_par_trimestre * max_(0, min_(trimestres_cibles_taux_plein - trimestres, trimestres_avant_aad))
         return decote
 
     def formula_1945(individu, period, parameters):
@@ -236,14 +237,15 @@ class regime_general_cnav_decote(Variable):
         aad = 65
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aad = max_(0, np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3))
-        return coefficient_minoration_par_trimestre * trimestres_apres_aad
+        trimestres_avant_aad = max_(0, np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3))
+        return coefficient_minoration_par_trimestre * trimestres_avant_aad
 
 class regime_general_cnav_liquidation_date(Variable):
     value_type = date
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class regime_general_cnav_surcote(Variable):
     value_type = float

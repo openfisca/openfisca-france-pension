@@ -1,5 +1,6 @@
 """Régime de base du secteur privé: régime général de la CNAV."""
 
+from datetime import datetime
 import functools
 from numba import jit
 import numpy as np
@@ -236,7 +237,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_apres_aad = np.trunc(
+            trimestres_avant_aad = np.trunc(
                 (aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
@@ -244,7 +245,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
-                    trimestres_apres_aad
+                    trimestres_avant_aad
                     )
                 )
             return decote
@@ -261,7 +262,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_apres_aad = np.trunc(
+            trimestres_avant_aad = np.trunc(
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
@@ -269,7 +270,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
-                    trimestres_apres_aad
+                    trimestres_avant_aad
                     )
                 )
             return decote
@@ -287,19 +288,22 @@ class RegimePrive(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
-            trimestres_apres_aad = max_(
+            trimestres_avant_aad = max_(
                 0,
                 np.trunc(
                     (aad * 12 - age_en_mois_a_la_liquidation) / 3
                     )
                 )
-            return coefficient_minoration_par_trimestre * trimestres_apres_aad
+            return coefficient_minoration_par_trimestre * trimestres_avant_aad
 
     class liquidation_date(Variable):
         value_type = date
         entity = Person
         definition_period = ETERNITY
         label = "Date de liquidation"
+        default_value = datetime.max.date()
+
+
 
     class surcote(Variable):
         value_type = float

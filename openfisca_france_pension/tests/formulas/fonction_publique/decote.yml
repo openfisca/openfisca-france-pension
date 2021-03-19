@@ -1,0 +1,54 @@
+- name: Absence de décote dans le public avant son intauration
+  absolute_error_margin: .001
+  period: 2000
+  input:
+    date_de_naissance: 1935-11-19
+    # fonction_publique_liquidation_date: 2000-10-31
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: 0
+    fonction_publique_decote: 0
+    fonction_publique_pension_brute: 1000 * .75
+
+
+- name: Décote dans le public après la réforme de 2003 avant son entrée ne vigueur en 2006
+  absolute_error_margin: .001
+  period: 2004
+  input:
+    date_de_naissance: 1944-11-19
+    fonction_publique_liquidation_date: 2004-11-20
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: 0
+    fonction_publique_decote: 0
+    fonction_publique_pension_brute: 1000 * .75
+
+
+- name: Décote dans le public après la réforme de 2003 en 2006
+  absolute_error_margin: .001
+  period: 2006
+  input:
+    date_de_naissance: 1946-04-11
+    fonction_publique_liquidation_date: 2006-05-01
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: 0
+    fonction_publique_decote: 4 * .00125
+    fonction_publique_pension_brute: 1000 * .75 * (1 - 4 * .00125)
+
+
+- name: Décote dans le public après la réforme de 2003 en 2011
+  absolute_error_margin: .001
+  period: 2011
+  input:
+    date_de_naissance: 1951-04-11
+    fonction_publique_liquidation_date: 2011-05-01
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: 0
+    fonction_publique_decote: 11 * .0075
+    fonction_publique_pension_brute: 1000 * .75 * (1 - 11 * .0075)

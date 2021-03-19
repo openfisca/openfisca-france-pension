@@ -1,5 +1,6 @@
 - name: Salaire de réference
   absolute_error_margin: .001
+  max_spiral_loops: 2
   period: 2021
   input:
     date_de_naissance: 1940-11-19
@@ -12,6 +13,7 @@
 - name: Salaire de réference
   absolute_error_margin: .001
   period: 2021
+  max_spiral_loops: 3
   input:
     date_de_naissance: 1940-11-19
     salaire_de_base:

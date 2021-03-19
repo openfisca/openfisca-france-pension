@@ -94,7 +94,7 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Pension brute"
 
-        def formula(individu, period, parameters):
+        def formula(individu, period):
             coefficient_de_proratisation = individu('regime_name_coefficient_de_proratisation', period)
             salaire_de_reference = individu('regime_name_salaire_de_reference', period)
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
@@ -112,7 +112,20 @@ class AbstractRegimeDeBase(AbstractRegime):
             return pension_brute + majoration_pension
 
 
-# class RegimeComplementaires(Regime):
+class AbstractRegimeComplementaires(AbstractRegime):
+
+    class points(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
+
+        def formula(individu, period, parameters):
+           salaire_de_reference = parameters(period).regime_name.salaire_de_reference
+           taux_d_acquisition = parameters(period).regime_name.taux_d_acquisition
+           cotisation = individu("regime_name_cotisation", period)
+           return cotisation / salaire_de_reference
+
 #     def nombre_points(self, data, sali_for_regime):
 #         ''' Détermine le nombre de point à liquidation de la pension dans les
 #         régimes complémentaires (pour l'instant Ok pour ARRCO/AGIRC)
@@ -195,9 +208,6 @@ class AbstractRegimeDeBase(AbstractRegime):
 #         val_point = P.val_point
 #         return nb_points_enf * val_point
 
-#     def nb_points_cot(self, nombre_points):
-#         return nombre_points.sum(axis=1)
-
 #     def pension(self, data, coefficient_age, pension_brute_b,
 #                 majoration_pension, trim_decote):
 #         ''' le régime Arrco ne tient pas compte du coefficient de
@@ -208,11 +218,18 @@ class AbstractRegimeDeBase(AbstractRegime):
 #         pension = (1 - decote) * pension
 #         return pension * coefficient_age
 
-#     def pension_brute(self, nb_points, minimum_points):
-#         P = reduce(getattr, self.param_name.split('.'), self.P)
-#         val_point = P.val_point
-#         pension_brute = (nb_points + minimum_points) * val_point
-#         return pension_brute
+    class pension_brute(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension brute"
+
+        def formula(individu, period, parameters):
+            valeur_du_point = parameters(period).regime_name.valeur_du_point
+            minimum_de_points = parameters(period).regime_name.minimum_de_points
+            points = individu("regime_name_points", period)
+            pension_brute = (points + minimum_de_points) * valeur_du_point
+            return pension_brute
 
 #     def cotisations(self, sali_for_regime):
 #         ''' Calcul des cotisations passées par année'''

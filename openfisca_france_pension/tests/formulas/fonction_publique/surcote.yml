@@ -1,0 +1,27 @@
+- name: Absence de surcote dans le public avant son intauration en 2004
+  absolute_error_margin: .001
+  period: 2000
+  input:
+    date_de_naissance: 1935-11-19
+    # fonction_publique_liquidation_date: 2000-10-31
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: 0
+    fonction_publique_decote: 0
+    fonction_publique_pension_brute: 1000 * .75
+
+
+- name: Surcote dans le public à son intauration en 2006 (par l'âge)
+  absolute_error_margin: .001
+  period: 2006
+  input:
+    date_de_naissance: 1945-11-19
+    fonction_publique_liquidation_date: 2006-11-30
+    fonction_publique_trimestres: 160
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: .03
+    fonction_publique_decote: 0
+    fonction_publique_pension_brute: 1000 * .75 * (1 + .03)

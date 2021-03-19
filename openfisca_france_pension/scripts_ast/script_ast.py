@@ -193,23 +193,7 @@ def main(verbose = False):
         for name in ['regime_general_cnav', 'fonction_publique']
         }
 
-    # regime_general_cnav = os.path.join(
-    #     france_pension_root,
-    #     "openfisca_france_pension",
-    #     "regimes",
-    #     "regime_general_cnav.py"
-    #     )
-
-    # fonction_publique = os.path.join(
-    #     france_pension_root,
-    #     "openfisca_france_pension",
-    #     "regimes",
-    #     "fonction_publique.py"
-    #     )
-
     for regime_name, regime_files in regimes_files_by_name.items():
-        print(regime_name)
-        print(regime_files)
         input_file_names = [
             regime_de_base,
             regime_files['input'],
