@@ -3,14 +3,23 @@ from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Household, Person
 'Régime de base du secteur privé: régime général de la CNAV.'
 import functools
+from numba import jit
 import numpy as np
-from openfisca_core.parameters import ParameterNotFound
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Household, Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
+
+def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
+    salaire_de_refererence[filter] = np.apply_along_axis(mean_over_largest, axis=0, arr=arr)
+
+def make_mean_over_largest(k):
+
+    def mean_over_largest(vector):
+        return mean_over_k_nonzero_largest(vector, k=k)
+    return mean_over_largest
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
@@ -112,17 +121,6 @@ class regime_general_cnav_trimestres(Variable):
     definition_period = YEAR
     label = 'Trimestres cotisés au régime général'
 
-    def formula(individu, period, parameters):
-        salaire_de_base = individu('salaire_de_base', period)
-        try:
-            salaire_validant_un_trimestre = parameters(period).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
-        except ParameterNotFound:
-            import openfisca_core.periods as periods
-            salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
-        trimestres_valides_avant_cette_annee = individu('regime_general_cnav_trimestres', period.last_year)
-        trimestres_valides_dans_l_annee = min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
-        return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
-
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
     entity = Person
@@ -135,19 +133,21 @@ class regime_general_cnav_salaire_de_reference(Variable):
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         annees_de_naissance_distinctes = np.unique(annee_de_naissance[liquidation_date >= np.datetime64(period.start)])
-        salaire_de_refererence = 0
+        salaire_de_reference = individu.empty_array()
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
             if _annee_de_naissance + OFFSET >= period.start.year:
                 break
             k = int(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[np.array(str(_annee_de_naissance), dtype='datetime64[Y]')])
-            mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=k)
+            mean_over_largest = make_mean_over_largest(k)
             revalorisation = dict()
             revalorisation[period.start.year] = 1
             for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
                 revalorisation[annee_salaire] = np.prod(np.array([parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient for _annee in range(annee_salaire + 1, period.start.year + 1)]))
             print(period.start.year, _annee_de_naissance + OFFSET)
-            salaire_de_refererence = where(annee_de_naissance == _annee_de_naissance, np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[year] for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])), salaire_de_refererence)
-        return salaire_de_refererence
+            filter = (annee_de_naissance == _annee_de_naissance,)
+            arr = np.vstack([min_(individu('salaire_de_base', period=year)[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[year] for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])
+            compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
+        return salaire_de_reference
 
     def formula_1972(individu, period, parameters):
         n = parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01

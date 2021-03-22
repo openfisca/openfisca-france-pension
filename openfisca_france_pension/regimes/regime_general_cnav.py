@@ -5,7 +5,6 @@ from numba import jit
 import numpy as np
 
 
-from openfisca_core.parameters import ParameterNotFound
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
@@ -19,15 +18,11 @@ from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 
 
 # @jit(nopython=True)
-def compute_salaire_de_reference(annee_de_naissance, _annee_de_naissance, mean_over_largest, arr, salaire_de_refererence):
-    return where(
-        annee_de_naissance == _annee_de_naissance,
-        np.apply_along_axis(
-            mean_over_largest,
-            axis = 0,
-            arr = arr,
-            ),
-        salaire_de_refererence,
+def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
+    salaire_de_refererence[filter] = np.apply_along_axis(
+        mean_over_largest,
+        axis = 0,
+        arr = arr,
         )
 
 
@@ -50,19 +45,12 @@ class RegimePrive(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Trimestres cotisés au régime général"
 
-        def formula(individu, period, parameters):
-            salaire_de_base = individu("salaire_de_base", period)
-            try:
-                salaire_validant_un_trimestre = parameters(period).regime_name.salval.salaire_validant_trimestre.metropole
-            except ParameterNotFound:
-                import openfisca_core.periods as periods
-                salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
-            trimestres_valides_avant_cette_annee = individu("regime_name_trimestres", period.last_year)
-            trimestres_valides_dans_l_annee = min_(
-                (salaire_de_base / salaire_validant_un_trimestre).astype(int),
-                4
-                )
-            return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
+        # assert self.P_longit is not None, 'self.P_longit is None'
+        # P_long = reduce(getattr, self.param_name.split('.'), self.P_longit)
+        # salref = P_long.salref
+        # plafond = 4  # nombre de trimestres dans l'année
+        # ratio = divide(sal_cot, salref).astype(int)
+        # return minimum(ratio, plafond)
 
     # def nb_trimesters(self, trimesters):
     #     return trimesters.sum(axis=1)
@@ -119,7 +107,7 @@ class RegimePrive(AbstractRegimeDeBase):
             annees_de_naissance_distinctes = np.unique(
                 annee_de_naissance[liquidation_date >= np.datetime64(period.start)]
                 )
-            salaire_de_refererence = 0
+            salaire_de_reference = individu.empty_array()
             for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
                 if _annee_de_naissance + OFFSET >= period.start.year:
                     break
@@ -142,18 +130,19 @@ class RegimePrive(AbstractRegimeDeBase):
                             )
                         )
                 print(period.start.year, _annee_de_naissance + OFFSET)
+                filter = annee_de_naissance == _annee_de_naissance,
                 # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
                 arr = np.vstack([
                     min_(
-                        individu('salaire_de_base', period = year),
+                        individu('salaire_de_base', period = year)[filter],
                         parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
                         )
                     * revalorisation[year]
                     for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
                     ])
-                salaire_de_refererence = compute_salaire_de_reference(annee_de_naissance, _annee_de_naissance, mean_over_largest, arr, salaire_de_refererence)
+                compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
 
-            return salaire_de_refererence
+            return salaire_de_reference
 
         def formula_1972(individu, period, parameters):
             # TODO test and adapt like 1994 formula

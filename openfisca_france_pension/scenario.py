@@ -196,12 +196,16 @@ if __name__ == "__main__":
         )
     date_de_naissance = survey_secnario.calculate_variable('date_de_naissance', period = 2000)
     date_de_liquidation = survey_secnario.calculate_variable('regime_general_cnav_liquidation_date', period = 2000)
+    import time
+    start = time.process_time()
     salaire_de_reference = survey_secnario.calculate_variable('regime_general_cnav_salaire_de_reference', period = 2000)
+    print(time.process_time() - start)
 
     _periods = [2018, 2019, 2020]
     for period in _periods:
         salaire_de_base = survey_secnario.calculate_variable('salaire_de_base', period = period)
         print(period, salaire_de_base)
+
         trimestres = survey_secnario.calculate_variable('regime_general_cnav_trimestres', period = period)
         print(period, trimestres)
 
