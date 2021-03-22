@@ -18,6 +18,7 @@ def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence,
 
 def make_mean_over_largest(k):
 
+    @jit(nopython=True)
     def mean_over_largest(vector):
         return mean_over_k_nonzero_largest(vector, k=k)
     return mean_over_largest
@@ -121,6 +122,17 @@ class regime_general_cnav_trimestres(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Trimestres validés au régime général'
+
+    def formula(individu, period, parameters):
+        salaire_de_base = individu('salaire_de_base', period)
+        try:
+            salaire_validant_un_trimestre = parameters(period).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
+        except ParameterNotFound:
+            import openfisca_core.periods as periods
+            salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
+        trimestres_valides_avant_cette_annee = individu('regime_general_cnav_trimestres', period.last_year)
+        trimestres_valides_dans_l_annee = min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
+        return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float

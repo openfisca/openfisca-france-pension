@@ -6,6 +6,7 @@ from numba import jit
 import numpy as np
 
 
+from openfisca_core.parameters import ParameterNotFound
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
@@ -44,12 +45,19 @@ class RegimePrive(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Trimestres validés au régime général"
 
-        # assert self.P_longit is not None, 'self.P_longit is None'
-        # P_long = reduce(getattr, self.param_name.split('.'), self.P_longit)
-        # salref = P_long.salref
-        # plafond = 4  # nombre de trimestres dans l'année
-        # ratio = divide(sal_cot, salref).astype(int)
-        # return minimum(ratio, plafond)
+        def formula(individu, period, parameters):
+            salaire_de_base = individu("salaire_de_base", period)
+            try:
+                salaire_validant_un_trimestre = parameters(period).regime_name.salval.salaire_validant_trimestre.metropole
+            except ParameterNotFound:
+                import openfisca_core.periods as periods
+                salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
+            trimestres_valides_avant_cette_annee = individu("regime_name_trimestres", period.last_year)
+            trimestres_valides_dans_l_annee = min_(
+                (salaire_de_base / salaire_validant_un_trimestre).astype(int),
+                4
+                )
+            return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
 
     # def trim_maj_ini(self, trim_maj_mda_ini):  # sert à comparer avec pensipp
     #     return trim_maj_mda_ini
