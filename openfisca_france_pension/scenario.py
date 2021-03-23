@@ -2,6 +2,7 @@
 
 import configparser
 import logging
+from typing import Collection
 import numpy as np
 import os
 import pandas as pd
@@ -12,9 +13,9 @@ import pyreadr
 from openfisca_core import periods
 from openfisca_survey_manager.scenarios import AbstractSurveyScenario
 from openfisca_survey_manager import default_config_files_directory as config_files_directory
+from openfisca_survey_manager.input_dataframe_generator import set_table_in_survey
 
 from openfisca_france_pension import CountryTaxBenefitSystem as FrancePensionTaxBenefitSystem
-
 
 
 log = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ class DestinieSurveyScenario(AbstractSurveyScenario):
     """OpenFisca survey scenario to compute French Pensions."""
 
     def __init__(self, tax_benefit_system = None, baseline_tax_benefit_system = None, year = None,
-            data = None, comportement_de_depart = None):
+            data = None, dataframe_variables = None, comportement_de_depart = None):
         super(DestinieSurveyScenario, self).__init__()
 
         if tax_benefit_system is None:
@@ -44,25 +45,26 @@ class DestinieSurveyScenario(AbstractSurveyScenario):
             baseline_tax_benefit_system = baseline_tax_benefit_system,
             )
 
-        assert 'input_data_frame_by_entity_by_period' in data
-        period = min(list(data['input_data_frame_by_entity_by_period'].keys()))
-        self.year = period
-        dataframe_variables = set()
-        for entity_dataframe in data['input_data_frame_by_entity_by_period'][period].values():
-            if not isinstance(entity_dataframe, pd.DataFrame):
-                continue
-            dataframe_variables = dataframe_variables.union(set(entity_dataframe.columns))
+        assert (
+            'input_data_frame_by_entity_by_period' in data
+            or 'input_data_table_by_entity_by_period'
+            )
+
+        assert dataframe_variables is not None
         self.used_as_input_variables = list(
             set(tax_benefit_system.variables.keys()).intersection(dataframe_variables)
             )
 
+        # period = min(list(data['input_data_frame_by_entity_by_period'].keys()))
+        self.year = periods.period(1909)
+        self.collection = "destinie"
         self.init_from_data(data = data)
         self.simulation.max_spiral_loops = np.infty
         if self.baseline_simulation is not None:
             self.baseline_simulation.max_spiral_loops = np.infty
 
 
-def create_input_data(sample_size = None):
+def create_input_data(sample_size = None, save_to_disk = False):
     """Creates input data from liam2 output to use in DestinieSurveyScenario.
 
     Returns:
@@ -77,8 +79,6 @@ def create_input_data(sample_size = None):
     ech_file_name = "ech_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
     emp_file_name = "emp_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
     fam_file_name = "fam_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
-
-
 
     ech = (pyreadr.read_r(os.path.join(destinie_path, ech_file_name))['ech']
         .rename(columns = dict(Id = "person_id"))
@@ -180,19 +180,72 @@ def create_input_data(sample_size = None):
             on = "person_id"
             )
         )
-    # Initialize regime_general_cnav_trimestres to avoid ininite loop
+
+    # Initialize regime_general_cnav_trimestres to avoid infinite loop
     input_data_frame_by_entity_by_period[initial_period]['person']['regime_general_cnav_trimestres'] = 0
 
-    return input_data_frame_by_entity_by_period
+    period = min(list(input_data_frame_by_entity_by_period.keys()))
+    dataframe_variables = set()
+    for entity_dataframe in input_data_frame_by_entity_by_period[period].values():
+        if not isinstance(entity_dataframe, pd.DataFrame):
+            continue
+        dataframe_variables = dataframe_variables.union(set(entity_dataframe.columns))
+
+    if not save_to_disk:
+        return input_data_frame_by_entity_by_period, dataframe_variables
+
+    collection = 'destinie'
+    table_by_entity_by_period = dict()
+
+    for period, input_data_frame_by_entity in input_data_frame_by_entity_by_period.items():
+        table_by_entity_by_period[period] = table_by_entity = dict()
+        for entity, input_dataframe in input_data_frame_by_entity.items():
+            set_table_in_survey(input_dataframe, entity, period, collection, survey_name = 'input')
+            table_by_entity[entity] = entity + '_' + str(period)
+
+    return table_by_entity_by_period, dataframe_variables
+
+
+def get_input_data():
+    """Gets input data.
+
+    Returns:
+        [dict]: data information to run the initialize the scenario's simulation
+    """
+    table_by_entity_by_period = dict()
+    entity = "person"
+    for period_ in range(1909, 2070 + 1):
+        period = periods.period(period_)
+        table_by_entity_by_period[period] = table_by_entity = dict()
+        table_by_entity[entity] = entity + '_' + str(period)
+
+    data = dict(
+        input_data_table_by_entity_by_period = table_by_entity_by_period,
+        survey = 'input',
+        )
+    return data
 
 
 if __name__ == "__main__":
     from openfisca_france_pension.reforms.comportement_de_depart.age_fixe import create_departt_a_age_fixe
-    input_data_frame_by_entity_by_period = create_input_data(sample_size = None)
-    data = dict(input_data_frame_by_entity_by_period = input_data_frame_by_entity_by_period)
+    # input_data_frame_by_entity_by_period, dataframe_variables = create_input_data(sample_size = None)
+    # data = dict(input_data_frame_by_entity_by_period = input_data_frame_by_entity_by_period)
+
+    # table_by_entity_by_period, dataframe_variables = create_input_data(sample_size = None, save_to_disk = True)
+
+    dataframe_variables = [
+        'date_de_naissance',
+        'person_id',
+        'regime_general_cnav_trimestres',
+        'salaire_de_base'
+        ]
+
+    data = get_input_data()
+
     survey_secnario = DestinieSurveyScenario(
         comportement_de_depart = create_departt_a_age_fixe(65),
-        data = data
+        data = data,
+        dataframe_variables = dataframe_variables,
         )
     date_de_naissance = survey_secnario.calculate_variable('date_de_naissance', period = 2000)
     date_de_liquidation = survey_secnario.calculate_variable('regime_general_cnav_liquidation_date', period = 2000)
