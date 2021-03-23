@@ -6,6 +6,7 @@ from datetime import datetime
 import functools
 from numba import jit
 import numpy as np
+from openfisca_core.parameters import ParameterNotFound
 from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
@@ -18,7 +19,6 @@ def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence,
 
 def make_mean_over_largest(k):
 
-    @jit(nopython=True)
     def mean_over_largest(vector):
         return mean_over_k_nonzero_largest(vector, k=k)
     return mean_over_largest
@@ -331,3 +331,13 @@ class regime_general_cnav_pension_maximale(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Pension maximale'
+
+    def formula(individu, period, parameters):
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
+        pension_plafond_hors_sucote = taux_plein * plafond_securite_sociale
+        pension_brute = individu('regime_general_cnav_pension_brute', period)
+        taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
+        surcote = individu('regime_general_cnav_surcote', period)
+        pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
+        return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote

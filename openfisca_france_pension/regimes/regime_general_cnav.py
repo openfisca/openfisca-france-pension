@@ -17,7 +17,6 @@ from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 
 
-# @jit(nopython=True)
 def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
     salaire_de_refererence[filter] = np.apply_along_axis(
         mean_over_largest,
@@ -27,7 +26,6 @@ def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence,
 
 
 def make_mean_over_largest(k):
-    @jit(nopython=True)
     def mean_over_largest(vector):
         return mean_over_k_nonzero_largest(vector, k = k)
 
@@ -540,15 +538,15 @@ class RegimePrive(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Pension maximale"
 
-        # def formula(indiivdu, period, paramaters):
-        #     pass
+        def formula(individu, period, parameters):
 
-        # ''' plafonnement à 50% du PSS
-        # TODO: gérer les plus de 65 ans au 1er janvier 1983'''
-        # PSS = self.P.common.plaf_ss
-        # P = reduce(getattr, self.param_name.split('.'), self.P)
-        # taux_plein = P.plein.taux
-        # taux_PSS = P.plafond
-        # pension_surcote_RG = taux_plein * salref * coeff_proratisation * surcote
-        # return minimum(pension_brute - pension_surcote_RG, taux_PSS * PSS) + \
-        # pension_surcote_RG
+            # TODO: gérer les plus de 65 ans au 1er janvier 1983'''
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
+            pension_plafond_hors_sucote = taux_plein * plafond_securite_sociale
+            pension_brute = individu('regime_name_pension_brute', period)
+            taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
+            surcote = individu('regime_name_surcote', period)
+            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
+            return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
+
