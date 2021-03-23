@@ -1,6 +1,8 @@
 """Régime de base du secteur privé: régime général de la CNAV."""
 
+from datetime import datetime
 import functools
+from numba import jit
 import numpy as np
 
 
@@ -9,12 +11,25 @@ from openfisca_core.periods import ETERNITY, MONTH, YEAR
 from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
 
-# Import the Entities specifically defined for this tax and benefit system
-from openfisca_france_pension.entities import Household, Person
 
-
+from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
+
+
+def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
+    salaire_de_refererence[filter] = np.apply_along_axis(
+        mean_over_largest,
+        axis = 0,
+        arr = arr,
+        )
+
+
+def make_mean_over_largest(k):
+    def mean_over_largest(vector):
+        return mean_over_k_nonzero_largest(vector, k = k)
+
+    return mean_over_largest
 
 
 class RegimePrive(AbstractRegimeDeBase):
@@ -26,7 +41,7 @@ class RegimePrive(AbstractRegimeDeBase):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Trimestres cotisés au régime général"
+        label = "Trimestres validés au régime général"
 
         def formula(individu, period, parameters):
             salaire_de_base = individu("salaire_de_base", period)
@@ -42,9 +57,6 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
 
-    # def nb_trimesters(self, trimesters):
-    #     return trimesters.sum(axis=1)
-
     # def trim_maj_ini(self, trim_maj_mda_ini):  # sert à comparer avec pensipp
     #     return trim_maj_mda_ini
 
@@ -54,32 +66,6 @@ class RegimePrive(AbstractRegimeDeBase):
     #     else:
     #         trim_maj = trim_maj_mda
     #     return trim_maj
-
-    # def salref(self, data, sal_regime):
-    #     ''' SAM : Calcul du salaire annuel moyen de référence :
-    #     notamment application du plafonnement à un PSS et de la revalorisation sur les prix
-    #     des salaires portés aux comptes'''
-    #     P = reduce(getattr, self.param_name_bis.split('.'), self.P)
-    #     nb_best_years_to_take = P.nb_years
-    #     plafond = self.P_longit.common.plaf_ss
-    #     revalo = self.P_longit.prive.RG.revalo
-
-    #     revalo = array(revalo)
-    #     for i in range(1, len(revalo)):
-    #         revalo[:i] *= revalo[i]
-    #     sal_regime.translate_frequency(output_frequency='year', method='sum', inplace=True)
-    #     years_sali = (sal_regime != 0).sum(axis=1)
-    #     nb_best_years_to_take = array(nb_best_years_to_take)
-    #     nb_best_years_to_take[years_sali < nb_best_years_to_take] = \
-    #         years_sali[years_sali < nb_best_years_to_take]
-    #     if plafond is not None:
-    #         assert sal_regime.shape[1] == len(plafond)
-    #         sal_regime = minimum(sal_regime, plafond)
-    #     if revalo is not None:
-    #         assert sal_regime.shape[1] == len(revalo)
-    #         sal_regime = multiply(sal_regime, revalo)
-    #     salref = sal_regime.best_dates_mean(nb_best_years_to_take)
-    #     return salref.round(2)
 
     class salaire_de_reference(Variable):
         value_type = float
@@ -97,7 +83,7 @@ class RegimePrive(AbstractRegimeDeBase):
             annees_de_naissance_distinctes = np.unique(
                 annee_de_naissance[liquidation_date >= np.datetime64(period.start)]
                 )
-            salaire_de_refererence = 0
+            salaire_de_reference = individu.empty_array()
             for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
                 if _annee_de_naissance + OFFSET >= period.start.year:
                     break
@@ -106,7 +92,7 @@ class RegimePrive(AbstractRegimeDeBase):
                         np.array(str(_annee_de_naissance), dtype="datetime64[Y]")
                         ]
                     )
-                mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = k)
+                mean_over_largest = make_mean_over_largest(k)
                 revalorisation = dict()
                 revalorisation[period.start.year] = 1
                 for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
@@ -120,25 +106,19 @@ class RegimePrive(AbstractRegimeDeBase):
                             )
                         )
                 print(period.start.year, _annee_de_naissance + OFFSET)
+                filter = annee_de_naissance == _annee_de_naissance,
                 # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
-                salaire_de_refererence = where(
-                    annee_de_naissance == _annee_de_naissance,
-                    np.apply_along_axis(
-                        mean_over_largest,
-                        axis = 0,
-                        arr = np.vstack([
-                            min_(
-                                individu('salaire_de_base', period = year),
-                                parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
-                                )
-                            * revalorisation[year]
-                            for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
-                            ]),
-                        ),
-                    salaire_de_refererence,
-                    )
+                arr = np.vstack([
+                    min_(
+                        individu('salaire_de_base', period = year)[filter],
+                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+                        )
+                    * revalorisation[year]
+                    for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
+                    ])
+                compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
 
-            return salaire_de_refererence
+            return salaire_de_reference
 
         def formula_1972(individu, period, parameters):
             # TODO test and adapt like 1994 formula
@@ -161,7 +141,7 @@ class RegimePrive(AbstractRegimeDeBase):
     class coefficient_de_proratisation(Variable):
         value_type = float
         entity = Person
-        definition_period = ETERNITY
+        definition_period = YEAR
         label = "Coefficient de proratisation"
 
         def formula_2011_07_01(individu, period, parameters):
@@ -184,7 +164,6 @@ class RegimePrive(AbstractRegimeDeBase):
                     (age_en_mois_a_la_liquidation - aad_annee * 12 - aad_mois) / 3
                     )
                 )
-            age = individu('age_au_31_decembre', period)
             trimestres = individu('regime_name_trimestres', period)
             duree_assurance_corrigee = min_(
                 duree_de_proratisation,
@@ -215,7 +194,6 @@ class RegimePrive(AbstractRegimeDeBase):
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )
-            age = individu('age_au_31_decembre', period)
             trimestres = individu('regime_name_trimestres', period)
             duree_assurance_corrigee = min_(
                 duree_de_proratisation,
@@ -265,7 +243,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_apres_aad = np.trunc(
+            trimestres_avant_aad = np.trunc(
                 (aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
@@ -273,7 +251,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
-                    trimestres_apres_aad
+                    trimestres_avant_aad
                     )
                 )
             return decote
@@ -290,7 +268,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_apres_aad = np.trunc(
+            trimestres_avant_aad = np.trunc(
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
@@ -298,7 +276,7 @@ class RegimePrive(AbstractRegimeDeBase):
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
-                    trimestres_apres_aad
+                    trimestres_avant_aad
                     )
                 )
             return decote
@@ -316,19 +294,22 @@ class RegimePrive(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
-            trimestres_apres_aad = max_(
+            trimestres_avant_aad = max_(
                 0,
                 np.trunc(
                     (aad * 12 - age_en_mois_a_la_liquidation) / 3
                     )
                 )
-            return coefficient_minoration_par_trimestre * trimestres_apres_aad
+            return coefficient_minoration_par_trimestre * trimestres_avant_aad
 
     class liquidation_date(Variable):
         value_type = date
         entity = Person
         definition_period = ETERNITY
         label = "Date de liquidation"
+        default_value = datetime.max.date()
+
+
 
     class surcote(Variable):
         value_type = float
@@ -508,57 +489,6 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             return coefficient_majoration_par_trimestre * trimestres_apres_aad
 
-        # def formulat(individu, period, parmaters):
-        #     pass
-    # def surcote(self, data, trimesters, trimesters_tot, date_start_surcote):
-    #     ''' Détermination de la surcote à appliquer aux pensions.'''
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     P_long = reduce(getattr, self.param_name.split('.'), self.P_longit)
-    #     # dispositif de type 0
-    #     n_trim = array(P.plein.n_trim, dtype=float)
-    #     trim_tot = trimesters_tot.sum(axis=1)
-    #     surcote = P.surcote.dispositif0.taux * (trim_tot - n_trim) * (trim_tot > n_trim)
-    #     # Note surcote = 0 après 1983
-    #     # dispositif de type 1
-    #     agem = data.info_ind['agem']
-    #     datesim = self.dateleg.liam
-    #     if P.surcote.dispositif1.taux > 0:
-    #         trick = P.surcote.dispositif1.date_trick
-    #         trick = str(int(trick))
-    #         selected_dates = getattr(P_long.surcote.dispositif1, 'dates' + trick)
-    #         if sum(selected_dates) > 0:
-    #             surcote += P.surcote.dispositif1.taux * \
-    #                 nb_trim_surcote(trimesters, selected_dates,
-    #                                 date_start_surcote)
-
-    #     # dispositif de type 2
-    #     P2 = P.surcote.dispositif2
-    #     if P2.taux0 > 0:
-    #         selected_dates = P_long.surcote.dispositif2.dates
-    #         basic_trim = nb_trim_surcote(trimesters, selected_dates,
-    #                                      date_start_surcote)
-    #         age_by_year = array([array(agem) - 12 * i for i in reversed(range(trimesters.shape[1]))])
-    #         nb_years_surcote_age = greater(age_by_year, P2.age_majoration * 12).T.sum(axis=1)
-    #         start_surcote_age = [datesim - nb_year * 100 if nb_year > 0 else 2100 * 100 + 1
-    #                              for nb_year in nb_years_surcote_age]
-    #         maj_age_trim = nb_trim_surcote(trimesters, selected_dates,
-    #                                        start_surcote_age)
-    #         basic_trim = basic_trim - maj_age_trim
-    #         trim_with_majo = (basic_trim - P2.trim_majoration) * \
-    #                          ((basic_trim - P2.trim_majoration) >= 0)
-    #         basic_trim = basic_trim - trim_with_majo
-    #         surcote += P2.taux0 * basic_trim + \
-    #             P2.taux_maj_trim * trim_with_majo + \
-    #             P2.taux_maj_age * maj_age_trim
-    #     return surcote
-
-    # def trimestres_excess_taux_plein(self, data, trimesters, trimesters_tot):
-    #     ''' Détermination nb de trimestres au delà du taux plein.'''
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     # dispositif de type 0
-    #     n_trim = array(P.plein.n_trim, dtype=float)
-    #     trim_tot = trimesters_tot.sum(axis=1)
-    #     return (trim_tot - n_trim) * (trim_tot > n_trim)
 
     class pension_minimale(Variable):
         value_type = float
@@ -608,15 +538,15 @@ class RegimePrive(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Pension maximale"
 
-        # def formula(indiivdu, period, paramaters):
-        #     pass
+        def formula(individu, period, parameters):
 
-        # ''' plafonnement à 50% du PSS
-        # TODO: gérer les plus de 65 ans au 1er janvier 1983'''
-        # PSS = self.P.common.plaf_ss
-        # P = reduce(getattr, self.param_name.split('.'), self.P)
-        # taux_plein = P.plein.taux
-        # taux_PSS = P.plafond
-        # pension_surcote_RG = taux_plein * salref * coeff_proratisation * surcote
-        # return minimum(pension_brute - pension_surcote_RG, taux_PSS * PSS) + \
-        # pension_surcote_RG
+            # TODO: gérer les plus de 65 ans au 1er janvier 1983'''
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
+            pension_plafond_hors_sucote = taux_plein * plafond_securite_sociale
+            pension_brute = individu('regime_name_pension_brute', period)
+            taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
+            surcote = individu('regime_name_surcote', period)
+            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
+            return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
+

@@ -18,6 +18,13 @@ class age_au_31_decembre(Variable):
         return period.start.year - annee_de_naissance
 
 
+class date_de_naissance(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de naissance'
+
+
 class salaire_de_base(Variable):
     value_type = float
     entity = Person
@@ -26,8 +33,23 @@ class salaire_de_base(Variable):
     set_input = set_input_divide_by_period
 
 
-class date_de_naissance(Variable):
-    value_type = date
+class taux_de_prime(Variable):
+    value_type = float
     entity = Person
-    definition_period = ETERNITY
-    label = 'Date de naissance'
+    definition_period = YEAR
+    label = 'Taux de prime dans la fonction publique'
+    set_input = set_input_dispatch_by_period
+
+
+class trimestres_tous_regimes(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = 'Trimestres accumulés tous régimes confondus'
+
+    def formula(individu, period):
+        regimes = ['regime_general_cnav', 'fonction_publique']
+        return sum(
+            individu(f'{regime}_trimestres', period)
+            for regime in regimes
+            )

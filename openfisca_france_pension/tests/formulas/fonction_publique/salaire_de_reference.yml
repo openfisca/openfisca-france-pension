@@ -1,0 +1,43 @@
+- name: Salaire de réference
+  absolute_error_margin: .01
+  period: 2021
+  input:
+    salaire_de_base: 20000
+  output:
+    fonction_publique_dernier_indice_atteint: 355.66
+
+
+- name: Salaire de réference
+  absolute_error_margin: .01
+  period: 2021
+  max_spiral_loops: 2
+  input:
+    salaire_de_base:
+      2020: 20000
+      2021: 0
+  output:
+    fonction_publique_dernier_indice_atteint: 355.66
+
+
+- name: Salaire de réference
+  absolute_error_margin: .01
+  period: 2021
+  max_spiral_loops: 3
+  input:
+    salaire_de_base:
+      2019: 20000
+      2021: 0
+  output:
+    fonction_publique_dernier_indice_atteint: 355.66
+
+
+- name: Salaire de réference
+  absolute_error_margin: .01
+  period: 2021
+  max_spiral_loops: 25
+  input:
+    salaire_de_base:
+      2000: 20000
+      2021: 0
+  output:
+    fonction_publique_dernier_indice_atteint: 392.56

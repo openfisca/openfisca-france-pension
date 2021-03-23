@@ -25,3 +25,16 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         # We add to our tax and benefit system all the legislation parameters defined in the  parameters files
         param_path = os.path.join(COUNTRY_DIR, 'parameters')
         self.load_parameters(param_path)
+
+        from openfisca_core.parameters import ParameterNode
+        taux_plein = ParameterNode(
+            "taux_plein",
+            data = {
+                "taux_plein": {
+                    "values": {
+                        "1948-01-01": .75
+                        }
+                    }
+                }
+            )
+        self.parameters.secteur_public.add_child("taux_plein", taux_plein)

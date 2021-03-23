@@ -1,0 +1,47 @@
+- name: Coeffiicent de proratisation
+  absolute_error_margin: .001
+  period: 1980
+  input:
+    fonction_publique_trimestres: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 1
+
+
+
+- name: Coeffiicent de proratisation
+  absolute_error_margin: .001
+  period: 1980
+  input:
+    fonction_publique_trimestres: 0
+  output:
+    fonction_publique_coefficient_de_proratisation: 0
+
+
+- name: Coeffiicent de proratisation
+  absolute_error_margin: .001
+  period: 2010
+  input:
+    date_de_naissance: 1960-01-01
+    fonction_publique_trimestres: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 150 / 164
+
+
+- name: Coeffiicent de proratisation
+  absolute_error_margin: .001
+  period: 2030
+  input:
+    date_de_naissance: 1970-01-01
+    fonction_publique_trimestres: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 150 / 171
+
+
+- name: Coeffiicent de proratisation
+  absolute_error_margin: .001
+  period: 2030
+  input:
+    date_de_naissance: 1973-01-01
+    fonction_publique_trimestres: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 150 / 172
