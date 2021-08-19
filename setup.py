@@ -1,4 +1,4 @@
-"""An openfisca based model of French Pension system."""
+"""An openfisca based model of the French Pension system."""
 
 
 from setuptools import find_packages, setup
