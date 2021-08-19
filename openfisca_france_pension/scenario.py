@@ -227,7 +227,7 @@ def get_input_data():
 
 
 if __name__ == "__main__":
-    from openfisca_france_pension.reforms.comportement_de_depart.age_fixe import create_departt_a_age_fixe
+    from openfisca_france_pension.reforms.comportement_de_depart.age_fixe import create_depart_a_age_fixe
     # input_data_frame_by_entity_by_period, dataframe_variables = create_input_data(sample_size = None)
     # data = dict(input_data_frame_by_entity_by_period = input_data_frame_by_entity_by_period)
 
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     data = get_input_data()
 
     survey_secnario = DestinieSurveyScenario(
-        comportement_de_depart = create_departt_a_age_fixe(65),
+        comportement_de_depart = create_depart_a_age_fixe(65),
         data = data,
         dataframe_variables = dataframe_variables,
         )

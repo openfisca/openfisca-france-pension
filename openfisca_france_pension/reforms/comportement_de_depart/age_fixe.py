@@ -6,7 +6,7 @@ from openfisca_core.model_api import Variable, date, ETERNITY, Reform
 from openfisca_france_pension.entities import Person
 
 
-def create_departt_a_age_fixe(age_fixe):
+def create_depart_a_age_fixe(age_fixe):
     """Crée une réforme de départ à age fixe
 
     Args:
