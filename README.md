@@ -126,7 +126,9 @@ Une autre solution serait de découper la simulation en quelques intervalles tem
 
 #### Le pas de temps
 
-#### les polypensionnés
+On utilise un pas de temps annuel. On peut prendre plus petit mais cela augementera la taille des données mobilisées et le temps de calcul.
+
+#### Les polypensionnés
 
 A priori il n'y a pas de problèmes de traiter des polypensionnés tant qu'il n'ont qu'ils ne cotisent qu'à une seule caisse par an.
 
