@@ -27,18 +27,20 @@ Afin de refléter l'évolution de la législation, les variables calculées s'ap
 ### L'utilisation de régimes "abstraits"
 
 Afin d'éviter des redondances inutiles et de factoriser la création des variables intervenant dans les différents régimes, une innovation issue de [TiL-Pension](https://www.github.com/TaxIPP-Life/Til-Pension) a été rajoutée, le régime. Les [abstractions retenues](openfisca_france_pension/regimes/regime.py) sont:
-- le régime le plus abstrait (ÀbstractRegime`) qui spécifie les variables communes à tous les régimes (sans nécessairement préciser leurs formules)
+- le régime le plus abstrait (`AbstractRegime`) qui spécifie les variables communes à tous les régimes (sans nécessairement préciser leurs formules)
 - le régime de base abstrait (`AbstractRegimeDeBase`) (TODO: envisager de renommer en régime en annuités)
 - le régime complémentaire abstrait (`AbstractRegimeComplementaire`) (TODO: envisager de renommer en régime en points)
 
-Les "vrais" régimes vont donc s'appuyer sur ces régimes pour la structure globale et ne définir que leurs variables propres.
+Ces abstractions servent de base aux régimes réels qui "héritent" de leur structure, avec la possibilité de modifier certaines de leur caractéristiques. Par exemple, le régime général et celui de la fonction publique sont tous les deux des régimes en annuité. Ils héritent par conséquent tous les deux de la structure d'`AbstractRegimeDeBase`. Cela leur permet de profiter implicitement de leurs points communs avec ce type de régime, comme par exemple le calcul de la pension en fonction d'un salaire de reference multiplié par un taux de liquidation et un coefficient de proratisation. Certaines formules sont alors partagées. Là où chaque régime diverge du modèle de base, les formules sont adaptées. Ainsi, le calcul du salaire de référence dans le régime général divergera des autres régimes.
 
-Les variables crées seront préfixées par le nom du régime (par exemple `regime_genral_cnav_pension`).
+Les variables créées seront préfixées par le nom du régime (par exemple `regime_general_cnav_pension`).
 
 ### L'étude de potentielles réformes
 
 L'étude des réformes du système de retraite peut être facilement conduite
 en mobilisant l'objet idoine [`Reform`](https://openfisca.org/doc/coding-the-legislation/reforms.html#reforms) fourni par OpenFisca qui viendra modifier, retirer ou ajouter, de façon sélective, certaines variables du système de retraite ou en modifier certains paramètres.
+
+Ainsi, on peut comparer plusieurs systèmes socio-fiscaux en modifiant les composants du code de manière minimale. 
 
 ## [FR] Les composantes des régimes modélisées
 
@@ -59,7 +61,7 @@ Le régime général de la sécurité sociale [`RegimeGeneralCnav`](openfisca_fr
 - `cotisation_employeur` et `cotisation_salarie`
 - `salaire_de_reference`
 - `trimestres`
-- `majoration_duree_assurance_trimestres` (non implémentés)
+- `majoration_duree_assurance_trimestres` (non implémentée)
 - `coefficient_de_proratisation`
 - `decote_trimestres`
 - `decote`
@@ -71,7 +73,7 @@ Le régime général de la sécurité sociale [`RegimeGeneralCnav`](openfisca_fr
 #### Le régime de la fonction publique (héritant du régime abstrait de base)
 
 Le régime général de la sécurité sociale [`RegimeGeneralCnav`](openfisca_france_pension/regimes/fonction_publique.py) a été modélisé avec les variables suivantes (hors service actif):
-- `trimetres` (non implémentés)
+- `trimestres` (non implémentés)
 - `coefficient_de_proratisation`
 - `aod`
 - `limite_d_age`
@@ -89,7 +91,7 @@ Il définit les éléments essentiels d'un régime en points (points, coefficien
 
 #### Le régime Arrco
 
-Le régime de retraite complémentaire Arrco avec un traitement différents des cadres et des non-cadres a été modélisé avec les variables suivantes (sans points enfnats ni pensions de réversion):
+Le régime de retraite complémentaire Arrco avec un traitement différents des cadres et des non-cadres a été modélisé avec les variables suivantes (sans points enfants ni pensions de réversion):
 - `coefficient_de_minoration`
 - `cotisation_employeur`
 - `cotisation_salarie`
@@ -130,7 +132,7 @@ On utilise un pas de temps annuel. On peut prendre plus petit mais cela augement
 
 #### Les polypensionnés
 
-A priori il n'y a pas de problèmes de traiter des polypensionnés tant qu'il n'ont qu'ils ne cotisent qu'à une seule caisse par an.
+A priori il n'y a pas de problèmes de traiter des polypensionnés tant qu'il n'ont qu'ils ne cotisent qu'à une seule caisse par pas de temps.
 
 #### Les ayants droit et les "donnants" droit (conjoints, enfants)
 
