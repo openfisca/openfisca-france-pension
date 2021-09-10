@@ -6,7 +6,7 @@ from setuptools import find_packages, setup
 
 setup(
     name = "OpenFisca-France-Pension",
-    python_requires='>3.9',
+    python_requires='>=3.9',
     version = "0.0.1",
     author = "OpenFisca Team",
     author_email = "contact@openfisca.org",
@@ -30,20 +30,20 @@ setup(
         ],
     install_requires = [
         "bottleneck >=1.3.2,<=2.0.0",
-        "OpenFisca-Core >=27.0,<35.0",
-        "numba",
+        "OpenFisca-Core @ git+https://github.com/openfisca/openfisca-core@asof-parameters#egg=openfisca-core",
+        "numba>=0.54,<1.0.0",
         ],
     extras_require = {
         "dev": [
-            "autopep8 ==1.5.4",
-            "flake8 >=3.8.0,<3.9.0",
+            "autopep8",
+            "flake8>=3.9,<4.0",
             "flake8-import-order",
             "flake8-print",
             "pycodestyle >=2.6.0",
             ],
         "scenario": [
-            "OpenFisca-Survey-Manager",
-            "pyreadr",
+            "OpenFisca-Survey-Manager >=0.46.1,<1.0.0",
+            "pyreadr>=0.4.2,<1.0.0",
             ]
         },
     packages=find_packages(),

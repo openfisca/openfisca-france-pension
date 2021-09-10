@@ -6,6 +6,18 @@ from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
 
 
+class TypesCategorieSalarie(Enum):
+    __order__ = 'prive_non_cadre prive_cadre public_titulaire_etat public_titulaire_militaire public_titulaire_territoriale public_titulaire_hospitaliere public_non_titulaire non_pertinent'  # Needed to preserve the enum order in Python 2
+    prive_non_cadre = 'prive_non_cadre'
+    prive_cadre = 'prive_cadre'
+    public_titulaire_etat = 'public_titulaire_etat'
+    public_titulaire_militaire = 'public_titulaire_militaire'
+    public_titulaire_territoriale = 'public_titulaire_territoriale'
+    public_titulaire_hospitaliere = 'public_titulaire_hospitaliere'
+    public_non_titulaire = 'public_non_titulaire'
+    non_pertinent = 'non_pertinent'
+
+
 class age_au_31_decembre(Variable):
     value_type = float
     entity = Person
@@ -16,6 +28,16 @@ class age_au_31_decembre(Variable):
         # https://stackoverflow.com/questions/13648774/get-year-month-or-day-from-numpy-datetime64
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         return period.start.year - annee_de_naissance
+
+
+class categorie_salarie(Variable):
+    value_type = Enum
+    possible_values = TypesCategorieSalarie
+    default_value = TypesCategorieSalarie.prive_non_cadre
+    entity = Person
+    label = "Catégorie de salarié"
+    definition_period = YEAR
+    set_input = set_input_dispatch_by_period
 
 
 class date_de_naissance(Variable):

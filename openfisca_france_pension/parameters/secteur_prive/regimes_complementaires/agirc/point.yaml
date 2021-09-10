@@ -1,5 +1,5 @@
 description: Valeur du point AGIRC
-valeur_point_agirc_en_nominal:
+valeur_point_en_nominal:
   description: Valeur du point AGIRC (en nominal)
   values:
     2018-11-01:
@@ -181,7 +181,7 @@ valeur_point_agirc_en_nominal:
       2002-04-01: currency-EUR
       1960-01-01: currency-FRF
       1947-04-01: currency-AFRF
-valeur_point_agirc_en_euros:
+valeur_point_en_euros:
   description: Valeur du point AGIRC (en euros)
   values:
     2018-11-01:
@@ -363,8 +363,8 @@ valeur_point_agirc_en_euros:
     unit: currency-EUR
 metadata:
   order:
-  - valeur_point_agirc_en_nominal
-  - valeur_point_agirc_en_euros
+  - valeur_point_en_nominal
+  - valeur_point_en_euros
   reference:
     2018-11-01: Circ. Agirc-Arrco 2018-7-DT du 11/10/2018
     2013-04-01: Circ. Agirc-Arrco 2013-6-DT du 02/04/2014

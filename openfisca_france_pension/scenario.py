@@ -2,18 +2,20 @@
 
 import configparser
 import logging
-from typing import Collection
-import numpy as np
 import os
+import sys
+
+
+import numpy as np
 import pandas as pd
 import pyreadr
 
 
-
 from openfisca_core import periods
-from openfisca_survey_manager.scenarios import AbstractSurveyScenario
 from openfisca_survey_manager import default_config_files_directory as config_files_directory
 from openfisca_survey_manager.input_dataframe_generator import set_table_in_survey
+from openfisca_survey_manager.scenarios import AbstractSurveyScenario
+
 
 from openfisca_france_pension import CountryTaxBenefitSystem as FrancePensionTaxBenefitSystem
 
@@ -65,7 +67,7 @@ class DestinieSurveyScenario(AbstractSurveyScenario):
 
 
 def create_input_data(sample_size = None, save_to_disk = False):
-    """Creates input data from liam2 output to use in DestinieSurveyScenario.
+    """Creates input data from destinie data output to use in DestinieSurveyScenario.
 
     Returns:
         dict: Input data frames by entity by period
@@ -80,15 +82,18 @@ def create_input_data(sample_size = None, save_to_disk = False):
     emp_file_name = "emp_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
     fam_file_name = "fam_pour_IPP_cho7%_pib1,3%_date2017-07-12.Rda"
 
-    ech = (pyreadr.read_r(os.path.join(destinie_path, ech_file_name))['ech']
+    ech = (
+        pyreadr.read_r(os.path.join(destinie_path, ech_file_name))['ech']
         .rename(columns = dict(Id = "person_id"))
         .eval('person_id = person_id - 1')
         )
-    emp = (pyreadr.read_r(os.path.join(destinie_path, emp_file_name))['emp']
+    emp = (
+        pyreadr.read_r(os.path.join(destinie_path, emp_file_name))['emp']
         .rename(columns = dict(Id = "person_id"))
         .eval('person_id = person_id - 1')
         )
-    fam = (pyreadr.read_r(os.path.join(destinie_path, fam_file_name))['fam']
+    fam = (
+        pyreadr.read_r(os.path.join(destinie_path, fam_file_name))['fam']
         .rename(columns = dict(Id = "person_id"))
         .eval('person_id = person_id - 1')
         )
@@ -107,17 +112,18 @@ def create_input_data(sample_size = None, save_to_disk = False):
 
     ech["date_de_naissance"] = pd.to_datetime(
         ech[['anaiss', 'moisnaiss']]
-            .eval("day = 1")
-            .rename(columns = dict(anaiss = "year", moisnaiss = "month"))
-            .eval("month = month + 1")
+        .eval("day = 1")
+        .rename(columns = dict(anaiss = "year", moisnaiss = "month"))
+        .eval("month = month + 1")
         ).values.astype('datetime64[D]')
 
     ech = ech.drop(["anaiss", "moisnaiss"], axis = 1)
     emp = emp.merge(ech[["person_id", 'date_de_naissance']], on = "person_id")
     emp['period'] = emp.date_de_naissance.dt.year + emp.age
 
+    # TODO: use https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.to_numeric.html instead of this hack
+
     def int_dtype_from_values(values):
-        from math import log, floor
         if min(values) >= 0:
             prefix = 'u'
             top_value = max(values)
@@ -148,10 +154,10 @@ def create_input_data(sample_size = None, save_to_disk = False):
     emp = (emp
         .set_index(["person_id", 'period'])
         .reindex(complete_multiindex)
-        ## .fillna({"decede": True})
+        # .fillna({"decede": True})
         .fillna(method = 'ffill')
         .reset_index()
-        )
+           )
     input_data_frame_by_entity_by_period = dict(
         (
             periods.period(int(period)),
@@ -227,6 +233,7 @@ def get_input_data():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level = logging.DEBUG, stream = sys.stdout)
     from openfisca_france_pension.reforms.comportement_de_depart.age_fixe import create_depart_a_age_fixe
     # input_data_frame_by_entity_by_period, dataframe_variables = create_input_data(sample_size = None)
     # data = dict(input_data_frame_by_entity_by_period = input_data_frame_by_entity_by_period)
@@ -247,21 +254,21 @@ if __name__ == "__main__":
         data = data,
         dataframe_variables = dataframe_variables,
         )
+
     date_de_naissance = survey_secnario.calculate_variable('date_de_naissance', period = 2000)
     date_de_liquidation = survey_secnario.calculate_variable('regime_general_cnav_liquidation_date', period = 2000)
     import time
     start = time.process_time()
     salaire_de_reference = survey_secnario.calculate_variable('regime_general_cnav_salaire_de_reference', period = 2000)
-    print(time.process_time() - start)
+    log.debug(time.process_time() - start)
 
     _periods = [2018, 2019, 2020]
     for period in _periods:
         salaire_de_base = survey_secnario.calculate_variable('salaire_de_base', period = period)
-        print(period, salaire_de_base)
+        log.debug(period, salaire_de_base)
 
         trimestres = survey_secnario.calculate_variable('regime_general_cnav_trimestres', period = period)
-        print(period, trimestres)
-
+        log.debug(period, trimestres)
 
 
 openfisca_by_destinie_name = {

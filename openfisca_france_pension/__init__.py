@@ -1,5 +1,8 @@
+"""OpenFisca France Pension tax-benefit system."""
+
 import os
 
+from openfisca_core.parameters import ParameterNode
 from openfisca_core.taxbenefitsystems import TaxBenefitSystem
 
 from openfisca_france_pension import entities
@@ -13,20 +16,42 @@ COUNTRY_DIR = os.path.dirname(os.path.abspath(__file__))
 script_ast.main(verbose=True)
 
 
-# Our country tax and benefit class inherits from the general TaxBenefitSystem class.
-# The name CountryTaxBenefitSystem must not be changed, as all tools of the OpenFisca ecosystem expect a CountryTaxBenefitSystem class to be exposed in the __init__ module of a country package.
+def build_regimes_prelevements_sociaux(parameters):
+
+    regime_general_cnav = parameters.prelevements_sociaux.cotisations_securite_sociale_regime_general.cnav
+    parameters.secteur_prive.regime_general_cnav.add_child(
+        "prelevements_sociaux",
+        regime_general_cnav,
+        )
+    arrco = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.arrco
+    parameters.secteur_prive.regimes_complementaires.arrco.add_child(
+        "prelevements_sociaux",
+        arrco,
+        )
+    agirc = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.agirc
+    parameters.secteur_prive.regimes_complementaires.agirc.add_child(
+        "prelevements_sociaux",
+        agirc,
+        )
+    # Régime unifié depuis 2019
+    agirc_arrco = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.agirc_arrco
+    parameters.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.add_child(
+        "agirc_arrco",
+        agirc_arrco,
+        )
+    parameters.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.add_child(
+        "agirc_arrco",
+        agirc_arrco,
+        )
+
+
 class CountryTaxBenefitSystem(TaxBenefitSystem):
     def __init__(self):
-        # We initialize our tax and benefit system with the general constructor
         super(CountryTaxBenefitSystem, self).__init__(entities.entities)
-
-        # We add to our tax and benefit system all the variables
         self.add_variables_from_directory(os.path.join(COUNTRY_DIR, 'variables'))
-        # We add to our tax and benefit system all the legislation parameters defined in the  parameters files
         param_path = os.path.join(COUNTRY_DIR, 'parameters')
         self.load_parameters(param_path)
 
-        from openfisca_core.parameters import ParameterNode
         taux_plein = ParameterNode(
             "taux_plein",
             data = {
@@ -38,3 +63,4 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
                 }
             )
         self.parameters.secteur_public.add_child("taux_plein", taux_plein)
+        build_regimes_prelevements_sociaux(self.parameters)

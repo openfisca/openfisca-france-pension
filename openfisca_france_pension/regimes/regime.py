@@ -1,9 +1,9 @@
-"""Abstract regimesdefinition."""
+"""Abstract regimes definition."""
 
 from openfisca_core.model_api import *
 
 # Import the Entities specifically defined for this tax and benefit system
-from openfisca_france_pension.entities import Household, Person
+from openfisca_france_pension.entities import Person
 
 
 class AbstractRegime(object):
@@ -11,46 +11,59 @@ class AbstractRegime(object):
     variable_prefix = None
     parameters = None
 
-    class surcote_debut_date(Variable):
-        value_type = date
-        entity = Person
-        definition_period = YEAR
-        label = "Date du début de la surcote"
-
-    class decote_annulation_date(Variable):
-        value_type = date
-        entity = Person
-        definition_period = YEAR
-        label = "Date d'annulation de la décote'"
-
-    class taux_plein_date(Variable):
-        value_type = date
-        entity = Person
-        definition_period = YEAR
-        label = "Date du taux plein"
-
-    class taux_de_liquidation(Variable):
+    class cotisation(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Taux de liquidation de la pension"
+        label = "cotisation retraite employeur"
 
-        def formula(individu, period, parameters):
-            decote = individu('regime_name_decote', period)
-            surcote = individu('regime_name_surcote', period)
-            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
-            return taux_plein * (1 - decote + surcote)
+        def formula(individu, period):
+            return individu("regime_name_cotisation_employeur", period) + individu("regime_name_cotisation_salarie", period)
 
-    class cotisation_retraite(Variable):
-        value_type = float
-        entity = Person
-        definition_period = MONTH
-        label = "cotisation retraite"
+    # class cotisation_employeur(Variable):
+    #     value_type = float
+    #     entity = Person
+    #     definition_period = YEAR
+    #     label = "cotisation retraite employeur"
 
-        def formula(individu, period, parameters):
-            salaire_de_base = individu('salaire_de_base', period)
-            taux = parameters(period).regime_name.cotisation.taux
-            return salaire_de_base * taux
+    #     def formula(individu, period, parameters):
+    #         NotImplementedError
+
+    # class cotisation_salarie(Variable):
+    #     value_type = float
+    #     entity = Person
+    #     definition_period = YEAR
+    #     label = "cotisation retraite employeur"
+
+    #     def formula(individu, period, parameters):
+    #         NotImplementedError
+
+    # class majoration_pension(Variable):
+    #     value_type = int
+    #     entity = Person
+    #     definition_period = MONTH
+    #     label = "Majoration de pension"
+
+    #     def formula(individu, period, parameters):
+    #         NotImplementedError
+
+    # class pension(Variable):
+    #     value_type = float
+    #     entity = Person
+    #     definition_period = YEAR
+    #     label = "Pension"
+
+    #     def formula(individu, period, parameters):
+    #         NotImplementedError
+
+    # class pension_brute(Variable):
+    #     value_type = float
+    #     entity = Person
+    #     definition_period = YEAR
+    #     label = "Pension brute"
+
+    #     def formula(individu, period, parameters):
+    #         NotImplementedError
 
 
 class AbstractRegimeDeBase(AbstractRegime):
@@ -58,35 +71,22 @@ class AbstractRegimeDeBase(AbstractRegime):
     variable_prefix = "regime_de_base"
     parameters = "regime_de_base"
 
-    class salaire_de_reference(Variable):
-        value_type = float
-        entity = Person
-        definition_period = ETERNITY
-        label = "Salaire de référence"
-
-    class trimestres(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Trimestres"
-
-    class majoration_pension(Variable):
-        value_type = int
-        entity = Person
-        definition_period = MONTH
-        label = "Majoration de pension"
-
     class decote(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
         label = "Décote"
 
-    class surcote(Variable):
+    class pension(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Surcote"
+        label = "Pension"
+
+        def formula(individu, period):
+            pension_brute = individu('regime_name_pension_brute', period)
+            majoration_pension = individu('regime_name_majoration_pension', period)
+            return pension_brute + majoration_pension
 
     class pension_brute(Variable):
         value_type = float
@@ -100,74 +100,57 @@ class AbstractRegimeDeBase(AbstractRegime):
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
             return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
-    class pension(Variable):
+    class salaire_de_reference(Variable):
+        value_type = float
+        entity = Person
+        definition_period = ETERNITY
+        label = "Salaire de référence"
+
+    class surcote(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Pension"
+        label = "Surcote"
 
-        def formula(individu, period):
-            pension_brute = individu('regime_name_pension_brute', period)
-            majoration_pension = individu('regime_name_majoration_pension', period)
-            return pension_brute + majoration_pension
+    class taux_de_liquidation(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Taux de liquidation de la pension"
+
+        def formula(individu, period, parameters):
+            decote = individu('regime_name_decote', period)
+            surcote = individu('regime_name_surcote', period)
+            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
+            return taux_plein * (1 - decote + surcote)
+
+    class trimestres(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Trimestres"
 
 
-class AbstractRegimeComplementaires(AbstractRegime):
+class AbstractRegimeComplementaire(AbstractRegime):
+
+    class coefficient_de_minoration(Variable):
+        value_type = float
+        default_value = 1.0
+        entity = Person
+        definition_period = YEAR
+        label = "Coefficient de minoration"
 
     class points(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Pension"
+        label = "Points"
 
         def formula(individu, period, parameters):
-           salaire_de_reference = parameters(period).regime_name.salaire_de_reference
-           taux_d_acquisition = parameters(period).regime_name.taux_d_acquisition
-           cotisation = individu("regime_name_cotisation", period)
-           return cotisation / salaire_de_reference
-
-#     def nombre_points(self, data, sali_for_regime):
-#         ''' Détermine le nombre de point à liquidation de la pension dans les
-#         régimes complémentaires (pour l'instant Ok pour ARRCO/AGIRC)
-#         Pour calculer ces points, il faut diviser la cotisation annuelle
-#         ouvrant des droits par le salaire de référence de l'année concernée
-#         et multiplier par le taux d'acquisition des points'''
-#         Plong_regime = reduce(getattr, self.param_name.split('.'), self.P_longit)
-#         # getattr(self.P_longit.prive.complementaire,  self.name)
-#         salref = Plong_regime.sal_ref
-#         taux_cot = Plong_regime.taux_cot_moy
-#         sali_plaf = sali_for_regime
-#         assert len(salref) == sali_plaf.shape[1] == len(taux_cot)
-#         nombre_points = zeros(sali_plaf.shape)
-#         for ix_year in range(sali_plaf.shape[1]):
-#             if salref[ix_year] > 0:
-#                 nombre_points[:, ix_year] = (taux_cot[ix_year].calc(sali_plaf[:, ix_year]) / salref[ix_year])
-#         nb_points_by_year = nombre_points.round(2)
-#         return nb_points_by_year
-
-#     def coefficient_age(self, data, nb_trimesters, trim_decote):
-#         ''' TODO: add surcote  pour avant 1955 '''
-#         P = reduce(getattr, self.param_name.split('.'), self.P)
-#         coef_mino = P.coef_mino
-#         agem = data.info_ind['agem']
-#         # print data.info_ind.dtype.names
-#         age_annulation_decote = self.P.prive.RG.decote.age_null
-#         diff_age = divide(age_annulation_decote - agem, 12) * (age_annulation_decote > agem)
-#         if P.cond_taux_plein == 1:
-#             diff_trim = minimum(diff_age, divide(trim_decote, 4))
-#         coeff_min = zeros(len(agem))
-#         for nb_annees, coef_mino in coef_mino._tranches:
-#             coeff_min += (diff_trim == nb_annees) * coef_mino
-#         coeff_min += P.coeff_maj * diff_age
-#         if P.cond_taux_plein == 1:
-#             # Dans ce cas, la minoration ne s'applique que si la durée de cotisation
-#             # au régime général est inférieure à celle requise pour le taux plein
-#             n_trim = self.P.prive.RG.plein.n_trim
-#             # la bonne formule est la suivante :
-#             coeff_min = coeff_min * (n_trim > nb_trimesters) + (n_trim <= nb_trimesters)
-#             # mais on a ça...
-#             coeff_min = 1
-#         return coeff_min
+            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_nominal
+            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            cotisation = individu("regime_name_cotisation", period)
+            return cotisation / salaire_de_reference / taux_appel
 
 #     def nb_points_enf(self, data, nombre_points):
 #         ''' Application de la majoration pour enfants à charge. Deux types de
@@ -208,15 +191,35 @@ class AbstractRegimeComplementaires(AbstractRegime):
 #         val_point = P.val_point
 #         return nb_points_enf * val_point
 
-#     def pension(self, data, coefficient_age, pension_brute_b,
-#                 majoration_pension, trim_decote):
-#         ''' le régime Arrco ne tient pas compte du coefficient de
-#         minoration pour le calcul des majorations pour enfants '''
-#         P = reduce(getattr, self.param_name.split('.'), self.P)
-#         pension = pension_brute_b + majoration_pension
-#         decote = trim_decote * P.taux_decote
-#         pension = (1 - decote) * pension
-#         return pension * coefficient_age
+    class majoration_pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Majoration de pension"
+
+    class points_minimum_garantis(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points minimum garantis"
+
+    class pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
+
+        def formula(individu, period):
+            pension_brute = individu("regime_name_pension_brute", period)
+            majoration_pension = individu("regime_name_majoration_pension", period)
+            coefficient_de_minoration = individu("coefficient_de_minoration", period)
+            decote = individu("regime_name_decote", period)
+            pension = (
+                (pension_brute + majoration_pension)
+                * (1 - decote)
+                * coefficient_de_minoration
+                )
+            return pension
 
     class pension_brute(Variable):
         value_type = float
@@ -226,30 +229,7 @@ class AbstractRegimeComplementaires(AbstractRegime):
 
         def formula(individu, period, parameters):
             valeur_du_point = parameters(period).regime_name.valeur_du_point
-            minimum_de_points = parameters(period).regime_name.minimum_de_points
             points = individu("regime_name_points", period)
-            pension_brute = (points + minimum_de_points) * valeur_du_point
+            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
+            pension_brute = (points + points_minimum_garantis) * valeur_du_point
             return pension_brute
-
-#     def cotisations(self, sali_for_regime):
-#         ''' Calcul des cotisations passées par année'''
-#         sali = sali_for_regime.copy()
-#         assert self.P_cot is not None, 'self.P_cot should be not None'
-#         Pcot_regime = reduce(getattr, self.param_name.split('.'), self.P_cot)
-#         # getattr(self.P_longit.prive.complementaire,  self.name)
-#         taux_pat = Pcot_regime.cot_pat
-#         taux_sal = Pcot_regime.cot_sal
-#         assert len(taux_pat) == sali.shape[1] == len(taux_sal)
-#         cot_sal_by_year = zeros(sali.shape)
-#         cot_pat_by_year = zeros(sali.shape)
-#         for ix_year in range(sali.shape[1]):
-#             cot_sal_by_year[:, ix_year] = taux_sal[ix_year].calc(sali[:, ix_year])
-#             cot_pat_by_year[:, ix_year] = taux_pat[ix_year].calc(sali[:, ix_year])
-#         if not self.sal_nominal:
-#             revalo = self.P_longit.prive.RG.revalo
-#             revalo = array(revalo)
-#             for i in range(1, len(revalo)):
-#                 revalo[:i] *= revalo[i]
-#             cot_sal_by_year = multiply(cot_sal_by_year, revalo)
-#             cot_pat_by_year = multiply(cot_pat_by_year, revalo)
-#         return {'sal': cot_sal_by_year, 'pat': cot_pat_by_year}

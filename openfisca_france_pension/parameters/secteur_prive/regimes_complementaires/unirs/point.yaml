@@ -1,5 +1,5 @@
 description: Valeur du point ARRCO, UNIRS (1957-1998)
-valeur_point_unirs_en_nominal:
+valeur_point_en_nominal:
   description: Valeur du point UNIRS (en nominal)
   values:
     1998-04-01:
@@ -125,7 +125,7 @@ valeur_point_unirs_en_nominal:
   metadata:
     ipp_csv_id: val_point_arcco_nom
     unit: currency-FRF
-valeur_point_unirs_en_euros:
+valeur_point_en_euros:
   description: Valeur du point UNIRS (en euros)
   values:
     1998-04-01:
@@ -253,8 +253,8 @@ valeur_point_unirs_en_euros:
     unit: currency-EUR
 metadata:
   order:
-  - valeur_point_unirs_en_nominal
-  - valeur_point_unirs_en_euros
+  - valeur_point_en_nominal
+  - valeur_point_en_euros
   notes:
     1976-10-01: Création de l'Unirs en 1957.
   description_en: Point value ARRCO, UNIRS (1957-1998)
