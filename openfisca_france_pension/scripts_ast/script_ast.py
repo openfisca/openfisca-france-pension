@@ -4,11 +4,11 @@ import ast as ast
 import copy
 import logging
 import os
-import pkg_resources
 import sys
 
 
-from openfisca_france_pension.regimes.regime import AbstractRegime, AbstractRegimeDeBase
+import pkg_resources
+
 
 log = logging.getLogger(__name__)
 
@@ -176,7 +176,7 @@ def main(verbose = False):
         )
 
     regimes_files_by_name = {
-        name : {
+        name: {
             "input": os.path.join(
                 france_pension_root,
                 "openfisca_france_pension",
@@ -190,7 +190,11 @@ def main(verbose = False):
                 f"{name}.py"
                 )
             }
-        for name in ['regime_general_cnav', 'fonction_publique']
+        for name in [
+            'regime_general_cnav',
+            'fonction_publique',
+            'regimes_complementaires_prives'
+            ]
         }
 
     for regime_name, regime_files in regimes_files_by_name.items():

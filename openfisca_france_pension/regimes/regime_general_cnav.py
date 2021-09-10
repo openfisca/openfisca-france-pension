@@ -1,20 +1,20 @@
 """Régime de base du secteur privé: régime général de la CNAV."""
 
-from datetime import datetime
+
 import functools
-from numba import jit
+from datetime import datetime
+
 import numpy as np
 
-
-from openfisca_core.parameters import ParameterNotFound
-from openfisca_core.periods import ETERNITY, MONTH, YEAR
-from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
-
+from openfisca_core.parameters import ParameterNotFound
+from openfisca_core.periods import ETERNITY, YEAR
+from openfisca_core.variables import Variable
 
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
+from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 
 
 def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
@@ -32,7 +32,7 @@ def make_mean_over_largest(k):
     return mean_over_largest
 
 
-class RegimePrive(AbstractRegimeDeBase):
+class RegimeGeneralCnav(AbstractRegimeDeBase):
     name = "Régime de base du secteur privé: régime général de la Cnav"
     variable_prefix = "regime_general_cnav"
     parameters_prefix = "secteur_prive.regime_general_cnav"
@@ -75,7 +75,6 @@ class RegimePrive(AbstractRegimeDeBase):
 
         def formula_1994(individu, period, parameters):
             OFFSET = 10  # do not start working before 10 year
-            date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_naissance = (
                 individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
@@ -105,7 +104,7 @@ class RegimePrive(AbstractRegimeDeBase):
                                 ])
                             )
                         )
-                print(period.start.year, _annee_de_naissance + OFFSET)
+                # print(period.start.year, _annee_de_naissance + OFFSET)
                 filter = annee_de_naissance == _annee_de_naissance,
                 # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
                 arr = np.vstack([
@@ -149,8 +148,7 @@ class RegimePrive(AbstractRegimeDeBase):
             duree_de_proratisation = (
                 parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
                 )
-            aad_annee = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].annee
-            aad_mois = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].mois
+            aad = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance]
             coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
@@ -161,7 +159,7 @@ class RegimePrive(AbstractRegimeDeBase):
             trimestres_apres_aad = max_(
                 0,
                 np.trunc(
-                    (age_en_mois_a_la_liquidation - aad_annee * 12 - aad_mois) / 3
+                    (age_en_mois_a_la_liquidation - aad.annee * 12 - aad.mois) / 3
                     )
                 )
             trimestres = individu('regime_name_trimestres', period)
@@ -225,17 +223,76 @@ class RegimePrive(AbstractRegimeDeBase):
             coefficient = min_(1, trimestres / duree_de_proratisation)
             return coefficient
 
+    class cotisation_employeur(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Cotisation employeur"
+
+        def formula(individu, period, parameters):
+            categorie_salarie = individu("categorie_salarie", period)
+            salaire_de_base = individu("salaire_de_base", period)
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            employeur = parameters(period).regime_name.prelevements_sociaux.employeur
+            salarie_concerne = (
+                (categorie_salarie == TypesCategorieSalarie.prive_non_cadre)
+                + (categorie_salarie == TypesCategorieSalarie.prive_cadre)
+                + (categorie_salarie == TypesCategorieSalarie.public_non_titulaire)
+                )
+            return salarie_concerne * (
+                employeur.vieillesse_deplafonnee.calc(salaire_de_base, factor = plafond_securite_sociale)
+                + employeur.vieillesse_plafonnee.calc(salaire_de_base, factor = plafond_securite_sociale)
+                )
+
+    class cotisation_salarie(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Cotisation salarié"
+
+        def formula(individu, period, parameters):
+            categorie_salarie = individu("categorie_salarie", period)
+            salaire_de_base = individu("salaire_de_base", period)
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            salarie = parameters(period).regime_name.prelevements_sociaux.salarie
+            salarie_concerne = (
+                (categorie_salarie == TypesCategorieSalarie.prive_non_cadre)
+                + (categorie_salarie == TypesCategorieSalarie.prive_cadre)
+                + (categorie_salarie == TypesCategorieSalarie.public_non_titulaire)
+                )
+            return salarie_concerne * (
+                salarie.vieillesse_deplafonnee.calc(salaire_de_base, factor = plafond_securite_sociale)
+                + salarie.vieillesse_plafonnee.calc(salaire_de_base, factor = plafond_securite_sociale)
+                )
+
     class decote(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
         label = "Décote"
 
+        def formula_1983_04_01(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
+            decote_trimestres = individu('regime_name_decote_trimestres', period)
+            decote = coefficient_minoration_par_trimestre * decote_trimestres
+            return decote
+
+        def formula_1945(individu, period, parameters):
+            decote_trimestres = individu('regime_name_decote_trimestres', period)
+            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_1944_01_01
+            return coefficient_minoration_par_trimestre * decote_trimestres
+
+    class decote_trimestres(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Trimestres de décote"
+
         def formula_2011_07_01(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             aad_annee = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].annee
             aad_mois = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].mois
-            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
             trimestres_cibles_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
                 )
@@ -247,20 +304,19 @@ class RegimePrive(AbstractRegimeDeBase):
                 (aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
-            decote = coefficient_minoration_par_trimestre * max_(
+            decote_trimestres = max_(
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
                     trimestres_avant_aad
                     )
                 )
-            return decote
+            return decote_trimestres
 
         def formula_1983_04_01(individu, period, parameters):
-            # TODO add as a parameter
+            # TODO Age annulation de la décôte (aad) as a parameter
             aad = 65
             date_de_naissance = individu('date_de_naissance', period)
-            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
             trimestres_cibles_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
                 )
@@ -272,17 +328,16 @@ class RegimePrive(AbstractRegimeDeBase):
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
             trimestres = individu('regime_name_trimestres', period)
-            decote = coefficient_minoration_par_trimestre * max_(
+            decote_trimestres = max_(
                 0,
                 min_(
                     trimestres_cibles_taux_plein - trimestres,
                     trimestres_avant_aad
                     )
                 )
-            return decote
+            return decote_trimestres
 
         def formula_1945(individu, period, parameters):
-            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_1944_01_01
             # TODO extract age by generation
             aad = 65
             # (
@@ -294,13 +349,13 @@ class RegimePrive(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             # TODO definition exacte trimestres ?
-            trimestres_avant_aad = max_(
+            decote_trimestres = max_(
                 0,
                 np.trunc(
                     (aad * 12 - age_en_mois_a_la_liquidation) / 3
                     )
                 )
-            return coefficient_minoration_par_trimestre * trimestres_avant_aad
+            return decote_trimestres
 
     class liquidation_date(Variable):
         value_type = date
@@ -308,8 +363,6 @@ class RegimePrive(AbstractRegimeDeBase):
         definition_period = ETERNITY
         label = "Date de liquidation"
         default_value = datetime.max.date()
-
-
 
     class surcote(Variable):
         value_type = float
@@ -360,15 +413,10 @@ class RegimePrive(AbstractRegimeDeBase):
 
         def formula_2007_01_01(individu, period, parameters):
             aod = 65
-            taux_surcote_par_trimestre_moins_de_4_trimestres = (
-                parameters(period).regime_name.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['moins_de_4_trimestres']
-                )
-            taux_surcote_par_trimestre_plus_de_5_trimestres = (
-                parameters(period).regime_name.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['plus_de_5_trimestres']
-                )
-            taux_surcote_par_trimestre_partir_65_ans = (
-                parameters(period).regime_name.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['partir_65_ans']
-                )
+            taux_surcote_par_trimestre = parameters(period).regime_name.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004
+            taux_surcote_par_trimestre_moins_de_4_trimestres = taux_surcote_par_trimestre['moins_de_4_trimestres']
+            taux_surcote_par_trimestre_plus_de_5_trimestres = taux_surcote_par_trimestre['plus_de_5_trimestres']
+            taux_surcote_par_trimestre_partir_65_ans = taux_surcote_par_trimestre['partir_65_ans']
 
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
@@ -489,7 +537,6 @@ class RegimePrive(AbstractRegimeDeBase):
                 )
             return coefficient_majoration_par_trimestre * trimestres_apres_aad
 
-
     class pension_minimale(Variable):
         value_type = float
         entity = Person
@@ -549,4 +596,3 @@ class RegimePrive(AbstractRegimeDeBase):
             surcote = individu('regime_name_surcote', period)
             pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
             return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
-

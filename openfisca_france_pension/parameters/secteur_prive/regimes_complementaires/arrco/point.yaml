@@ -1,5 +1,5 @@
 description: Valeur du point ARRCO
-valeur_point_arrco_en_nominal:
+valeur_point_en_nominal:
   description: Valeur du point ARRCO (en nominal)
   values:
     2019-11-01:
@@ -39,8 +39,8 @@ valeur_point_arrco_en_nominal:
     1999-01-01:
       value: 6.5596
   metadata:
-    ipp_csv_id: val_point_arrco_nom
-valeur_point_arrco_en_euros:
+    ipp_csv_id: val_point_nom
+valeur_point_en_euros:
   description: Valeur du point ARRCO (en euros)
   values:
     2019-11-01:
@@ -80,12 +80,12 @@ valeur_point_arrco_en_euros:
     1999-01-01:
       value: 1.0
   metadata:
-    ipp_csv_id: val_point_arrco_eur
+    ipp_csv_id: val_point_eur
     unit: currency-EUR
 metadata:
   order:
-  - valeur_point_arrco_en_nominal
-  - valeur_point_arrco_en_euros
+  - valeur_point_en_nominal
+  - valeur_point_en_euros
   reference:
     2019-11-01: Circ. Agirc-Arrco 2019-14-DT du 16/10/2019
     2018-11-01: Circ. Agirc-Arrco 2018-7-DT du 11/10/2018

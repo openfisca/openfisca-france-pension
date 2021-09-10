@@ -1,31 +1,12 @@
-"""Abstract regimesdefinition."""
+"""Abstract regimes definition."""
 from openfisca_core.model_api import *
-from openfisca_france_pension.entities import Household, Person
+from openfisca_france_pension.entities import Person
 'Régime de base de la fonction publique.'
 from datetime import datetime
 import numpy as np
-from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
-from openfisca_france_pension.entities import Household, Person
+from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
-
-class fonction_publique_salaire_de_reference(Variable):
-    value_type = float
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Salaire de référence'
-
-class fonction_publique_trimestres(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = 'Trimestres'
-
-class fonction_publique_majoration_pension(Variable):
-    value_type = int
-    entity = Person
-    definition_period = MONTH
-    label = 'Majoration de pension'
 
 class fonction_publique_decote(Variable):
     value_type = float
@@ -33,11 +14,16 @@ class fonction_publique_decote(Variable):
     definition_period = YEAR
     label = 'Décote'
 
-class fonction_publique_surcote(Variable):
+class fonction_publique_pension(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Surcote'
+    label = 'Pension'
+
+    def formula(individu, period):
+        pension_brute = individu('fonction_publique_pension_brute', period)
+        majoration_pension = individu('fonction_publique_majoration_pension', period)
+        return pension_brute + majoration_pension
 
 class fonction_publique_pension_brute(Variable):
     value_type = float
@@ -51,34 +37,17 @@ class fonction_publique_pension_brute(Variable):
         taux_de_liquidation = individu('fonction_publique_taux_de_liquidation', period)
         return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
-class fonction_publique_pension(Variable):
+class fonction_publique_salaire_de_reference(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Salaire de référence'
+
+class fonction_publique_surcote(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Pension'
-
-    def formula(individu, period):
-        pension_brute = individu('fonction_publique_pension_brute', period)
-        majoration_pension = individu('fonction_publique_majoration_pension', period)
-        return pension_brute + majoration_pension
-
-class fonction_publique_surcote_debut_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = YEAR
-    label = 'Date du début de la surcote'
-
-class fonction_publique_decote_annulation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = YEAR
-    label = "Date d'annulation de la décote'"
-
-class fonction_publique_taux_plein_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = YEAR
-    label = 'Date du taux plein'
+    label = 'Surcote'
 
 class fonction_publique_taux_de_liquidation(Variable):
     value_type = float
@@ -92,16 +61,20 @@ class fonction_publique_taux_de_liquidation(Variable):
         taux_plein = parameters(period).secteur_public.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
 
-class fonction_publique_cotisation_retraite(Variable):
+class fonction_publique_trimestres(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = 'Trimestres'
+
+class fonction_publique_cotisation(Variable):
     value_type = float
     entity = Person
-    definition_period = MONTH
-    label = 'cotisation retraite'
+    definition_period = YEAR
+    label = 'cotisation retraite employeur'
 
-    def formula(individu, period, parameters):
-        salaire_de_base = individu('salaire_de_base', period)
-        taux = parameters(period).secteur_public.cotisation.taux
-        return salaire_de_base * taux
+    def formula(individu, period):
+        return individu('fonction_publique_cotisation_employeur', period) + individu('fonction_publique_cotisation_salarie', period)
 
 class fonction_publique_liquidation_date(Variable):
     value_type = date
@@ -154,7 +127,6 @@ class fonction_publique_limite_d_age(Variable):
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
         limite_age_sedentaire = parameters(period).secteur_public.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
-        limite_age_active = parameters(period).secteur_public.la_a.age_limite_fonction_publique_active_selon_annee_naissance
         if period.start.year <= 2011:
             limite_age_sedentaire_annee = limite_age_sedentaire.ne_avant_1951_07_01.annee
             limite_age_sedentaire_mois = 0
@@ -208,7 +180,6 @@ class fonction_publique_surcote(Variable):
             aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
         aod_annee = aod_sedentaire_annee
         aod_mois = aod_sedentaire_mois
-        annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12)
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - 12 * aod_annee + aod_mois) / 3))
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]

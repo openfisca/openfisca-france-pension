@@ -15,4 +15,6 @@ metadata:
   - taux_plein
   - decote
   - surcote
+  - reversion
+  - reversion_minimum
   description_en: Main pension scheme (ie "régime général" or CNAV)

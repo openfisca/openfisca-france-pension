@@ -1,0 +1,10 @@
+image: python:3.9
+
+stages:
+  - unique
+
+test:
+  stage: unique
+  script:
+    - pip install -e .[dev]
+    - make test

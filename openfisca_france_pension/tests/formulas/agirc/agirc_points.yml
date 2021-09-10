@@ -1,0 +1,12 @@
+- name: points Agirc
+  description: Exemple de brochure Agirc_Arrco https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/cotisations_points.pdf
+  absolute_error_margin: .005
+  period: 2016
+  input:
+    categorie_salarie: prive_cadre
+    salaire_de_base: 61530
+  output:
+    arrco_cotisation: 2394.19 * 1.25
+    arrco_points: 152.93
+    agirc_cotisation: 3767.06 * 1.25
+    agirc_points: 691.78  # Normalement arrondi à l'euro

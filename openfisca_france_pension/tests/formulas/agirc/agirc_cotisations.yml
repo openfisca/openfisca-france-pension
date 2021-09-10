@@ -1,0 +1,55 @@
+- name: cotisation Agirc cadre sous plafond
+  description: test
+  period: 2010
+  input:
+    categorie_salarie:
+      year:2010:10: prive_cadre
+    salaire_de_base:
+      2010: 1000
+      2015: 1000
+      2019: 1000
+  output:
+    arrco_cotisation_employeur:
+      2010: .045 * 1000
+      2015: .0465 * 1000
+      2019: 0
+    arrco_cotisation_salarie:
+      2010: .03 * 1000
+      2015: .031 * 1000
+      2019: 0
+    agirc_cotisation_employeur:
+      2010: 0
+      2015: 0
+      2019: .0472 * 1000
+    agirc_cotisation_salarie:
+      2010: 0
+      2015: 0
+      2019: .0315 * 1000
+
+- name: cotisation Arrco cadre au dessus du plafond
+  description: test
+  period: 2010
+  input:
+    categorie_salarie:
+      year:2010:10: prive_cadre
+    salaire_de_base:
+      2010: 2 * 12 * 2885
+      2015: 2 * 12 * 3170
+      2019: 2 * 12 * 3377
+  output:
+    arrco_cotisation_employeur:
+      2010: .045 * 12 * 2885
+      2015: .0465 * 12 * 3170
+      2019: 0
+    arrco_cotisation_salarie:
+      2010: .03 * 12 * 2885
+      2015: .031 * 12 * 3170
+      2019: 0
+    agirc_cotisation_employeur:
+      2010: 12 * .126 * 2885
+      2015: 12 * .1275 * 3170
+      2019: 12 * (.0472 + .1295) * 3377
+    agirc_cotisation_salarie:
+      2010: 12 * .077 * 2885
+      2015: 12 * .078 * 3170
+      2019: 12 * (.0315 + .0864) * 3377

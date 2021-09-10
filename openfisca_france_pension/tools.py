@@ -1,7 +1,9 @@
 """Tools."""
 
 import bottleneck
+
 from numba import jit
+
 import numpy as np
 
 
@@ -17,7 +19,8 @@ def mean_over_k_largest(vector, k):
     return z[:k].sum() / k
 
 
-@jit(nopython=True)
+# @jit(nopython=True)
+@jit()
 def mean_over_k_nonzero_largest(vector, k):
     '''Return the mean over the k largest values of a vector'''
     if k == 0:

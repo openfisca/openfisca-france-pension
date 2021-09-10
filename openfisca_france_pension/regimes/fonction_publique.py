@@ -1,14 +1,12 @@
 """Régime de base de la fonction publique."""
 
 from datetime import datetime
+
 import numpy as np
 
-
-from openfisca_core.variables import Variable
 from openfisca_core.model_api import *
 
-
-from openfisca_france_pension.entities import Household, Person
+from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
 
@@ -23,7 +21,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = ETERNITY
         label = 'Date de liquidation'
         default_value = datetime.max.date()
-
 
     class trimestres(Variable):
         value_type = int
@@ -155,7 +152,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 min_(
                     80 / 75,
                     (
-                        min_(duree_de_service_effective,  duree_assurance_requise)
+                        min_(duree_de_service_effective, duree_assurance_requise)
                         + bonification_cpcm
                         ) / duree_assurance_requise
                     )
@@ -190,7 +187,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             limite_age_sedentaire = parameters(period).regime_name.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
-            limite_age_active = parameters(period).regime_name.la_a.age_limite_fonction_publique_active_selon_annee_naissance
+            # limite_age_active = parameters(period).regime_name.la_a.age_limite_fonction_publique_active_selon_annee_naissance
             # statut = individu('statut', period)
             # return select(
             #     [statut == 'fonction_publique_active', statut == 'fonction_publique_sedentaire'],
@@ -290,7 +287,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             return taux_decote * decote_trimestres
 
-
     class surcote(Variable):
         value_type = float
         entity = Person
@@ -313,14 +309,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             aod_annee = aod_sedentaire_annee
             aod_mois = aod_sedentaire_mois
 
-            annee_age_ouverture_droits = np.trunc(
-                date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
-                + aod_annee
-                + (
-                    (date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int')
-                    + aod_mois
-                    ) / 12
-                )
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
@@ -347,7 +335,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
             return taux_surcote * trimestres_surcote
 
-
     class dernier_indice_atteint(Variable):
         value_type = float
         entity = Person
@@ -360,7 +347,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             taux_de_prime = individu("taux_de_prime", period)
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             dernier_indice = where(
-                salaire_de_base > 0, # and statut = fonction_publique,
+                salaire_de_base > 0,  # and statut = fonction_publique,
                 salaire_de_base / (1 + taux_de_prime) / valeur_point_indice,
                 individu("regime_name_dernier_indice_atteint", period.last_year)
                 )
