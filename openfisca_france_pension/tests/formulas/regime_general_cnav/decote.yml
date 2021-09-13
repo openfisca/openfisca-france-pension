@@ -169,8 +169,8 @@
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
     regime_general_cnav_surcote: 0
-    regime_general_cnav_decote: (159 - 158) * 0.02
-    regime_general_cnav_pension_brute: 1000 * .5 * (1 - (159 - 158) * 0.02)
+    regime_general_cnav_decote: (160 - 159) * 0.02
+    regime_general_cnav_pension_brute: 1000 * .5 * (1 - (160 - 159) * 0.02)
 
 
 - name: Décote après 2011-07 pour une personne de 61 ans et 159 trimestres
