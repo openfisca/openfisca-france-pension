@@ -11,7 +11,9 @@ L'autre apport du cadre OpenFisca est l'objet Reform, qui viendra modifier, reti
 Le code est donc modulaire : les systèmes et régimes partagent tout ce qu'ils peuvent, mais sont indépendants. Cela permet à la fois d'éviter au mieux les redondances et de parcelliser les tâches afin de faciliter le travail collectif asynchrone et la vitesse des itérations.
 Les composantes du système de retraite codées sont limitées aux droits directs et ne concernent que les régimes suivants:
 - le régime général de la CNAV,
+
 - le régime de la FPE (hors catégories actives),
+
 - le régime complémentaire Agirc-Arrco.
 
 Ni les minima, ni les majorations de pension ne sont codées.
@@ -37,14 +39,21 @@ Il a révélé que le branchement sur les données n'est pas particulièrement c
 ## Chemin critique
 
 - Lister les composantes du système de retraite restant à coder pour avoir un MVP:
+
   - l'idéal serait de connaître exactement ce qui a été fait dans PENSIPP pour égaler la couverture atteinte;
+
   - cela permettrait de chiffrer le temps pour reproduire;
+
   - une hiérarchisation des étapes serait également possible.
 
 - Brancher les données EIR-EIC en les restreignant aux cas couverts par le MVP pour tester la législation:
+
   - en effet, on ne dispose pas de base de cas type de carrières à tester;
+
   - on peut profiter que l'on peut utiliser des données hors CASD pour faire cela dans une CI et itérer rapidement;
+
   - on disposera d'une mesure de la couverture de la législation sur les cas pertiennts pour les chiffrages;
+
   - une CI fonctionnelle avec des données d'enquête nous permet de disposer d'un cas d'usage en état de marche facilement reproductible.
 
 - S'en servir pour les travaux sur les inégalités de pension (reproduire et compléter les travaux NBER).
@@ -52,12 +61,14 @@ Il a révélé que le branchement sur les données n'est pas particulièrement c
 - Ajouter un Régime abstrait de type comptes notionnels pour élargir le cadre des Réformes possibles
 
 - Préparer le branchement avec les données projetées par taxipp-life:
+
   - Brancher sur les données projetées quand celles-ci seront de bonne qualité;
+
   - Comparer avec les résultats obtenus avec PENSIPP.
 
 - Brancher sur le RGCU.
 
-Les 4 voire 5 derniers points peuvent être menés en parallèle.
+Les 4 voire les 5 derniers points peuvent être menés en parallèle.
 
 ## Ressources qui seraient très utiles
 
