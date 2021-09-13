@@ -26,55 +26,8 @@ Les tests unitaires unitaires ont un triple intérêt:
 
 - disposer d'un outil de débogage lors de la première écriture du code ou en cas de régression.
 
-Voici un exemple de test sur la décote du régime général:
-```yaml
-- name: Décote entre 2004 et 2010 pour une personne de 61 ans et 159 trimestres
-  absolute_error_margin: .001
-  period: 2008
-  input:
-    date_de_naissance: 1947-11-19
-    regime_general_cnav_liquidation_date: 2008-11-18
-    regime_general_cnav_trimestres: 159
-    regime_general_cnav_salaire_de_reference: 1000
-  output:
-    regime_general_cnav_coefficient_de_proratisation: 1
-    regime_general_cnav_surcote: 0
-    regime_general_cnav_decote: (160 - 159) * 0.02
-    regime_general_cnav_pension_brute: 1000 * .5 * (1 - (160 - 159) * 0.02)
-```
-L'exécution d'un test unitaire de la décote du régime général en mode débogage est reproduit ci-dessous à titre d'illustration
-```shell
-$ openfisca test openfisca_france_pension/tests/formulas/regime_general_cnav/decote.yml -v
-
-...
-.Computation log:
-  regime_general_cnav_coefficient_de_proratisation<2008> >> [1.]
-    date_de_naissance<2008> >> ['1947-11-19']
-    regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
-    date_de_naissance<2008> >> ['1947-11-19']
-    regime_general_cnav_trimestres<2008> >> [159]
-  regime_general_cnav_surcote<2008> >> [0.]
-    date_de_naissance<2008> >> ['1947-11-19']
-    regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
-    date_de_naissance<2008> >> ['1947-11-19']
-    regime_general_cnav_trimestres<2008> >> [159]
-  regime_general_cnav_decote<2008> >> [0.02]
-    date_de_naissance<2008> >> ['1947-11-19']
-    regime_general_cnav_decote_trimestres<2008> >> [1.]
-      date_de_naissance<2008> >> ['1947-11-19']
-      regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
-      date_de_naissance<2008> >> ['1947-11-19']
-      regime_general_cnav_trimestres<2008> >> [159]
-  regime_general_cnav_pension_brute<2008> >> [490.]
-    regime_general_cnav_coefficient_de_proratisation<2008> >> [1.]
-    regime_general_cnav_salaire_de_reference<2008> >> [1000.]
-    regime_general_cnav_taux_de_liquidation<2008> >> [0.49]
-      regime_general_cnav_decote<2008> >> [0.02]
-      regime_general_cnav_surcote<2008> >> [0.]
-...
-```
-Si le résultat n'est pa celui attendu, on peut tracer la provenance de l'erreur en terme de valeur produite.
-En cas de bug informatique, on peut entrer directement dans le débogueur Python exactement à l'endroit où celui-ci s'est produit et explorer l'étt du système.
+Un exemple de test et sa trace dans le débogueur sont disponibles en annexe, en bas du document. Si le résultat n'est pas celui qui est attendu, on a à disposition un arbre des valeurs calculées, qui permet de tracer la provenance de l'erreur.
+En cas de bug informatique, on peut entrer directement dans le débogueur Python exactement à l'endroit où celui-ci s'est produit et explorer l'état du système, ce qui facilite considérablement la résolution des problèmes.
 
 Il n'existe pour l'instant pas de tests sur une carrière complète car il n'existe pas de référence disponible. Une priorité à court terme sera de créer des cas types.
 
@@ -115,3 +68,56 @@ Les 4 voire 5 derniers points peuvent être menés en parallèle.
   - pour améliorer le précis de législation (l'ouvrir à la collaboration ?).
 
 - Des cas-types de carrière entière (DREES DSS ?)
+
+## Annexe : extraits de débogueur
+
+### Exemple de test de calcul de la pension d'un individu
+
+```yaml
+- name: Décote entre 2004 et 2010 pour une personne de 61 ans et 159 trimestres
+  absolute_error_margin: .001
+  period: 2008
+  input:
+    date_de_naissance: 1947-11-19
+    regime_general_cnav_liquidation_date: 2008-11-18
+    regime_general_cnav_trimestres: 159
+    regime_general_cnav_salaire_de_reference: 1000
+  output:
+    regime_general_cnav_coefficient_de_proratisation: 1
+    regime_general_cnav_surcote: 0
+    regime_general_cnav_decote: (160 - 159) * 0.02
+    regime_general_cnav_pension_brute: 1000 * .5 * (1 - (160 - 159) * 0.02)
+```
+
+### Arbre des valeurs calculées pour le test de calcul de pension
+
+```shell
+$ openfisca test openfisca_france_pension/tests/formulas/regime_general_cnav/decote.yml -v
+
+...
+.Computation log:
+  regime_general_cnav_coefficient_de_proratisation<2008> >> [1.]
+    date_de_naissance<2008> >> ['1947-11-19']
+    regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
+    date_de_naissance<2008> >> ['1947-11-19']
+    regime_general_cnav_trimestres<2008> >> [159]
+  regime_general_cnav_surcote<2008> >> [0.]
+    date_de_naissance<2008> >> ['1947-11-19']
+    regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
+    date_de_naissance<2008> >> ['1947-11-19']
+    regime_general_cnav_trimestres<2008> >> [159]
+  regime_general_cnav_decote<2008> >> [0.02]
+    date_de_naissance<2008> >> ['1947-11-19']
+    regime_general_cnav_decote_trimestres<2008> >> [1.]
+      date_de_naissance<2008> >> ['1947-11-19']
+      regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
+      date_de_naissance<2008> >> ['1947-11-19']
+      regime_general_cnav_trimestres<2008> >> [159]
+  regime_general_cnav_pension_brute<2008> >> [490.]
+    regime_general_cnav_coefficient_de_proratisation<2008> >> [1.]
+    regime_general_cnav_salaire_de_reference<2008> >> [1000.]
+    regime_general_cnav_taux_de_liquidation<2008> >> [0.49]
+      regime_general_cnav_decote<2008> >> [0.02]
+      regime_general_cnav_surcote<2008> >> [0.]
+...
+```
