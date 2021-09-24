@@ -1,5 +1,9 @@
 """Abstract regimes definition."""
 
+
+from datetime import datetime
+
+
 from openfisca_core.model_api import *
 
 # Import the Entities specifically defined for this tax and benefit system
@@ -76,6 +80,19 @@ class AbstractRegimeDeBase(AbstractRegime):
         entity = Person
         definition_period = YEAR
         label = "Décote"
+
+    class liquidation_date(Variable):
+        value_type = date
+        entity = Person
+        definition_period = ETERNITY
+        label = 'Date de liquidation'
+        default_value = datetime.max.date()
+
+    class majoration_pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Majoration de pension"
 
     class pension(Variable):
         value_type = float

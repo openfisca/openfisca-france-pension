@@ -140,7 +140,7 @@ def create_regime_variables(input_string, output_filename):
                 while extends != "object":
                     superRegime = inheritance_dict[extends]
                     inheritedClasses = superRegime['variables']
-                    for key, value in inheritedClasses.items():
+                    for _key, value in inheritedClasses.items():
                         el = copy.deepcopy(value)
                         el = ast.fix_missing_locations(RewriteRegimeVariableClass(parameters_prefix, variable_prefix).visit(el))
                         output_ast_tree.body.append(el)
@@ -197,7 +197,7 @@ def main(verbose = False):
             ]
         }
 
-    for regime_name, regime_files in regimes_files_by_name.items():
+    for _regime_name, regime_files in regimes_files_by_name.items():
         input_file_names = [
             regime_de_base,
             regime_files['input'],

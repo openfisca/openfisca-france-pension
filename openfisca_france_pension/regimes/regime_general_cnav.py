@@ -1,14 +1,12 @@
 """Régime de base du secteur privé: régime général de la CNAV."""
 
-
 import functools
-from datetime import datetime
 
 import numpy as np
 
 from openfisca_core.model_api import *
 from openfisca_core.parameters import ParameterNotFound
-from openfisca_core.periods import ETERNITY, YEAR
+from openfisca_core.periods import YEAR
 from openfisca_core.variables import Variable
 
 from openfisca_france_pension.entities import Person
@@ -356,13 +354,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 )
             return decote_trimestres
-
-    class liquidation_date(Variable):
-        value_type = date
-        entity = Person
-        definition_period = ETERNITY
-        label = "Date de liquidation"
-        default_value = datetime.max.date()
 
     class surcote(Variable):
         value_type = float

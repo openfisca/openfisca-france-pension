@@ -1,13 +1,13 @@
 """Abstract regimes definition."""
+from datetime import datetime
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
 'Régime de base du secteur privé: régime général de la CNAV.'
 import functools
-from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.parameters import ParameterNotFound
-from openfisca_core.periods import ETERNITY, YEAR
+from openfisca_core.periods import YEAR
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
@@ -28,6 +28,19 @@ class regime_general_cnav_decote(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Décote'
+
+class regime_general_cnav_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
+
+class regime_general_cnav_majoration_pension(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Majoration de pension'
 
 class regime_general_cnav_pension(Variable):
     value_type = float
@@ -265,13 +278,6 @@ class regime_general_cnav_decote_trimestres(Variable):
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         decote_trimestres = max_(0, np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3))
         return decote_trimestres
-
-class regime_general_cnav_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
 
 class regime_general_cnav_surcote(Variable):
     value_type = float
