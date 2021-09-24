@@ -1,4 +1,5 @@
 """Abstract regimes definition."""
+from datetime import datetime
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
 'Régimes complémentaires du secteur privé.'

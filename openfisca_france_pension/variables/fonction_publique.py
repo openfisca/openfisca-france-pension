@@ -1,4 +1,5 @@
 """Abstract regimes definition."""
+from datetime import datetime
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
 'Régime de base de la fonction publique.'
@@ -13,6 +14,19 @@ class fonction_publique_decote(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Décote'
+
+class fonction_publique_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
+
+class fonction_publique_majoration_pension(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Majoration de pension'
 
 class fonction_publique_pension(Variable):
     value_type = float
