@@ -187,8 +187,8 @@ def create_input_data(sample_size = None, save_to_disk = False):
             )
         )
 
-    # Initialize regime_general_cnav_trimestres to avoid infinite loop
-    input_data_frame_by_entity_by_period[initial_period]['person']['regime_general_cnav_trimestres'] = 0
+    # Initialize regime_general_cnav_duree_assurance to avoid infinite loop
+    input_data_frame_by_entity_by_period[initial_period]['person']['regime_general_cnav_duree_assurance'] = 0
 
     period = min(list(input_data_frame_by_entity_by_period.keys()))
     dataframe_variables = set()
@@ -243,7 +243,7 @@ if __name__ == "__main__":
     dataframe_variables = [
         'date_de_naissance',
         'person_id',
-        'regime_general_cnav_trimestres',
+        'regime_general_cnav_duree_assurance',
         'salaire_de_base'
         ]
 
@@ -267,7 +267,7 @@ if __name__ == "__main__":
         salaire_de_base = survey_secnario.calculate_variable('salaire_de_base', period = period)
         log.debug(period, salaire_de_base)
 
-        trimestres = survey_secnario.calculate_variable('regime_general_cnav_trimestres', period = period)
+        trimestres = survey_secnario.calculate_variable('regime_general_cnav_duree_assurance', period = period)
         log.debug(period, trimestres)
 
 

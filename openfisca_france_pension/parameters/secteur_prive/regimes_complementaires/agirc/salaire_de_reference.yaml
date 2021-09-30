@@ -300,7 +300,7 @@ salaire_reference_prix_achat_en_euros:
     unit: currency-EUR
 metadata:
   order:
-  - salaire_reference_prix_achat_valeur_nominale
+  - salaire_reference_en_nominal
   - salaire_reference_prix_achat_en_euros
   reference:
     2018-01-01: Circ. Arrco 2017-07-DT du 16/10/2017

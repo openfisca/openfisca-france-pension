@@ -91,7 +91,7 @@ Les 4 voire les 5 derniers points peuvent être menés en parallèle.
   input:
     date_de_naissance: 1947-11-19
     regime_general_cnav_liquidation_date: 2008-11-18
-    regime_general_cnav_trimestres: 159
+    regime_general_cnav_duree_assurance: 159
     regime_general_cnav_salaire_de_reference: 1000
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
@@ -111,19 +111,19 @@ $ openfisca test openfisca_france_pension/tests/formulas/regime_general_cnav/dec
     date_de_naissance<2008> >> ['1947-11-19']
     regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
     date_de_naissance<2008> >> ['1947-11-19']
-    regime_general_cnav_trimestres<2008> >> [159]
+    regime_general_cnav_duree_assurance<2008> >> [159]
   regime_general_cnav_surcote<2008> >> [0.]
     date_de_naissance<2008> >> ['1947-11-19']
     regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
     date_de_naissance<2008> >> ['1947-11-19']
-    regime_general_cnav_trimestres<2008> >> [159]
+    regime_general_cnav_duree_assurance<2008> >> [159]
   regime_general_cnav_decote<2008> >> [0.02]
     date_de_naissance<2008> >> ['1947-11-19']
     regime_general_cnav_decote_trimestres<2008> >> [1.]
       date_de_naissance<2008> >> ['1947-11-19']
       regime_general_cnav_liquidation_date<2008> >> ['2008-11-18']
       date_de_naissance<2008> >> ['1947-11-19']
-      regime_general_cnav_trimestres<2008> >> [159]
+      regime_general_cnav_duree_assurance<2008> >> [159]
   regime_general_cnav_pension_brute<2008> >> [490.]
     regime_general_cnav_coefficient_de_proratisation<2008> >> [1.]
     regime_general_cnav_salaire_de_reference<2008> >> [1000.]

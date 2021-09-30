@@ -18,7 +18,7 @@
   input:
     date_de_naissance: 1945-11-19
     fonction_publique_liquidation_date: 2006-11-30
-    fonction_publique_trimestres: 160
+    fonction_publique_duree_assurance: 160
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
   output:

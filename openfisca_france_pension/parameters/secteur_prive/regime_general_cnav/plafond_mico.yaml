@@ -4,6 +4,10 @@ minimum_contributif_plafond_mensuel:
   annuel:
     description: Annuel
     values:
+      2021-01-01:
+        value: 1203.35
+      2020-01-01:
+        value: 1191.56
       2019-01-01:
         value: 1177.44
       2018-01-01:
@@ -34,6 +38,12 @@ metadata:
   order:
   - minimum_contributif_plafond_mensuel
   reference:
+    2021-01-01:
+      title: Circulaire CNAV 2020/40 du 22/12/2020
+      href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2020_40_22122020.pdf
+    2020-01-01:
+      title: Circulaire CNAV 2019/34 du 30/12/2019
+      href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2019_34_30122019.pdf
     2019-01-01:
       title: Circulaire CNAV 2018/32 du 27/12/2018
       href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2018_32_27122018.pdf
@@ -65,7 +75,7 @@ metadata:
       title: Décret 2011-772 du 28/06/2011
       href: https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000024277944
   date_parution_jo:
-    2012-07-01: 2018-12-20,2012-06-29
+    2012-07-01: 2018-12-20; 2012-06-29
     2012-01-01: 2011-11-30
   description_en: Earning cap of the "minimum contributif"
 documentation: |

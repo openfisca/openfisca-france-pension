@@ -1,0 +1,6 @@
+description: Régime complémentaire Agirc-Arrco
+metadata:
+  order:
+  - point
+  - salaire_de_reference
+  description_en: Complementary scheme Agirc-Arrco

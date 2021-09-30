@@ -4,6 +4,8 @@ salaire_validant_trimestre:
   metropole:
     description: Métropole
     values:
+      2021-01-01:
+        value: 1537.50
       2020-01-01:
         value: 1522.50
       2019-01-01:
@@ -151,6 +153,8 @@ salaire_validant_trimestre:
   guadeloupe_guyane_martinique:
     description: Guadeloupe Guyane Martinique
     values:
+      2021-01-01:
+        value: 1537.50
       2020-01-01:
         value: 1522.50
       2019-01-01:
@@ -293,6 +297,8 @@ salaire_validant_trimestre:
   reunion:
     description: Réunion
     values:
+      2021-01-01:
+        value: 1537.50
       2020-01-01:
         value: 1522.50
       2019-01-01:
@@ -432,7 +438,7 @@ salaire_validant_trimestre:
       unit:
         2002-01-01: currency-EUR
         1949-01-01: currency-FRF
-        1948-01-01: CFA
+        1948-01-01: currency-XOF
   metadata:
     order:
     - metropole
@@ -442,6 +448,9 @@ metadata:
   order:
   - salaire_validant_trimestre
   reference:
+    2021-01-01:
+      title: Circulaire CNAV 2020/40 du 22/12/2020
+      href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2020_40_22122020.pdf
     2020-01-01:
       title: ​Circulaire CNAV 2019/34 du 30/12/2019
       href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2019_34_30122019.pdf
@@ -473,7 +482,7 @@ metadata:
       title: Décret 45-0179 du 29/12/1945, art. 71, §2
       href: https://www.legifrance.gouv.fr/affichTexteArticle.do?idArticle=LEGIARTI000006760608&cidTexte=JORFTEXT000000682675
   date_parution_jo:
-    2020-01-01: 2019-12-18 
+    2020-01-01: 2019-12-18
     2019-01-01: 2018-12-20
     2014-01-01: 2014-03-20
     1986-01-01: 1985-12-21

@@ -81,6 +81,18 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Décote"
 
+    class duree_assurance(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance (en trimestres)"
+
+    class duree_assurance_cotisee(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance cotisée (en trimestres cotisés)"
+
     class liquidation_date(Variable):
         value_type = date
         entity = Person
@@ -140,12 +152,6 @@ class AbstractRegimeDeBase(AbstractRegime):
             surcote = individu('regime_name_surcote', period)
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
             return taux_plein * (1 - decote + surcote)
-
-    class trimestres(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Trimestres"
 
 
 class AbstractRegimeComplementaire(AbstractRegime):

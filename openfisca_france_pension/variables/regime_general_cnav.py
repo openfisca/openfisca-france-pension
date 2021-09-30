@@ -29,6 +29,18 @@ class regime_general_cnav_decote(Variable):
     definition_period = YEAR
     label = 'Décote'
 
+class regime_general_cnav_duree_assurance(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance (en trimestres)"
+
+class regime_general_cnav_duree_assurance_cotisee(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance cotisée (en trimestres cotisés)"
+
 class regime_general_cnav_liquidation_date(Variable):
     value_type = date
     entity = Person
@@ -89,12 +101,6 @@ class regime_general_cnav_taux_de_liquidation(Variable):
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
 
-class regime_general_cnav_trimestres(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = 'Trimestres'
-
 class regime_general_cnav_cotisation(Variable):
     value_type = float
     entity = Person
@@ -104,11 +110,22 @@ class regime_general_cnav_cotisation(Variable):
     def formula(individu, period):
         return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
 
-class regime_general_cnav_trimestres(Variable):
+class regime_general_cnav_duree_assurance(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = 'Trimestres validés au régime général'
+    label = "Durée d'assurance (trimestres validés au régime général)"
+
+    def formula(individu, period, parameters):
+        duree_assurance_cotisee = individu('regime_general_cnav_duree_assurance_cotisee', period)
+        majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
+        return duree_assurance_cotisee + majoration_duree_assurance
+
+class regime_general_cnav_duree_assurance_cotisee(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance cotisée (trimestres cotisés au régime général)"
 
     def formula(individu, period, parameters):
         salaire_de_base = individu('salaire_de_base', period)
@@ -117,7 +134,7 @@ class regime_general_cnav_trimestres(Variable):
         except ParameterNotFound:
             import openfisca_core.periods as periods
             salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
-        trimestres_valides_avant_cette_annee = individu('regime_general_cnav_trimestres', period.last_year)
+        trimestres_valides_avant_cette_annee = individu('regime_general_cnav_duree_assurance_cotisee', period.last_year)
         trimestres_valides_dans_l_annee = min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
         return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
 
@@ -168,7 +185,7 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aad = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad.annee * 12 - aad.mois) / 3))
-        trimestres = individu('regime_general_cnav_trimestres', period)
+        trimestres = individu('regime_general_cnav_duree_assurance', period)
         duree_assurance_corrigee = min_(duree_de_proratisation, trimestres * (1 + trimestres_apres_aad * coefficient_minoration_par_trimestre))
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
         return coefficient
@@ -181,13 +198,13 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aad = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad * 12) / 3))
-        trimestres = individu('regime_general_cnav_trimestres', period)
+        trimestres = individu('regime_general_cnav_duree_assurance', period)
         duree_assurance_corrigee = min_(duree_de_proratisation, trimestres * (1 + trimestres_apres_aad * coefficient_minoration_par_trimestre))
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
         return coefficient
 
     def formula_1948(individu, period, parameters):
-        trimestres = individu('regime_general_cnav_trimestres', period)
+        trimestres = individu('regime_general_cnav_duree_assurance', period)
         duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.ne_avant_1944_01_01
         duree_assurance_corrigee = trimestres + (duree_de_proratisation - trimestres) / 2
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
@@ -195,7 +212,7 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
 
     def formula_1946(individu, period, parameters):
         duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.ne_avant_1944_01_01
-        trimestres = individu('regime_general_cnav_trimestres', period)
+        trimestres = individu('regime_general_cnav_duree_assurance', period)
         coefficient = min_(1, trimestres / duree_de_proratisation)
         return coefficient
 
@@ -258,8 +275,8 @@ class regime_general_cnav_decote_trimestres(Variable):
         trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
         age_en_mois_a_la_liquidation = (individu('regime_general_cnav_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = np.trunc((aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3)
-        trimestres = individu('regime_general_cnav_trimestres', period)
-        decote_trimestres = max_(0, min_(trimestres_cibles_taux_plein - trimestres, trimestres_avant_aad))
+        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
+        decote_trimestres = max_(0, min_(trimestres_cibles_taux_plein - duree_assurance_tous_regimes, trimestres_avant_aad))
         return decote_trimestres
 
     def formula_1983_04_01(individu, period, parameters):
@@ -268,8 +285,8 @@ class regime_general_cnav_decote_trimestres(Variable):
         trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
         age_en_mois_a_la_liquidation = (individu('regime_general_cnav_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3)
-        trimestres = individu('regime_general_cnav_trimestres', period)
-        decote_trimestres = max_(0, min_(trimestres_cibles_taux_plein - trimestres, trimestres_avant_aad))
+        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
+        decote_trimestres = max_(0, min_(trimestres_cibles_taux_plein - duree_assurance_tous_regimes, trimestres_avant_aad))
         return decote_trimestres
 
     def formula_1945(individu, period, parameters):
@@ -279,73 +296,35 @@ class regime_general_cnav_decote_trimestres(Variable):
         decote_trimestres = max_(0, np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3))
         return decote_trimestres
 
-class regime_general_cnav_surcote(Variable):
-    value_type = float
+class regime_general_cnav_majoration_duree_assurance(Variable):
+    value_type = int
     entity = Person
     definition_period = YEAR
-    label = 'Surcote'
+    label = "Majoration de durée d'assurance (trimestres augmentant la durée d'assurance au régime général)"
 
-    def formula_2009_04_01(individu, period, parameters):
-        aod = 65
-        taux_surcote = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['partir_65_ans']
-        date_de_naissance = individu('date_de_naissance', period)
-        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
-        distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
-        trimestres = individu('regime_general_cnav_trimestres', period)
-        trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
-        trimestres_surcote = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), trimestres - trimestres_cibles_taux_plein))
-        return taux_surcote * trimestres_surcote
-
-    def formula_2007_01_01(individu, period, parameters):
-        aod = 65
-        taux_surcote_par_trimestre = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004
-        taux_surcote_par_trimestre_moins_de_4_trimestres = taux_surcote_par_trimestre['moins_de_4_trimestres']
-        taux_surcote_par_trimestre_plus_de_5_trimestres = taux_surcote_par_trimestre['plus_de_5_trimestres']
-        taux_surcote_par_trimestre_partir_65_ans = taux_surcote_par_trimestre['partir_65_ans']
-        date_de_naissance = individu('date_de_naissance', period)
-        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
-        distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
-        trimestres = individu('regime_general_cnav_trimestres', period)
-        trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
-        trimestres_surcote = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), trimestres - trimestres_cibles_taux_plein))
-        trimestres_surcote_au_dela_de_65_ans = min_(trimestres_surcote, max_(0, np.trunc((age_en_mois_a_la_liquidation - 65 * 12) / 3)))
-        trimestres_surcote_en_deca_de_65_ans = max_(0, trimestres_surcote - trimestres_surcote_au_dela_de_65_ans)
-        surcote = taux_surcote_par_trimestre_moins_de_4_trimestres * min_(4, trimestres_surcote_en_deca_de_65_ans) + taux_surcote_par_trimestre_plus_de_5_trimestres * max_(0, trimestres_surcote_en_deca_de_65_ans - 4) + taux_surcote_par_trimestre_partir_65_ans * trimestres_surcote_au_dela_de_65_ans
-        return surcote
-
-    def formula_2004_01_01(individu, period, parameters):
-        aod = 65
-        taux_surcote_par_trimestre_moins_de_4_trimestres = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['moins_de_4_trimestres']
-        date_de_naissance = individu('date_de_naissance', period)
-        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
-        distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
-        trimestres = individu('regime_general_cnav_trimestres', period)
-        trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
-        trimestres_surcote = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), trimestres - trimestres_cibles_taux_plein))
-        return taux_surcote_par_trimestre_moins_de_4_trimestres * trimestres_surcote
-
-    def formula_1983_04_01(individu, period):
-        return individu.empty_array()
-
-    def formula_1945(individu, period):
-        coefficient_majoration_par_trimestre = 0.1 / 4
-        aad = 65
-        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aad = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad * 12) / 3))
-        return coefficient_majoration_par_trimestre * trimestres_apres_aad
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        liquidation = annee_de_liquidation == period.start.year
+        majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 2
+        return liquidation * majoration_duree_assurance_enfant
 
 class regime_general_cnav_pension_minimale(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Pension minimale'
+    label = 'Pension minimale (minimum contributif du régime général)'
+
+    def formula_1983_01_01(individu, period, parameters):
+        mico = parameters(period).secteur_prive.regime_general_cnav.montant_mico
+        trimestres_regime = individu('regime_general_cnav_duree_assurance', period)
+        date_de_naissance = individu('date_de_naissance', period)
+        duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
+        coefficient_de_proratisation = min_(1, trimestres_regime / duree_de_proratisation)
+        return coefficient_de_proratisation * mico
+
+    def formula_1941_01_01(indiivdu, period, parameters):
+        avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
+        return avts
 
 class regime_general_cnav_pension_maximale(Variable):
     value_type = float
@@ -362,3 +341,65 @@ class regime_general_cnav_pension_maximale(Variable):
         surcote = individu('regime_general_cnav_surcote', period)
         pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
         return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
+
+class regime_general_cnav_surcote(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Surcote'
+
+    def formula_2009_04_01(individu, period, parameters):
+        aod = 65
+        taux_surcote = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['partir_65_ans']
+        date_de_naissance = individu('date_de_naissance', period)
+        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
+        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
+        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
+        distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
+        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
+        trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
+        trimestres_surcote = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), duree_assurance_tous_regimes - trimestres_cibles_taux_plein))
+        return taux_surcote * trimestres_surcote
+
+    def formula_2007_01_01(individu, period, parameters):
+        aod = 65
+        taux_surcote_par_trimestre = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004
+        taux_surcote_par_trimestre_moins_de_4_trimestres = taux_surcote_par_trimestre['moins_de_4_trimestres']
+        taux_surcote_par_trimestre_plus_de_5_trimestres = taux_surcote_par_trimestre['plus_de_5_trimestres']
+        taux_surcote_par_trimestre_partir_65_ans = taux_surcote_par_trimestre['partir_65_ans']
+        date_de_naissance = individu('date_de_naissance', period)
+        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
+        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
+        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
+        distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
+        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
+        trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
+        trimestres_surcote = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), duree_assurance_tous_regimes - trimestres_cibles_taux_plein))
+        trimestres_surcote_au_dela_de_65_ans = min_(trimestres_surcote, max_(0, np.trunc((age_en_mois_a_la_liquidation - 65 * 12) / 3)))
+        trimestres_surcote_en_deca_de_65_ans = max_(0, trimestres_surcote - trimestres_surcote_au_dela_de_65_ans)
+        surcote = taux_surcote_par_trimestre_moins_de_4_trimestres * min_(4, trimestres_surcote_en_deca_de_65_ans) + taux_surcote_par_trimestre_plus_de_5_trimestres * max_(0, trimestres_surcote_en_deca_de_65_ans - 4) + taux_surcote_par_trimestre_partir_65_ans * trimestres_surcote_au_dela_de_65_ans
+        return surcote
+
+    def formula_2004_01_01(individu, period, parameters):
+        aod = 65
+        taux_surcote_par_trimestre_moins_de_4_trimestres = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['moins_de_4_trimestres']
+        date_de_naissance = individu('date_de_naissance', period)
+        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
+        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
+        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
+        distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
+        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
+        trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
+        trimestres_surcote = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), duree_assurance_tous_regimes - trimestres_cibles_taux_plein))
+        return taux_surcote_par_trimestre_moins_de_4_trimestres * trimestres_surcote
+
+    def formula_1983_04_01(individu, period):
+        return individu.empty_array()
+
+    def formula_1945(individu, period):
+        coefficient_majoration_par_trimestre = 0.1 / 4
+        aad = 65
+        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
+        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
+        trimestres_apres_aad = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad * 12) / 3))
+        return coefficient_majoration_par_trimestre * trimestres_apres_aad

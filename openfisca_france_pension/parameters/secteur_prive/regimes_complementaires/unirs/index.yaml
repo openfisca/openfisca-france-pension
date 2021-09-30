@@ -3,5 +3,4 @@ metadata:
   order:
   - point
   - salaire_de_reference
-  - coefficient_de_minoration
   description_en: Complementary scheme Arrco-UNIRS
