@@ -1,9 +1,9 @@
-description: Salaire de référence ARRCO
+description: Salaire de référence ARRCO (1999 - 2018)
 salaire_reference_en_nominal:
   description: Salaire de référence (en nominal)
   values:
-    2019-11-01:
-      value: 17.3982
+    2019-01-01:
+      value: null
     2018-01-01:
       value: 16.7226
     2017-01-01:
@@ -50,8 +50,8 @@ salaire_reference_en_nominal:
 salaire_reference_en_euros:
   description: Salaire de référence (en euros)
   values:
-    2019-11-01:
-      value: 17.3982
+    2019-01-01:
+      value: null
     2018-01-01:
       value: 16.7226
     2017-01-01:
@@ -98,7 +98,6 @@ metadata:
   - salaire_reference_en_nominal
   - salaire_reference_en_euros
   reference:
-    2019-11-01: Circ. Arrco 2019-14-DT du 16/10/2019
     2018-01-01: Circ. Arrco 2017-07-DT du 16/10/2017
     2017-01-01: Circ. Arrco 2016-02-DT du 10/10/2016
     2016-01-01: Circ. Agirc-Arrco 2015-10-DC
@@ -113,7 +112,7 @@ metadata:
     2006-01-01: Circ. Arrco 2006-01-DRE du 19/05/2006
     2005-01-01: Circ. Arrco 2005-02-DT du 21/03/2005
   notes:
-    2019-11-01: Fusion des régimes Agirc et Arrco le 1er janvier 2019. Salaire de référence Arrco = salaire de référence Agirc-Arrco.
+    2019-01-01: Fusion des régimes Agirc et Arrco le 1er janvier 2019. Salaire de référence Arrco = salaire de référence Agirc-Arrco.
     2014-01-01: Pas d'évolution en 2015.
     1999-01-01: Unification des régimes ARRCO en 1999.
-  description_en: Reference wage ARRCO
+  description_en: Reference wage ARRCO (1999 - 2018)

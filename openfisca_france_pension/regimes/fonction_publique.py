@@ -1,7 +1,5 @@
 """Régime de base de la fonction publique."""
 
-from datetime import datetime
-
 import numpy as np
 
 from openfisca_core.model_api import *
@@ -15,18 +13,17 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     variable_prefix = "fonction_publique"
     parameters_prefix = "secteur_public"
 
-    class liquidation_date(Variable):
-        value_type = date
-        entity = Person
-        definition_period = ETERNITY
-        label = 'Date de liquidation'
-        default_value = datetime.max.date()
-
-    class trimestres(Variable):
+    class duree_assurance(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Trimestres validés dans la fonction publique"
+        label = "Durée d'assurance (trimestres validés dans la fonction publique)"
+
+    class duree_assurance_cotisee(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
 
     # Utiliser la duréee de service
 
@@ -128,7 +125,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            duree_de_service_effective = individu('regime_name_trimestres', period)
+            duree_de_service_effective = individu("regime_name_duree_assurance", period)
             # (
             #     individu('regime_name_liquidation_date', period)
             #     - individu('regime_name_service_debut_date', period)
@@ -273,7 +270,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     )
                 )
             duree_assurance_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-            trimestres = individu('trimestres_tous_regimes', period)
+            trimestres = individu('duree_assurance_tous_regimes', period)
             decote_trimestres = max_(
                 0,
                 min_(
@@ -321,7 +318,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             duree_assurance_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
             duree_assurance_excedentaire = (
-                individu('trimestres_tous_regimes', period)
+                individu('duree_assurance_tous_regimes', period)
                 - duree_assurance_requise
                 )
             trimestres_surcote = max_(

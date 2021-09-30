@@ -47,6 +47,27 @@ class date_de_naissance(Variable):
     label = 'Date de naissance'
 
 
+class duree_assurance_tous_regimes(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance tous régimes (trimestres accumulés tous régimes confondus)"
+
+    def formula(individu, period):
+        regimes = ['regime_general_cnav', 'fonction_publique']
+        return sum(
+            individu(f'{regime}_duree_assurance', period)
+            for regime in regimes
+            )
+
+
+class nombre_enfants(Variable):
+    value_type = int
+    entity = Person
+    definition_period = ETERNITY
+    label = "Nombre d'enfants"
+
+
 class salaire_de_base(Variable):
     value_type = float
     entity = Person
@@ -61,17 +82,3 @@ class taux_de_prime(Variable):
     definition_period = YEAR
     label = 'Taux de prime dans la fonction publique'
     set_input = set_input_dispatch_by_period
-
-
-class trimestres_tous_regimes(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = 'Trimestres accumulés tous régimes confondus'
-
-    def formula(individu, period):
-        regimes = ['regime_general_cnav', 'fonction_publique']
-        return sum(
-            individu(f'{regime}_trimestres', period)
-            for regime in regimes
-            )

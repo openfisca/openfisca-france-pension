@@ -3,7 +3,6 @@ from datetime import datetime
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
 'Régime de base de la fonction publique.'
-from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
@@ -14,6 +13,18 @@ class fonction_publique_decote(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Décote'
+
+class fonction_publique_duree_assurance(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance (en trimestres)"
+
+class fonction_publique_duree_assurance_cotisee(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance cotisée (en trimestres cotisés)"
 
 class fonction_publique_liquidation_date(Variable):
     value_type = date
@@ -75,12 +86,6 @@ class fonction_publique_taux_de_liquidation(Variable):
         taux_plein = parameters(period).secteur_public.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
 
-class fonction_publique_trimestres(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = 'Trimestres'
-
 class fonction_publique_cotisation(Variable):
     value_type = float
     entity = Person
@@ -90,18 +95,17 @@ class fonction_publique_cotisation(Variable):
     def formula(individu, period):
         return individu('fonction_publique_cotisation_employeur', period) + individu('fonction_publique_cotisation_salarie', period)
 
-class fonction_publique_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
-
-class fonction_publique_trimestres(Variable):
+class fonction_publique_duree_assurance(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = 'Trimestres validés dans la fonction publique'
+    label = "Durée d'assurance (trimestres validés dans la fonction publique)"
+
+class fonction_publique_duree_assurance_cotisee(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
 
 class fonction_publique_coefficient_de_proratisation(Variable):
     value_type = float
@@ -111,7 +115,7 @@ class fonction_publique_coefficient_de_proratisation(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        duree_de_service_effective = individu('fonction_publique_trimestres', period)
+        duree_de_service_effective = individu('fonction_publique_duree_assurance', period)
         bonification_cpcm = 0
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
@@ -172,7 +176,7 @@ class fonction_publique_decote(Variable):
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = max_(0, np.trunc((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        trimestres = individu('trimestres_tous_regimes', period)
+        trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres))
         taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).secteur_public.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[max_(2006, annee_age_ouverture_droits)]
         return taux_decote * decote_trimestres
@@ -197,7 +201,7 @@ class fonction_publique_surcote(Variable):
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - 12 * aod_annee + aod_mois) / 3))
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        duree_assurance_excedentaire = individu('trimestres_tous_regimes', period) - duree_assurance_requise
+        duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
         trimestres_surcote = max_(0, min_(trimestres_apres_aod, duree_assurance_excedentaire))
         taux_surcote = parameters(period).secteur_public.surcote.taux_surcote_par_trimestre
         return taux_surcote * trimestres_surcote

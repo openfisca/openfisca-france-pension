@@ -4,6 +4,8 @@ minimum_contributif:
   annuel:
     description: Annuel
     values:
+      2021-01-01:
+        value: 7746.02
       2020-01-01: 
         value: 7715.16
       2019-10-01:
@@ -102,6 +104,8 @@ minimum_contributif:
   mensuel:
     description: Mensuel
     values:
+      2021-01-01:
+        value: 645.50
       2020-01-01:
         value: 642.93    
       2019-10-01:
@@ -206,6 +210,8 @@ minimum_contributif_majore:
   annuel:
     description: Annuel
     values:
+      2021-01-01:
+        value: 8464.28
       2020-01-01:
         value: 8430.56    
       2019-10-01:
@@ -244,6 +250,8 @@ minimum_contributif_majore:
   mensuel:
     description: Mensuel
     values:
+      2021-01-01:
+        value: 705.35
       2020-01-01:
         value: 702.54  
       2019-10-01:
@@ -288,6 +296,9 @@ metadata:
   - minimum_contributif
   - minimum_contributif_majore
   reference:
+    2021-01-01:
+      title: Circulaire CNAV 2021/1 du 11/01/2021
+      href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2021_01_11012021.pdf
     2020-01-01:
       title: Circulaire CNAV 2020/5 du 09/01/2020
       href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2020_05_09012020.pdf

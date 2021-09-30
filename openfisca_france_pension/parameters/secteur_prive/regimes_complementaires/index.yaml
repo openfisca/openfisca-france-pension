@@ -1,6 +1,7 @@
 description: Régimes complémentaires
 metadata:
   order:
+  - agirc_arrco
   - arrco
   - agirc
   - probtp

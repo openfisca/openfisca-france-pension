@@ -2,7 +2,7 @@
   absolute_error_margin: .001
   period: 1946
   input:
-    regime_general_cnav_trimestres: 120
+    regime_general_cnav_duree_assurance: 120
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
 
@@ -11,7 +11,7 @@
   absolute_error_margin: .001
   period: 1946
   input:
-    regime_general_cnav_trimestres: 100
+    regime_general_cnav_duree_assurance: 100
   output:
     regime_general_cnav_coefficient_de_proratisation: 100 / 120
 
@@ -20,7 +20,7 @@
   absolute_error_margin: .001
   period: 1950
   input:
-    regime_general_cnav_trimestres: 100
+    regime_general_cnav_duree_assurance: 100
   output:
     regime_general_cnav_coefficient_de_proratisation: (100 + (120 - 100) / 2) / 120
 
@@ -29,7 +29,7 @@
   absolute_error_margin: .001
   period: 1950
   input:
-    regime_general_cnav_trimestres: 120
+    regime_general_cnav_duree_assurance: 120
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
 
@@ -38,7 +38,7 @@
   absolute_error_margin: .001
   period: 1950
   input:
-    regime_general_cnav_trimestres: 130
+    regime_general_cnav_duree_assurance: 130
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
 
@@ -47,7 +47,7 @@
   absolute_error_margin: .001
   period: 1975
   input:
-    regime_general_cnav_trimestres: 120
+    regime_general_cnav_duree_assurance: 120
   output:
     regime_general_cnav_coefficient_de_proratisation: (120 + (150 - 120) / 2) / 150
 
@@ -56,7 +56,7 @@
   absolute_error_margin: .001
   period: 1975
   input:
-    regime_general_cnav_trimestres: 150
+    regime_general_cnav_duree_assurance: 150
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
 
@@ -67,7 +67,7 @@
   input:
     date_de_naissance: 1919-12-25
     regime_general_cnav_liquidation_date: 1985-01-01
-    regime_general_cnav_trimestres: 150
+    regime_general_cnav_duree_assurance: 150
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
 
@@ -78,7 +78,7 @@
   input:
     date_de_naissance: 1919-12-25
     regime_general_cnav_liquidation_date: 1987-01-01
-    regime_general_cnav_trimestres: 100
+    regime_general_cnav_duree_assurance: 100
   output:
     regime_general_cnav_coefficient_de_proratisation: 120 / 150
 
@@ -89,6 +89,6 @@
   input:
     date_de_naissance: 1947-11-19
     regime_general_cnav_liquidation_date: 2008-11-18
-    regime_general_cnav_trimestres: 156
+    regime_general_cnav_duree_assurance: 156
   output:
     regime_general_cnav_coefficient_de_proratisation: 156 / 158

@@ -145,7 +145,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
       ipp_csv_id: nbsam_0148
   metadata:
     order:
-    - ne_avant_1933_01_01
+    - ne_avant_1934_01_01
     - ne_apres_1934_01_01
     - ne_apres_1935_01_01
     - ne_apres_1936_01_01

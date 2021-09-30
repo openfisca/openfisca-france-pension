@@ -17,7 +17,7 @@
     date_de_naissance: 1925-11-19
     regime_general_cnav_salaire_de_reference: 1000
     regime_general_cnav_liquidation_date: 2000-11-30
-    regime_general_cnav_trimestres: 160
+    regime_general_cnav_duree_assurance: 160
     regime_general_cnav_coefficient_de_proratisation: 1
   output:
     regime_general_cnav_pension_brute: 1000 * .5

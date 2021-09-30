@@ -40,7 +40,7 @@ Les variables créées seront préfixées par le nom du régime (par exemple `re
 L'étude des réformes du système de retraite peut être facilement conduite
 en mobilisant l'objet idoine [`Reform`](https://openfisca.org/doc/coding-the-legislation/reforms.html#reforms) fourni par OpenFisca qui viendra modifier, retirer ou ajouter, de façon sélective, certaines variables du système de retraite ou en modifier certains paramètres.
 
-Ainsi, on peut comparer plusieurs systèmes socio-fiscaux en modifiant les composants du code de manière minimale. 
+Ainsi, on peut comparer plusieurs systèmes socio-fiscaux en modifiant les composants du code de manière minimale.
 
 ## [FR] Les composantes des régimes modélisées
 
@@ -60,8 +60,8 @@ Il définit les éléments essentiels d'un régime en annuité (décote, surcote
 Le régime général de la sécurité sociale [`RegimeGeneralCnav`](openfisca_france_pension/regimes/regime_general_cnav.py) a été modélisé avec les variables suivantes:
 - `cotisation_employeur` et `cotisation_salarie`
 - `salaire_de_reference`
-- `trimestres`
-- `majoration_duree_assurance_trimestres` (non implémentée)
+- `duree_assurance`
+- `majoration_duree_assurance` (non implémentée)
 - `coefficient_de_proratisation`
 - `decote_trimestres`
 - `decote`

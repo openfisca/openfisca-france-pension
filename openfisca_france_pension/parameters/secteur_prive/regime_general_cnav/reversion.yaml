@@ -1,8 +1,8 @@
 description: Taux de réversion et âge d'ouverture de la réversion
-taux_reversion:
+taux:
   description: Taux de réversion (en %)
   values:
-    1995-01-01: 
+    1995-01-01:
       value: 54
     1982-12-01:
       value: 52
@@ -10,11 +10,11 @@ taux_reversion:
       value: 50
   metadata:
     ipp_csv_id: tx_rev_rg
-    unit: year 
-age_reversion:
+    unit: year
+age_ouverture:
   description: Âge d'ouverture de la réversion
   values:
-    2009-01-01: 
+    2009-01-01:
       value: 55
     2007-07-01:
       value: 51
@@ -26,11 +26,11 @@ age_reversion:
       value: 65
   metadata:
     ipp_csv_id: age_rev_rg
-    unit: year 
+    unit: year
 metadata:
   order:
-  - reversion_age
-  - reversion_taux
+  - age_ouverture
+  - taux
   reference:
     2009-01-01:
       title: Loi n° 2008-1330 du 17 décembre 2008
