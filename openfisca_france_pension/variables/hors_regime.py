@@ -18,6 +18,15 @@ class TypesCategorieSalarie(Enum):
     non_pertinent = 'non_pertinent'
 
 
+class TypesRaisonDepartTauxPleinAnticipe(Enum):
+    __order__ = 'non_concerne ancien_deporte inapte ancien_combattant travailleur_manuel'  # Needed to preserve the enum order in Python 2
+    non_concerne = "Non concerné"
+    ancien_deporte = "Ancien déporté ou interné politique"
+    inapte = "Inapte"
+    ancien_combattant = "Ancien combattant"
+    travailleur_manuel = "Travailleur manuel ou mère de famille ouvrière"
+
+
 class age_au_31_decembre(Variable):
     value_type = float
     entity = Person
@@ -82,3 +91,12 @@ class taux_de_prime(Variable):
     definition_period = YEAR
     label = 'Taux de prime dans la fonction publique'
     set_input = set_input_dispatch_by_period
+
+
+class raison_depart_taux_plein_anticipe(Variable):
+    value_type = Enum
+    possible_values = TypesRaisonDepartTauxPleinAnticipe
+    default_value = TypesRaisonDepartTauxPleinAnticipe.non_concerne
+    entity = Person
+    label = "Raison du départ anticipé au taux plein "
+    definition_period = ETERNITY

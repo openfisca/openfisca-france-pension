@@ -13,6 +13,7 @@ from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
+from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
     salaire_de_refererence[filter] = np.apply_along_axis(mean_over_largest, axis=0, arr=arr)
@@ -109,6 +110,23 @@ class regime_general_cnav_cotisation(Variable):
 
     def formula(individu, period):
         return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
+
+class regime_general_cnav_age_annulation_decote(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = 'Âge auquel un individu peut partir au taux plein (éventuellement de façon anticipée)'
+
+    def formula_1972_01_01(individu, period, parameters):
+        aad_droit_commun = 65
+        aad_inaptitude = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_inaptitude
+        raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
+        aad = switch(raison_depart_taux_plein_anticipe, {TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun, TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude})
+        return aad
+
+    def formula_1945(individu, period, parameters):
+        aad_droit_commun = 65
+        return aad_droit_commun
 
 class regime_general_cnav_duree_assurance(Variable):
     value_type = int
@@ -280,7 +298,7 @@ class regime_general_cnav_decote_trimestres(Variable):
         return decote_trimestres
 
     def formula_1983_04_01(individu, period, parameters):
-        aad = 65
+        aad = individu('regime_general_cnav_age_annulation_decote', period)
         date_de_naissance = individu('date_de_naissance', period)
         trimestres_cibles_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
         age_en_mois_a_la_liquidation = (individu('regime_general_cnav_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
@@ -290,7 +308,7 @@ class regime_general_cnav_decote_trimestres(Variable):
         return decote_trimestres
 
     def formula_1945(individu, period, parameters):
-        aad = 65
+        aad = individu('regime_general_cnav_age_annulation_decote', period)
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         decote_trimestres = max_(0, np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3))
