@@ -43,16 +43,73 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         # default_value = 65 can be kept and firs formula removed
         # not clean, clear nor readable but may save memory
 
+        def formula_1976_07_01(individu, period, parameters):
+            # TODO use legislative parameter
+            aad_droit_commun = 65
+            aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
+            aad_inaptitude = parameters(period).regime_name.aad.age_annulation_decote_inaptitude
+            aad_anciens_anciens_combattants = parameters(period).regime_name.aad.age_annulation_decote_anciens_combattants
+            aad_anciens_travailleurs_manuels = parameters(period).regime_name.aad.travailleurs_manuels.age_annulation_decote
+            # TODO Ajouter durée d'assurance pour les travailleurs manuels
+            raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
+            aad = switch(
+                raison_depart_taux_plein_anticipe,
+                {
+                    TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun,
+                    TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes,
+                    TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude,
+                    TypesRaisonDepartTauxPleinAnticipe.ancien_combattant: aad_anciens_anciens_combattants,
+                    TypesRaisonDepartTauxPleinAnticipe.travailleur_manuel: aad_anciens_travailleurs_manuels,
+                    }
+                )
+            return aad
+
+        def formula_1974_01_01(individu, period, parameters):
+            # TODO use legislative parameter
+            aad_droit_commun = 65
+            aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
+            aad_inaptitude = parameters(period).regime_name.aad.age_annulation_decote_inaptitude
+            aad_anciens_anciens_combattants = parameters(period).regime_name.aad.age_annulation_decote_anciens_combattants
+
+            raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
+            aad = switch(
+                raison_depart_taux_plein_anticipe,
+                {
+                    TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun,
+                    TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes,
+                    TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude,
+                    TypesRaisonDepartTauxPleinAnticipe.ancien_combattant: aad_anciens_anciens_combattants,
+                    }
+                )
+            return aad
+
         def formula_1972_01_01(individu, period, parameters):
             # TODO use legislative parameter
             aad_droit_commun = 65
+            aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
             aad_inaptitude = parameters(period).regime_name.aad.age_annulation_decote_inaptitude
             raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
             aad = switch(
                 raison_depart_taux_plein_anticipe,
                 {
                     TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun,
-                    TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude
+                    TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes,
+                    TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude,
+                    }
+                )
+            return aad
+
+
+        def formula_1965_05_01(individu, period, parameters):
+            # TODO use legislative parameter
+            aad_droit_commun = 65
+            aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
+            raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
+            aad = switch(
+                raison_depart_taux_plein_anticipe,
+                {
+                    TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun,
+                    TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes,
                     }
                 )
             return aad
