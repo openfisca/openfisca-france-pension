@@ -56,11 +56,25 @@ class date_de_naissance(Variable):
     label = 'Date de naissance'
 
 
+class duree_assurance_cotisee_tous_regimes(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance cotisée tous régimes (trimestres cotisés tous régimes confondus)"
+
+    def formula(individu, period):
+        regimes = ['regime_general_cnav', 'fonction_publique']
+        return sum(
+            individu(f'{regime}_duree_assurance_cotisee', period)
+            for regime in regimes
+            )
+
+
 class duree_assurance_tous_regimes(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance tous régimes (trimestres accumulés tous régimes confondus)"
+    label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
         regimes = ['regime_general_cnav', 'fonction_publique']
