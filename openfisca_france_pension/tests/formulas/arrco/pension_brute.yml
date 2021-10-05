@@ -1,0 +1,8 @@
+- name: points Arrco
+  description: test
+  absolute_error_margin: .001
+  period: 2010
+  input:
+    arrco_points: 1000
+  output:
+     69.42178 / 1.25

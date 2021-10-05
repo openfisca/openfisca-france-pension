@@ -99,11 +99,50 @@ class RegimeArrco(AbstractRegimeComplementaire):
                 [salarie_non_cadre, salarie_cadre],
                 )
 
+    class pension_brute(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension brute"
+
+        def formula_1999(individu, period, parameters):
+            valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
+            points = individu("regime_name_points", period)
+            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
+            pension_brute = (points + points_minimum_garantis) * valeur_du_point
+            return pension_brute
+
+        def formula_1957(individu, period, parameters):
+            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
+            points = individu("regime_name_points", period)
+            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
+            pension_brute = (points + points_minimum_garantis) * valeur_du_point
+            return pension_brute
 
 #     def pension(self, data, coefficient_age, pension_brute_b,
 #                 majoration_pension, trim_decote):
 #         ''' le régime Arrco ne tient pas compte du coefficient de
 #         minoration pour le calcul des majorations pour enfants '''
+
+    class points(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points"
+
+        def formula_1999(individu, period, parameters):
+            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
+            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            cotisation = individu("regime_name_cotisation", period)
+            return cotisation / salaire_de_reference / taux_appel
+
+        def formula_1957(individu, period, parameters):
+            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
+            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            cotisation = individu("regime_name_cotisation", period)
+            return cotisation / salaire_de_reference / taux_appel
+
+
 
 
 class RegimeAgirc(AbstractRegimeComplementaire):

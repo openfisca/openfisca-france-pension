@@ -1,6 +1,7 @@
 """Abstract regimes definition."""
 from datetime import datetime
 from openfisca_core.model_api import *
+from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
 'Régime de base de la fonction publique.'
 import numpy as np
@@ -25,13 +26,6 @@ class fonction_publique_duree_assurance_cotisee(Variable):
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance cotisée (en trimestres cotisés)"
-
-class fonction_publique_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
 
 class fonction_publique_majoration_pension(Variable):
     value_type = float
@@ -94,6 +88,13 @@ class fonction_publique_cotisation(Variable):
 
     def formula(individu, period):
         return individu('fonction_publique_cotisation_employeur', period) + individu('fonction_publique_cotisation_salarie', period)
+
+class fonction_publique_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class fonction_publique_duree_assurance(Variable):
     value_type = int

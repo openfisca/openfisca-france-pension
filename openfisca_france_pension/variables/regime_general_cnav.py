@@ -1,6 +1,7 @@
 """Abstract regimes definition."""
 from datetime import datetime
 from openfisca_core.model_api import *
+from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
 'Régime de base du secteur privé: régime général de la CNAV.'
 import functools
@@ -41,13 +42,6 @@ class regime_general_cnav_duree_assurance_cotisee(Variable):
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance cotisée (en trimestres cotisés)"
-
-class regime_general_cnav_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
 
 class regime_general_cnav_majoration_pension(Variable):
     value_type = float
@@ -110,6 +104,13 @@ class regime_general_cnav_cotisation(Variable):
 
     def formula(individu, period):
         return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
+
+class regime_general_cnav_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class regime_general_cnav_age_annulation_decote(Variable):
     value_type = int
@@ -350,7 +351,7 @@ class regime_general_cnav_majoration_duree_assurance(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         liquidation = annee_de_liquidation == period.start.year
-        majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 2
+        majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 8
         return liquidation * majoration_duree_assurance_enfant
 
 class regime_general_cnav_pension_minimale(Variable):
