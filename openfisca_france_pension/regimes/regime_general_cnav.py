@@ -461,7 +461,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             liquidation = (annee_de_liquidation == period.start.year)
             # TODO créer une variable dédiée pour refléter la législation voir précis de législation retraite
-            majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 2
+            majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 8
             return liquidation * majoration_duree_assurance_enfant
 
     class pension_minimale(Variable):

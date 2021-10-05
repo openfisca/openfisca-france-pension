@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 from openfisca_core.model_api import *
+from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 
 # Import the Entities specifically defined for this tax and benefit system
 from openfisca_france_pension.entities import Person
@@ -23,6 +24,13 @@ class AbstractRegime(object):
 
         def formula(individu, period):
             return individu("regime_name_cotisation_employeur", period) + individu("regime_name_cotisation_salarie", period)
+
+    class liquidation_date(Variable):
+        value_type = date
+        entity = Person
+        definition_period = ETERNITY
+        label = 'Date de liquidation'
+        default_value = datetime.max.date()
 
     # class cotisation_employeur(Variable):
     #     value_type = float
@@ -92,13 +100,6 @@ class AbstractRegimeDeBase(AbstractRegime):
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance cotisée (en trimestres cotisés)"
-
-    class liquidation_date(Variable):
-        value_type = date
-        entity = Person
-        definition_period = ETERNITY
-        label = 'Date de liquidation'
-        default_value = datetime.max.date()
 
     class majoration_pension(Variable):
         value_type = float
@@ -170,7 +171,7 @@ class AbstractRegimeComplementaire(AbstractRegime):
         label = "Points"
 
         def formula(individu, period, parameters):
-            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_nominal
+            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
             taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
             cotisation = individu("regime_name_cotisation", period)
             return cotisation / salaire_de_reference / taux_appel
@@ -235,8 +236,11 @@ class AbstractRegimeComplementaire(AbstractRegime):
         def formula(individu, period):
             pension_brute = individu("regime_name_pension_brute", period)
             majoration_pension = individu("regime_name_majoration_pension", period)
-            coefficient_de_minoration = individu("coefficient_de_minoration", period)
-            decote = individu("regime_name_decote", period)
+            coefficient_de_minoration = individu("regime_name_coefficient_de_minoration", period)
+            try:
+                decote = individu("regime_name_decote", period)
+            except VariableNotFoundError:
+                decote = 0
             pension = (
                 (pension_brute + majoration_pension)
                 * (1 - decote)
@@ -251,7 +255,7 @@ class AbstractRegimeComplementaire(AbstractRegime):
         label = "Pension brute"
 
         def formula(individu, period, parameters):
-            valeur_du_point = parameters(period).regime_name.valeur_du_point
+            valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
             points = individu("regime_name_points", period)
             points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
             pension_brute = (points + points_minimum_garantis) * valeur_du_point

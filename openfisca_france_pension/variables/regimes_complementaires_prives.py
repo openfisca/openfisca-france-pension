@@ -1,6 +1,7 @@
 """Abstract regimes definition."""
 from datetime import datetime
 from openfisca_core.model_api import *
+from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
 'Régimes complémentaires du secteur privé.'
 import numpy as np
@@ -24,7 +25,7 @@ class arrco_points(Variable):
     label = 'Points'
 
     def formula(individu, period, parameters):
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_nominal
+        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
         taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
         cotisation = individu('arrco_cotisation', period)
         return cotisation / salaire_de_reference / taux_appel
@@ -50,8 +51,11 @@ class arrco_pension(Variable):
     def formula(individu, period):
         pension_brute = individu('arrco_pension_brute', period)
         majoration_pension = individu('arrco_majoration_pension', period)
-        coefficient_de_minoration = individu('coefficient_de_minoration', period)
-        decote = individu('arrco_decote', period)
+        coefficient_de_minoration = individu('arrco_coefficient_de_minoration', period)
+        try:
+            decote = individu('arrco_decote', period)
+        except VariableNotFoundError:
+            decote = 0
         pension = (pension_brute + majoration_pension) * (1 - decote) * coefficient_de_minoration
         return pension
 
@@ -62,7 +66,7 @@ class arrco_pension_brute(Variable):
     label = 'Pension brute'
 
     def formula(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.valeur_du_point
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         points = individu('arrco_points', period)
         points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
@@ -76,6 +80,13 @@ class arrco_cotisation(Variable):
 
     def formula(individu, period):
         return individu('arrco_cotisation_employeur', period) + individu('arrco_cotisation_salarie', period)
+
+class arrco_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class arrco_coefficient_de_minoration(Variable):
     value_type = float
@@ -138,6 +149,44 @@ class arrco_cotisation_salarie(Variable):
         salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, categorie_salarie == TypesCategorieSalarie.prive_cadre], [salarie_non_cadre, salarie_cadre])
 
+class arrco_pension_brute(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension brute'
+
+    def formula_1999(individu, period, parameters):
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        points = individu('arrco_points', period)
+        points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
+        pension_brute = (points + points_minimum_garantis) * valeur_du_point
+        return pension_brute
+
+    def formula_1957(individu, period, parameters):
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
+        points = individu('arrco_points', period)
+        points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
+        pension_brute = (points + points_minimum_garantis) * valeur_du_point
+        return pension_brute
+
+class arrco_points(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points'
+
+    def formula_1999(individu, period, parameters):
+        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
+        cotisation = individu('arrco_cotisation', period)
+        return cotisation / salaire_de_reference / taux_appel
+
+    def formula_1957(individu, period, parameters):
+        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
+        cotisation = individu('arrco_cotisation', period)
+        return cotisation / salaire_de_reference / taux_appel
+
 class agirc_coefficient_de_minoration(Variable):
     value_type = float
     default_value = 1.0
@@ -152,7 +201,7 @@ class agirc_points(Variable):
     label = 'Points'
 
     def formula(individu, period, parameters):
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_nominal
+        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
         taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         cotisation = individu('agirc_cotisation', period)
         return cotisation / salaire_de_reference / taux_appel
@@ -178,8 +227,11 @@ class agirc_pension(Variable):
     def formula(individu, period):
         pension_brute = individu('agirc_pension_brute', period)
         majoration_pension = individu('agirc_majoration_pension', period)
-        coefficient_de_minoration = individu('coefficient_de_minoration', period)
-        decote = individu('agirc_decote', period)
+        coefficient_de_minoration = individu('agirc_coefficient_de_minoration', period)
+        try:
+            decote = individu('agirc_decote', period)
+        except VariableNotFoundError:
+            decote = 0
         pension = (pension_brute + majoration_pension) * (1 - decote) * coefficient_de_minoration
         return pension
 
@@ -190,7 +242,7 @@ class agirc_pension_brute(Variable):
     label = 'Pension brute'
 
     def formula(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.valeur_du_point
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
         points = individu('agirc_points', period)
         points_minimum_garantis = individu('agirc_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
@@ -204,6 +256,13 @@ class agirc_cotisation(Variable):
 
     def formula(individu, period):
         return individu('agirc_cotisation_employeur', period) + individu('agirc_cotisation_salarie', period)
+
+class agirc_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class agirc_coefficient_de_minoration(Variable):
     value_type = float
