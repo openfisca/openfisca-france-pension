@@ -111,6 +111,7 @@ class regime_general_cnav_liquidation_date(Variable):
     definition_period = ETERNITY
     label = 'Date de liquidation'
     default_value = datetime.max.date()
+
 class regime_general_cnav_age_annulation_decote_droit_commun(Variable):
     value_type = float
     entity = Person
@@ -121,9 +122,6 @@ class regime_general_cnav_age_annulation_decote_droit_commun(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         aad_annee = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].annee
         aad_mois = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].mois
-        print(aad_annee)
-        print(aad_mois)
-        print(aad_annee + aad_mois / 12)
         return aad_annee + aad_mois / 12
 
     def formula_1945(individu, period, parameters):
@@ -141,8 +139,6 @@ class regime_general_cnav_age_annulation_decote(Variable):
         aad_anciens_anciens_combattants = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_anciens_combattants
         aad_anciens_travailleurs_manuels = parameters(period).secteur_prive.regime_general_cnav.aad.travailleurs_manuels.age_annulation_decote
         aad_droit_commun = individu('regime_general_cnav_age_annulation_decote_droit_commun', period)
-        print(period)
-        print(aad_droit_commun)
         raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
         aad = switch(raison_depart_taux_plein_anticipe, {TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun, TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes, TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude, TypesRaisonDepartTauxPleinAnticipe.ancien_combattant: aad_anciens_anciens_combattants, TypesRaisonDepartTauxPleinAnticipe.travailleur_manuel: aad_anciens_travailleurs_manuels})
         return aad
