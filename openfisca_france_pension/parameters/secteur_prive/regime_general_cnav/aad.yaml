@@ -6,14 +6,14 @@ age_annulation_decote_en_fonction_date_naissance:
     annee:
       description: Année
       values:
-        1983-04-01:
+        1945-01-01:
           value: 65.0
       metadata:
         ipp_csv_id: ageplein_base
     mois:
       description: Mois
       values:
-        1983-04-01:
+        1945-01-01:
           value: 0.0
     metadata:
       order:

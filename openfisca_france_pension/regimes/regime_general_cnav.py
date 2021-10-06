@@ -36,8 +36,23 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
     variable_prefix = "regime_general_cnav"
     parameters_prefix = "secteur_prive.regime_general_cnav"
 
+    class age_annulation_decote_droit_commun(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Âge auquel un individu peut partir au taux plein hors départ anticipé"
+
+        def formula_2011_07_01(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            aad_annee = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].annee
+            aad_mois = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].mois
+            return aad_annee + aad_mois / 12
+
+        def formula_1945(individu, period, parameters):
+            return parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance.ne_avant_1951_07_01.annee
+
     class age_annulation_decote(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
         label = "Âge auquel un individu peut partir au taux plein (éventuellement de façon anticipée)"
@@ -46,11 +61,11 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula_1976_07_01(individu, period, parameters):
             # TODO use legislative parameter
-            aad_droit_commun = 65
             aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
             aad_inaptitude = parameters(period).regime_name.aad.age_annulation_decote_inaptitude
             aad_anciens_anciens_combattants = parameters(period).regime_name.aad.age_annulation_decote_anciens_combattants
             aad_anciens_travailleurs_manuels = parameters(period).regime_name.aad.travailleurs_manuels.age_annulation_decote
+            aad_droit_commun = individu("regime_name_age_annulation_decote_droit_commun", period)
             # TODO Ajouter durée d'assurance pour les travailleurs manuels
             raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
             aad = switch(
@@ -160,76 +175,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
     #         trim_maj = trim_maj_mda
     #     return trim_maj
 
-    class salaire_de_reference(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Salaire annuel moyen de base dit salaire de référence"
-
-        def formula_1994(individu, period, parameters):
-            OFFSET = 10  # do not start working before 10 year
-            liquidation_date = individu('regime_name_liquidation_date', period)
-            annee_de_naissance = (
-                individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
-                )
-            annees_de_naissance_distinctes = np.unique(
-                annee_de_naissance[liquidation_date >= np.datetime64(period.start)]
-                )
-            salaire_de_reference = individu.empty_array()
-            for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
-                if _annee_de_naissance + OFFSET >= period.start.year:
-                    break
-                k = int(
-                    parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
-                        np.array(str(_annee_de_naissance), dtype="datetime64[Y]")
-                        ]
-                    )
-                mean_over_largest = make_mean_over_largest(k)
-                revalorisation = dict()
-                revalorisation[period.start.year] = 1
-                for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
-                    # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
-                    revalorisation[annee_salaire] = (
-                        np.prod(
-                            np.array([
-                                parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient
-                                for _annee in range(annee_salaire + 1, period.start.year + 1)
-                                ])
-                            )
-                        )
-                # print(period.start.year, _annee_de_naissance + OFFSET)
-                filter = annee_de_naissance == _annee_de_naissance,
-                # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
-                arr = np.vstack([
-                    min_(
-                        individu('salaire_de_base', period = year)[filter],
-                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
-                        )
-                    * revalorisation[year]
-                    for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
-                    ])
-                compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
-
-            return salaire_de_reference
-
-        def formula_1972(individu, period, parameters):
-            # TODO test and adapt like 1994 formula
-            n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01
-            mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
-            annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
-            salaire_de_refererence = np.apply_along_axis(
-                mean_over_largest,
-                axis = 0,
-                arr = np.vstack([
-                    min_(
-                        individu('salaire_de_base', period = year),
-                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
-                        )
-                    for year in range(period.start.year, annee_initiale, -1)
-                    ]),
-                )
-            return salaire_de_refererence
-
     class coefficient_de_proratisation(Variable):
         value_type = float
         entity = Person
@@ -241,7 +186,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             duree_de_proratisation = (
                 parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
                 )
-            aad = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance]
+            aad = individu('regime_name_age_annulation_decote', period)
             coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
@@ -252,7 +197,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             trimestres_apres_aad = max_(
                 0,
                 np.trunc(
-                    (age_en_mois_a_la_liquidation - aad.annee * 12 - aad.mois) / 3
+                    (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )
             trimestres = individu("regime_name_duree_assurance", period)
@@ -271,7 +216,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             duree_de_proratisation = (
                 parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
                 )
-            aad = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance.ne_avant_1951_07_01.annee
+            aad = individu('regime_name_age_annulation_decote', period)
             coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[date_de_naissance]
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
@@ -384,8 +329,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula_2011_07_01(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            aad_annee = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].annee
-            aad_mois = parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].mois
+            aad = individu('regime_name_age_annulation_decote', period)
             duree_assurance_cible_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
                 )
@@ -394,8 +338,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
             trimestres_avant_aad = np.trunc(
-                (aad_annee * 12 + aad_mois - age_en_mois_a_la_liquidation) / 3
+                (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
+            print(aad)
             duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
             decote_trimestres = max_(
                 0,
@@ -407,7 +352,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return decote_trimestres
 
         def formula_1983_04_01(individu, period, parameters):
-            # TODO Age annulation de la décôte (aad) as a parameter
             aad = individu("regime_name_age_annulation_decote", period)
             date_de_naissance = individu("date_de_naissance", period)
             duree_assurance_cible_taux_plein = (
@@ -433,10 +377,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula_1945(individu, period, parameters):
             # TODO extract age by generation
             aad = individu("regime_name_age_annulation_decote", period)
-            # aad = 65
-            # (
-            #     parameters(period).regime_name.age_annulation_decote_en_fonction_date_naissance.ne_avant_1951_07_01
-            #     )
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (
                 liquidation_date
@@ -463,6 +403,18 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             # TODO créer une variable dédiée pour refléter la législation voir précis de législation retraite
             majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 8
             return liquidation * majoration_duree_assurance_enfant
+
+    class majoration_pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Majoration de pension"
+
+    def formula(individu, period, parameters):
+        # TODO Fix date, legislation parameters
+        nombre_enfants = individu('nombre_enfants', period)
+        pension_brute  = individu('pension_brute', period)
+        return .1 * pension_brute * (nombre_enfants >= 3)
 
     class pension_minimale(Variable):
         value_type = float
@@ -626,6 +578,76 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             surcote = individu('regime_name_surcote', period)
             pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
             return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
+
+    class salaire_de_reference(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Salaire annuel moyen de base dit salaire de référence"
+
+        def formula_1994(individu, period, parameters):
+            OFFSET = 10  # do not start working before 10 year
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            annee_de_naissance = (
+                individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+                )
+            annees_de_naissance_distinctes = np.unique(
+                annee_de_naissance[liquidation_date >= np.datetime64(period.start)]
+                )
+            salaire_de_reference = individu.empty_array()
+            for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
+                if _annee_de_naissance + OFFSET >= period.start.year:
+                    break
+                k = int(
+                    parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
+                        np.array(str(_annee_de_naissance), dtype="datetime64[Y]")
+                        ]
+                    )
+                mean_over_largest = make_mean_over_largest(k)
+                revalorisation = dict()
+                revalorisation[period.start.year] = 1
+                for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
+                    # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
+                    revalorisation[annee_salaire] = (
+                        np.prod(
+                            np.array([
+                                parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient
+                                for _annee in range(annee_salaire + 1, period.start.year + 1)
+                                ])
+                            )
+                        )
+                # print(period.start.year, _annee_de_naissance + OFFSET)
+                filter = annee_de_naissance == _annee_de_naissance,
+                # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
+                arr = np.vstack([
+                    min_(
+                        individu('salaire_de_base', period = year)[filter],
+                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+                        )
+                    * revalorisation[year]
+                    for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
+                    ])
+                compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
+
+            return salaire_de_reference
+
+        def formula_1972(individu, period, parameters):
+            # TODO test and adapt like 1994 formula
+            n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01
+            mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
+            annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
+            salaire_de_refererence = np.apply_along_axis(
+                mean_over_largest,
+                axis = 0,
+                arr = np.vstack([
+                    min_(
+                        individu('salaire_de_base', period = year),
+                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+                        )
+                    for year in range(period.start.year, annee_initiale, -1)
+                    ]),
+                )
+            return salaire_de_refererence
 
     class surcote(Variable):
         value_type = float
