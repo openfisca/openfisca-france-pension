@@ -130,6 +130,31 @@ class AbstractRegimeDeBase(AbstractRegime):
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
             return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
+    class pension_servie(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension servie"
+
+        def formula(individu, period, parameters):
+            revalorisation = parameters(period).regime_name.reval_p.coefficient
+            pension = individu('regime_name_pension', period)
+            pension_servie_annee_precedente = individu('regime_name_pension_servie', period.offset(-1))
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            pension_servie = select(
+                [
+                    annee_de_liquidation < period.start.year,
+                    annee_de_liquidation == period.start.year,
+                    annee_de_liquidation > period.start.year,
+                    ],
+                [
+                    0,
+                    pension,
+                    pension_servie_annee_precedente * revalorisation
+                    ]
+                )
+            return pension_servie
+
     class salaire_de_reference(Variable):
         value_type = float
         entity = Person

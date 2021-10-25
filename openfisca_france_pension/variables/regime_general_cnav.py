@@ -64,6 +64,32 @@ class regime_general_cnav_pension_brute(Variable):
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
         return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
+class regime_general_cnav_pension_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension servie'
+
+    def formula(individu, period, parameters):
+        revalorisation = parameters(period).secteur_prive.regime_general_cnav.reval_p.coefficient
+        pension = individu('regime_general_cnav_pension', period)
+        pension_servie_annee_precedente = individu('regime_general_cnav_pension_servie', period.offset(-1))
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        pension_servie = select([annee_de_liquidation < period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation > period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
+        return pension_servie
+
+class regime_general_cnav_salaire_de_reference(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Salaire de référence'
+
+class regime_general_cnav_surcote(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Surcote'
+
 class regime_general_cnav_taux_de_liquidation(Variable):
     value_type = float
     entity = Person
