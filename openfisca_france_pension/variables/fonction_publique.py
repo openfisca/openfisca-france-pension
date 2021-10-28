@@ -9,23 +9,21 @@ from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
-class fonction_publique_decote(Variable):
+class fonction_publique_cotisation(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Décote'
+    label = 'cotisation retraite employeur'
 
-class fonction_publique_duree_assurance(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance (en trimestres)"
+    def formula(individu, period):
+        return individu('fonction_publique_cotisation_employeur', period) + individu('fonction_publique_cotisation_salarie', period)
 
-class fonction_publique_duree_assurance_cotisee(Variable):
-    value_type = int
+class fonction_publique_liquidation_date(Variable):
+    value_type = date
     entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance cotisée (en trimestres cotisés)"
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class fonction_publique_majoration_pension(Variable):
     value_type = float
@@ -56,18 +54,6 @@ class fonction_publique_pension_brute(Variable):
         taux_de_liquidation = individu('fonction_publique_taux_de_liquidation', period)
         return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
-class fonction_publique_salaire_de_reference(Variable):
-    value_type = float
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Salaire de référence'
-
-class fonction_publique_surcote(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Surcote'
-
 class fonction_publique_taux_de_liquidation(Variable):
     value_type = float
     entity = Person
@@ -79,22 +65,6 @@ class fonction_publique_taux_de_liquidation(Variable):
         surcote = individu('fonction_publique_surcote', period)
         taux_plein = parameters(period).secteur_public.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
-
-class fonction_publique_cotisation(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('fonction_publique_cotisation_employeur', period) + individu('fonction_publique_cotisation_salarie', period)
-
-class fonction_publique_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
 
 class fonction_publique_duree_assurance(Variable):
     value_type = int

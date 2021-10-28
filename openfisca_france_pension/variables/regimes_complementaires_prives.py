@@ -11,24 +11,21 @@ from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeComplementaire
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 
-class arrco_coefficient_de_minoration(Variable):
-    value_type = float
-    default_value = 1.0
-    entity = Person
-    definition_period = YEAR
-    label = 'Coefficient de minoration'
-
-class arrco_points(Variable):
+class arrco_cotisation(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Points'
+    label = 'cotisation retraite employeur'
 
-    def formula(individu, period, parameters):
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
-        taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
-        cotisation = individu('arrco_cotisation', period)
-        return cotisation / salaire_de_reference / taux_appel
+    def formula(individu, period):
+        return individu('arrco_cotisation_employeur', period) + individu('arrco_cotisation_salarie', period)
+
+class arrco_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class arrco_majoration_pension(Variable):
     value_type = float
@@ -58,35 +55,6 @@ class arrco_pension(Variable):
             decote = 0
         pension = (pension_brute + majoration_pension) * (1 - decote) * coefficient_de_minoration
         return pension
-
-class arrco_pension_brute(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Pension brute'
-
-    def formula(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
-        points = individu('arrco_points', period)
-        points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
-        pension_brute = (points + points_minimum_garantis) * valeur_du_point
-        return pension_brute
-
-class arrco_cotisation(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('arrco_cotisation_employeur', period) + individu('arrco_cotisation_salarie', period)
-
-class arrco_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
 
 class arrco_coefficient_de_minoration(Variable):
     value_type = float
@@ -187,12 +155,21 @@ class arrco_points(Variable):
         cotisation = individu('arrco_cotisation', period)
         return cotisation / salaire_de_reference / taux_appel
 
-class agirc_coefficient_de_minoration(Variable):
+class agirc_cotisation(Variable):
     value_type = float
-    default_value = 1.0
     entity = Person
     definition_period = YEAR
-    label = 'Coefficient de minoration'
+    label = 'cotisation retraite employeur'
+
+    def formula(individu, period):
+        return individu('agirc_cotisation_employeur', period) + individu('agirc_cotisation_salarie', period)
+
+class agirc_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class agirc_points(Variable):
     value_type = float
@@ -247,22 +224,6 @@ class agirc_pension_brute(Variable):
         points_minimum_garantis = individu('agirc_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
-
-class agirc_cotisation(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('agirc_cotisation_employeur', period) + individu('agirc_cotisation_salarie', period)
-
-class agirc_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
 
 class agirc_coefficient_de_minoration(Variable):
     value_type = float

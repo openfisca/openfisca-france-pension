@@ -25,29 +25,21 @@ def make_mean_over_largest(k):
         return mean_over_k_nonzero_largest(vector, k=k)
     return mean_over_largest
 
-class regime_general_cnav_decote(Variable):
+class regime_general_cnav_cotisation(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Décote'
+    label = 'cotisation retraite employeur'
 
-class regime_general_cnav_duree_assurance(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance (en trimestres)"
+    def formula(individu, period):
+        return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
 
-class regime_general_cnav_duree_assurance_cotisee(Variable):
-    value_type = int
+class regime_general_cnav_liquidation_date(Variable):
+    value_type = date
     entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance cotisée (en trimestres cotisés)"
-
-class regime_general_cnav_majoration_pension(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Majoration de pension'
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
 
 class regime_general_cnav_pension(Variable):
     value_type = float
@@ -72,18 +64,6 @@ class regime_general_cnav_pension_brute(Variable):
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
         return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
-class regime_general_cnav_salaire_de_reference(Variable):
-    value_type = float
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Salaire de référence'
-
-class regime_general_cnav_surcote(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Surcote'
-
 class regime_general_cnav_taux_de_liquidation(Variable):
     value_type = float
     entity = Person
@@ -95,22 +75,6 @@ class regime_general_cnav_taux_de_liquidation(Variable):
         surcote = individu('regime_general_cnav_surcote', period)
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
-
-class regime_general_cnav_cotisation(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
-
-class regime_general_cnav_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
 
 class regime_general_cnav_age_annulation_decote_droit_commun(Variable):
     value_type = float
