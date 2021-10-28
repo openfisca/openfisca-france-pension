@@ -64,31 +64,6 @@ class RewriteRegimeVariableClass(ast.NodeTransformer):
         return node
 
 
-def get_regime_attribute(regime_class_node, attribute):
-    """Gets regime attribute.
-
-    Args:
-        regime_class_node (ast.ClassDef): regime node
-        attribute (str): attribute name
-
-    Returns:
-        [Any]: the attribute value
-    """
-    assert (
-        isinstance(regime_class_node, ast.ClassDef)
-        and "Regime" in regime_class_node.name
-        and "Abstract" not in regime_class_node.name
-        ), f"{regime_class_node.name} is not a valid regime"
-    for sub_node in regime_class_node.body:
-        if isinstance(sub_node, ast.Assign):
-            for target in sub_node.targets:
-                if target.id == attribute:
-                    assert isinstance(sub_node.value, ast.Constant), f"{sub_node.value} is not a constant"
-                    return sub_node.value.value
-
-    return None
-
-
 def flatten_regime(
         regime_class_node_by_name,
         regime_class_node,
@@ -181,6 +156,31 @@ def flatten_regimes(input_string, output_filename):
         file.write(output_string)
 
     log.info(f"Result saved as {output_filename}")
+
+
+def get_regime_attribute(regime_class_node, attribute):
+    """Gets regime attribute.
+
+    Args:
+        regime_class_node (ast.ClassDef): regime node
+        attribute (str): attribute name
+
+    Returns:
+        [Any]: the attribute value
+    """
+    assert (
+        isinstance(regime_class_node, ast.ClassDef)
+        and "Regime" in regime_class_node.name
+        and "Abstract" not in regime_class_node.name
+        ), f"{regime_class_node.name} is not a valid regime"
+    for sub_node in regime_class_node.body:
+        if isinstance(sub_node, ast.Assign):
+            for target in sub_node.targets:
+                if target.id == attribute:
+                    assert isinstance(sub_node.value, ast.Constant), f"{sub_node.value} is not a constant"
+                    return sub_node.value.value
+
+    return None
 
 
 def main(verbose = False):
