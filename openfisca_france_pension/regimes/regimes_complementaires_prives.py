@@ -143,8 +143,6 @@ class RegimeArrco(AbstractRegimeComplementaire):
             return cotisation / salaire_de_reference / taux_appel
 
 
-
-
 class RegimeAgirc(AbstractRegimeComplementaire):
     name = "Régime complémentaire Agirc"
     variable_prefix = "agirc"
