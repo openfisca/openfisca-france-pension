@@ -71,11 +71,14 @@ class regime_general_cnav_pension_servie(Variable):
     label = 'Pension servie'
 
     def formula(individu, period, parameters):
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(annee_de_liquidation > period.start.year):
+            return individu.empty_array()
+        last_year = period.start.period('year').offset(-1)
+        pension_servie_annee_precedente = individu('regime_general_cnav_pension_servie', last_year)
         revalorisation = parameters(period).secteur_prive.regime_general_cnav.reval_p.coefficient
         pension = individu('regime_general_cnav_pension', period)
-        pension_servie_annee_precedente = individu('regime_general_cnav_pension_servie', period.offset(-1))
-        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        pension_servie = select([annee_de_liquidation < period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation > period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
+        pension_servie = select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
         return pension_servie
 
 class regime_general_cnav_salaire_de_reference(Variable):
@@ -406,8 +409,9 @@ class regime_general_cnav_salaire_de_reference(Variable):
             k = int(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[np.array(str(_annee_de_naissance), dtype='datetime64[Y]')])
             mean_over_largest = make_mean_over_largest(k)
             revalorisation = dict()
+            REVAL_S_YEAR_MIN = 1949
             revalorisation[period.start.year] = 1
-            for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
+            for annee_salaire in range(max(_annee_de_naissance + OFFSET, REVAL_S_YEAR_MIN), period.start.year + 1):
                 revalorisation[annee_salaire] = np.prod(np.array([parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient for _annee in range(annee_salaire + 1, period.start.year + 1)]))
             filter = (annee_de_naissance == _annee_de_naissance,)
             arr = np.vstack([min_(individu('salaire_de_base', period=year)[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[year] for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])
