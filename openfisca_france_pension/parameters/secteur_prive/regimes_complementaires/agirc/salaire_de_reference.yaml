@@ -150,7 +150,7 @@ salaire_reference_en_nominal:
       2002-01-01: currency-EUR
       1960-01-01: currency-FRF
       1947-04-01: currency-AFRF
-salaire_reference_prix_achat_en_euros:
+salaire_reference_en_euros:
   description: Salaire de référence AGIRC (prix d'achat) en euros
   values:
     2018-01-01:
@@ -301,7 +301,7 @@ salaire_reference_prix_achat_en_euros:
 metadata:
   order:
   - salaire_reference_en_nominal
-  - salaire_reference_prix_achat_en_euros
+  - salaire_reference_en_euros
   reference:
     2018-01-01: Circ. Arrco 2017-07-DT du 16/10/2017
     2017-01-01: Circ. Arrco 2016-02-DT du 10/10/2016
