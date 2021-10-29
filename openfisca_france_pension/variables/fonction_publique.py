@@ -25,6 +25,24 @@ class fonction_publique_liquidation_date(Variable):
     label = 'Date de liquidation'
     default_value = datetime.max.date()
 
+class fonction_publique_cotisation_employeur(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'cotisation retraite employeur'
+
+    def formula(individu, period, parameters):
+        NotImplementedError
+
+class fonction_publique_cotisation_salarie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'cotisation retraite employeur'
+
+    def formula(individu, period, parameters):
+        NotImplementedError
+
 class fonction_publique_majoration_pension(Variable):
     value_type = float
     entity = Person

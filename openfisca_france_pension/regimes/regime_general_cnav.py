@@ -340,7 +340,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             trimestres_avant_aad = np.trunc(
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
-            print(aad)
             duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
             decote_trimestres = max_(
                 0,
