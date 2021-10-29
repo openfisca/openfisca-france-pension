@@ -89,18 +89,6 @@ class fonction_publique_pension_servie(Variable):
         pension_servie = select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
         return pension_servie
 
-class fonction_publique_salaire_de_reference(Variable):
-    value_type = float
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Salaire de référence'
-
-class fonction_publique_surcote(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Surcote'
-
 class fonction_publique_taux_de_liquidation(Variable):
     value_type = float
     entity = Person
