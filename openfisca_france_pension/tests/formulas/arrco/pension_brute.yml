@@ -5,4 +5,4 @@
   input:
     arrco_points: 1000
   output:
-     69.42178 / 1.25
+    arrco_pension_brute: 1000 * 1.1799

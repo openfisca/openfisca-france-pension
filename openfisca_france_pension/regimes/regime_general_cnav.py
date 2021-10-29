@@ -603,8 +603,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 mean_over_largest = make_mean_over_largest(k)
                 revalorisation = dict()
+                REVAL_S_YEAR_MIN = 1949
                 revalorisation[period.start.year] = 1
-                for annee_salaire in range(_annee_de_naissance + OFFSET, period.start.year + 1):
+                for annee_salaire in range(max(_annee_de_naissance + OFFSET, REVAL_S_YEAR_MIN), period.start.year + 1):
                     # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
                     revalorisation[annee_salaire] = (
                         np.prod(

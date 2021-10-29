@@ -72,6 +72,23 @@ class fonction_publique_pension_brute(Variable):
         taux_de_liquidation = individu('fonction_publique_taux_de_liquidation', period)
         return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
+class fonction_publique_pension_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(annee_de_liquidation > period.start.year):
+            return individu.empty_array()
+        last_year = period.start.period('year').offset(-1)
+        pension_servie_annee_precedente = individu('fonction_publique_pension_servie', last_year)
+        revalorisation = parameters(period).secteur_public.reval_p.coefficient
+        pension = individu('fonction_publique_pension', period)
+        pension_servie = select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
+        return pension_servie
+
 class fonction_publique_taux_de_liquidation(Variable):
     value_type = float
     entity = Person
