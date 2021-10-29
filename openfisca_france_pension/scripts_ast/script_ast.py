@@ -1,6 +1,6 @@
 """Generate openfisca variables of pension scheme."""
 
-import ast as ast
+import ast
 import copy
 import logging
 import os
@@ -64,32 +64,48 @@ class RewriteRegimeVariableClass(ast.NodeTransformer):
         return node
 
 
-def get_regime_attribute(regime_node, attribute):
-    """Gets regime attribute.
+def flatten_regime(
+        regime_class_node_by_name,
+        regime_class_node,
+        parameters_prefix,
+        variable_prefix,
+        existing_variables_name,
+        output_node,
+        ):
+    new_variables_name = set()
+    for node in regime_class_node.body:
+        if type(node) == ast.ClassDef:
+            # Node is a variable.
+            if node.name not in existing_variables_name:
+                # Variable is not overriden by a subclass variable.
+                existing_variables_name.add(node.name)
+                new_variables_name.add(node.name)
 
-    Args:
-        regime_node (ast.ClassDef): regime node
-        attribute (str): attrbute name
+    # Aplatit récursivement les variables la classe de base de cette classe Regime.
+    if regime_class_node.bases[0].id != "object":
+        flatten_regime(
+            regime_class_node_by_name,
+            regime_class_node_by_name[regime_class_node.bases[0].id],
+            parameters_prefix,
+            variable_prefix,
+            existing_variables_name,
+            output_node,
+            )
 
-    Returns:
-        [Any]: the attribute value
-    """
-    assert (
-        isinstance(regime_node, ast.ClassDef)
-        and "Regime" in regime_node.name
-        and "Abstract" not in regime_node.name
-        ), f"{regime_node.name} is not a valid regime"
-    for sub_node in regime_node.body:
-        if isinstance(sub_node, ast.Assign):
-            for target in sub_node.targets:
-                if target.id == attribute:
-                    assert isinstance(sub_node.value, ast.Constant), f"{sub_node.value} is not a constant"
-                    return sub_node.value.value
-
-    return None
+    # Aplatit les variables de cette classe Regime.
+    for node in regime_class_node.body:
+        if type(node) == ast.ClassDef:
+            # Node is a variable.
+            if node.name in new_variables_name:
+                node = copy.deepcopy(node)
+                node = ast.fix_missing_locations(RewriteRegimeVariableClass(
+                    parameters_prefix,
+                    variable_prefix,
+                    ).visit(node))
+                output_node.body.append(node)
 
 
-def create_regime_variables(input_string, output_filename):
+def flatten_regimes(input_string, output_filename):
     """Creates regime variables.
 
     Args:
@@ -97,74 +113,74 @@ def create_regime_variables(input_string, output_filename):
         output_filename (path): Destination of created variables code
     """
     # parser le texte du fichier en structure logique de type AST
-    input_ast_tree = ast.parse(input_string)
+    input_node = ast.parse(input_string)
 
     # pour afficher un arbre AST faire une commande
-    # print(ast.dump(input_ast_tree, indent=4))
+    # print(ast.dump(input_node, indent=4))
 
     # créer un nouveau arbre AST vide qui va contenir le nouveau code
-    output_ast_tree = ast.Module(body=[], type_ignores=[])
+    output_node = ast.Module(body=[], type_ignores=[])
 
-    # Créer un dictionnaire de l'heritage pour tous les régimes pour pouvoir recopier les classes heritées
-    inheritance_dict = {}
-    # pour chaque element du body de l'arbre ast
-    for node in input_ast_tree.body:
-        # si cet element est une classe et son nom contien le mot Regime
+    # Crée un dictionnaire de toutes les classes contenant "Regime" dans le nom.
+    regime_class_node_by_name = {}
+    for node in input_node.body:
         if type(node) == ast.ClassDef and "Regime" in node.name:
-            # copier les classes internes (variables)
-            inheritance_dict[node.name] = {}
-            inheritance_dict[node.name]['variables'] = {}
-            for el in node.body:
-                if type(el) == ast.ClassDef:
-                    inheritance_dict[node.name]['variables'][el.name] = copy.deepcopy(el)
-            # identifier la classe superieure et la sauvegarder sous la cle "extends"
-            inheritance_dict[node.name]['extends'] = node.bases[0].id
+            regime_class_node_by_name[node.name] = node
 
-    # pour afficher le contenu du dictionnaire de l'heritage
-    # pprint(inheritance_dict)
-
-    # Remplir le nouveau arbre AST avec les classes applatties
-    # Pour tous les Régimes (les elements du code de type class dont le nom contient le mot Regime) et si la classe n'est pas "abstraite"
-    for node in input_ast_tree.body:
+    # Recrée un AST en aplatissant les classes Regime
+    # (ie en en extrayant et renommant les variables OpenFisca).
+    for node in input_node.body:
         if type(node) == ast.ClassDef and "Regime" in node.name:
-            if "Abstract" in node.name:
-                continue
-            regime = node
-            parameters_prefix = get_regime_attribute(regime, "parameters_prefix")
-            variable_prefix = get_regime_attribute(regime, "variable_prefix")
-            # si la classe étend une autre classe
-            extends = inheritance_dict[regime.name]['extends']
-            # log.debug(regime.name, "extends", extends)
-            if extends != "object":
-                # tant que la classe étend une autre (et ainsi de suite recursivement)
-                while extends != "object":
-                    superRegime = inheritance_dict[extends]
-                    inheritedClasses = superRegime['variables']
-                    for _key, value in inheritedClasses.items():
-                        el = copy.deepcopy(value)
-                        el = ast.fix_missing_locations(RewriteRegimeVariableClass(parameters_prefix, variable_prefix).visit(el))
-                        output_ast_tree.body.append(el)
-                    extends = inheritance_dict[extends]['extends']
-                # copier ses propres classes
-                for el in regime.body:
-                    if type(el) == ast.ClassDef:
-                        el = copy.deepcopy(el)
-                        el = ast.fix_missing_locations(RewriteRegimeVariableClass(parameters_prefix, variable_prefix).visit(el))
-                        output_ast_tree.body.append(el)
+            if "Abstract" not in node.name:
+                parameters_prefix = get_regime_attribute(node, "parameters_prefix")
+                variable_prefix = get_regime_attribute(node, "variable_prefix")
+                flatten_regime(
+                    regime_class_node_by_name,
+                    node,
+                    parameters_prefix,
+                    variable_prefix,
+                    set(),
+                    output_node,
+                    )
         else:
-            output_ast_tree.body.append(node)
+            output_node.body.append(node)
 
     # pour afficher le nouveau arbre AST faire une commande
-    # print(ast.dump(output_ast_tree, indent=4))
+    # print(ast.dump(output_node, indent=4))
 
     # convertir la structure logique de l'arbre AST en code python formatté (type string)
-    output_string = ast.unparse(output_ast_tree)
+    output_string = ast.unparse(output_node)
 
     # sauvegarder
     with open(output_filename, "w") as file:
         file.write(output_string)
 
     log.info(f"Result saved as {output_filename}")
+
+
+def get_regime_attribute(regime_class_node, attribute):
+    """Gets regime attribute.
+
+    Args:
+        regime_class_node (ast.ClassDef): regime node
+        attribute (str): attribute name
+
+    Returns:
+        [Any]: the attribute value
+    """
+    assert (
+        isinstance(regime_class_node, ast.ClassDef)
+        and "Regime" in regime_class_node.name
+        and "Abstract" not in regime_class_node.name
+        ), f"{regime_class_node.name} is not a valid regime"
+    for sub_node in regime_class_node.body:
+        if isinstance(sub_node, ast.Assign):
+            for target in sub_node.targets:
+                if target.id == attribute:
+                    assert isinstance(sub_node.value, ast.Constant), f"{sub_node.value} is not a constant"
+                    return sub_node.value.value
+
+    return None
 
 
 def main(verbose = False):
@@ -208,7 +224,7 @@ def main(verbose = False):
                 input_string += "\n" + file.read()
 
         logging.basicConfig(level = logging.DEBUG if verbose else logging.WARNING, stream = sys.stdout)
-        create_regime_variables(input_string, regime_files['output'])
+        flatten_regimes(input_string, regime_files['output'])
 
 
 if __name__ == "__main__":

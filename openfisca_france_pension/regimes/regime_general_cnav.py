@@ -340,7 +340,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             trimestres_avant_aad = np.trunc(
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
-            print(aad)
             duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
             decote_trimestres = max_(
                 0,
@@ -413,7 +412,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
     def formula(individu, period, parameters):
         # TODO Fix date, legislation parameters
         nombre_enfants = individu('nombre_enfants', period)
-        pension_brute  = individu('pension_brute', period)
+        pension_brute = individu('pension_brute', period)
         return .1 * pension_brute * (nombre_enfants >= 3)
 
     class pension_minimale(Variable):
@@ -423,7 +422,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         label = "Pension minimale (minimum contributif du régime général)"
 
         # TODO Peut-on réutiliser la formule de 2004
-
         def formula_2004_01_01(individu, period, parameters):
             regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
             minimum_contributif = regime_general_cnav.montant_mico

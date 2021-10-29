@@ -32,50 +32,50 @@ class AbstractRegime(object):
         label = 'Date de liquidation'
         default_value = datetime.max.date()
 
-    # class cotisation_employeur(Variable):
-    #     value_type = float
-    #     entity = Person
-    #     definition_period = YEAR
-    #     label = "cotisation retraite employeur"
+    class cotisation_employeur(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "cotisation retraite employeur"
 
-    #     def formula(individu, period, parameters):
-    #         NotImplementedError
+        def formula(individu, period, parameters):
+            NotImplementedError
 
-    # class cotisation_salarie(Variable):
-    #     value_type = float
-    #     entity = Person
-    #     definition_period = YEAR
-    #     label = "cotisation retraite employeur"
+    class cotisation_salarie(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "cotisation retraite employeur"
 
-    #     def formula(individu, period, parameters):
-    #         NotImplementedError
+        def formula(individu, period, parameters):
+            NotImplementedError
 
-    # class majoration_pension(Variable):
-    #     value_type = int
-    #     entity = Person
-    #     definition_period = MONTH
-    #     label = "Majoration de pension"
+    class majoration_pension(Variable):
+        value_type = int
+        entity = Person
+        definition_period = MONTH
+        label = "Majoration de pension"
 
-    #     def formula(individu, period, parameters):
-    #         NotImplementedError
+        def formula(individu, period, parameters):
+            NotImplementedError
 
-    # class pension(Variable):
-    #     value_type = float
-    #     entity = Person
-    #     definition_period = YEAR
-    #     label = "Pension"
+    class pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
 
-    #     def formula(individu, period, parameters):
-    #         NotImplementedError
+        def formula(individu, period, parameters):
+            NotImplementedError
 
-    # class pension_brute(Variable):
-    #     value_type = float
-    #     entity = Person
-    #     definition_period = YEAR
-    #     label = "Pension brute"
+    class pension_brute(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension brute"
 
-    #     def formula(individu, period, parameters):
-    #         NotImplementedError
+        def formula(individu, period, parameters):
+            NotImplementedError
 
 
 class AbstractRegimeDeBase(AbstractRegime):
