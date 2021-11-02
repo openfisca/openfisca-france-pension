@@ -22,7 +22,7 @@ def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence,
 def make_mean_over_largest(k):
 
     def mean_over_largest(vector):
-        return mean_over_k_nonzero_largest(vector, k=k)
+        return mean_over_k_nonzero_largest(vector, k=int(k))
     return mean_over_largest
 
 class regime_general_cnav_cotisation(Variable):
