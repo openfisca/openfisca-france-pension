@@ -16,6 +16,9 @@ from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 
+REVAL_S_YEAR_MIN = 1949
+
+
 def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
     salaire_de_refererence[filter] = np.apply_along_axis(
         mean_over_largest,
@@ -603,8 +606,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 mean_over_largest = make_mean_over_largest(k)
                 revalorisation = dict()
-                REVAL_S_YEAR_MIN = 1949
                 revalorisation[period.start.year] = 1
+                # TODO on doit pouvoir faire plus efficace en sortant de la boucle
                 for annee_salaire in range(max(_annee_de_naissance + OFFSET, REVAL_S_YEAR_MIN), period.start.year + 1):
                     # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
                     revalorisation[annee_salaire] = (
@@ -615,7 +618,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                                 ])
                             )
                         )
-                # print(period.start.year, _annee_de_naissance + OFFSET)
                 filter = annee_de_naissance == _annee_de_naissance,
                 # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
                 arr = np.vstack([
@@ -631,10 +633,23 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return salaire_de_reference
 
         def formula_1972(individu, period, parameters):
+            OFFSET = 10  # do not start working before 10 year
             # TODO test and adapt like 1994 formula
             n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01
             mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
             annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
+            revalorisation = dict()
+            revalorisation[period.start.year] = 1
+            for annee_salaire in range(max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), period.start.year + 1):
+                revalorisation[annee_salaire] = (
+                    np.prod(
+                        np.array([
+                            parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient
+                            for _annee in range(annee_salaire + 1, period.start.year + 1)
+                            ])
+                        )
+                    )
+
             salaire_de_refererence = np.apply_along_axis(
                 mean_over_largest,
                 axis = 0,
@@ -643,7 +658,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                         individu('salaire_de_base', period = year),
                         parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
                         )
-                    for year in range(period.start.year, annee_initiale, -1)
+                    * revalorisation[annee_salaire]
+                    for year in range(period.start.year, max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), -1)
                     ]),
                 )
             return salaire_de_refererence
