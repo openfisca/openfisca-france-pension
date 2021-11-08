@@ -26,89 +26,6 @@ def make_mean_over_largest(k):
         return mean_over_k_nonzero_largest(vector, k=int(k))
     return mean_over_largest
 
-class regime_general_cnav_cotisation(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
-
-class regime_general_cnav_liquidation_date(Variable):
-    value_type = date
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Date de liquidation'
-    default_value = datetime.max.date()
-
-class regime_general_cnav_pension(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Pension'
-
-    def formula(individu, period):
-        pension_brute = individu('regime_general_cnav_pension_brute', period)
-        majoration_pension = individu('regime_general_cnav_majoration_pension', period)
-        return pension_brute + majoration_pension
-
-class regime_general_cnav_pension_brute(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Pension brute'
-
-    def formula(individu, period):
-        coefficient_de_proratisation = individu('regime_general_cnav_coefficient_de_proratisation', period)
-        salaire_de_reference = individu('regime_general_cnav_salaire_de_reference', period)
-        taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
-        return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
-
-class regime_general_cnav_pension_servie(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Pension servie'
-
-    def formula(individu, period, parameters):
-        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        if all(annee_de_liquidation > period.start.year):
-            return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
-        pension_servie_annee_precedente = individu('regime_general_cnav_pension_servie', last_year)
-        revalorisation = parameters(period).secteur_prive.regime_general_cnav.reval_p.coefficient
-        pension = individu('regime_general_cnav_pension', period)
-        pension_servie = select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
-        return pension_servie
-
-class regime_general_cnav_taux_de_liquidation(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Taux de liquidation de la pension'
-
-    def formula(individu, period, parameters):
-        decote = individu('regime_general_cnav_decote', period)
-        surcote = individu('regime_general_cnav_surcote', period)
-        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
-        return taux_plein * (1 - decote + surcote)
-
-class regime_general_cnav_age_annulation_decote_droit_commun(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Âge auquel un individu peut partir au taux plein hors départ anticipé'
-
-    def formula_2011_07_01(individu, period, parameters):
-        date_de_naissance = individu('date_de_naissance', period)
-        aad_annee = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].annee
-        aad_mois = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].mois
-        return aad_annee + aad_mois / 12
-
-    def formula_1945(individu, period, parameters):
-        return parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance.ne_avant_1951_07_01.annee
-
 class regime_general_cnav_age_annulation_decote(Variable):
     value_type = float
     entity = Person
@@ -153,33 +70,20 @@ class regime_general_cnav_age_annulation_decote(Variable):
         aad_droit_commun = 65
         return aad_droit_commun
 
-class regime_general_cnav_duree_assurance(Variable):
-    value_type = int
+class regime_general_cnav_age_annulation_decote_droit_commun(Variable):
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance (trimestres validés au régime général)"
+    label = 'Âge auquel un individu peut partir au taux plein hors départ anticipé'
 
-    def formula(individu, period, parameters):
-        duree_assurance_cotisee = individu('regime_general_cnav_duree_assurance_cotisee', period)
-        majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
-        return duree_assurance_cotisee + majoration_duree_assurance
+    def formula_2011_07_01(individu, period, parameters):
+        date_de_naissance = individu('date_de_naissance', period)
+        aad_annee = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].annee
+        aad_mois = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance[date_de_naissance].mois
+        return aad_annee + aad_mois / 12
 
-class regime_general_cnav_duree_assurance_cotisee(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance cotisée (trimestres cotisés au régime général)"
-
-    def formula(individu, period, parameters):
-        salaire_de_base = individu('salaire_de_base', period)
-        try:
-            salaire_validant_un_trimestre = parameters(period).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
-        except ParameterNotFound:
-            import openfisca_core.periods as periods
-            salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
-        trimestres_valides_avant_cette_annee = individu('regime_general_cnav_duree_assurance_cotisee', period.last_year)
-        trimestres_valides_dans_l_annee = min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
-        return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
+    def formula_1945(individu, period, parameters):
+        return parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_en_fonction_date_naissance.ne_avant_1951_07_01.annee
 
 class regime_general_cnav_coefficient_de_proratisation(Variable):
     value_type = float
@@ -225,6 +129,15 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
         trimestres = individu('regime_general_cnav_duree_assurance', period)
         coefficient = min_(1, trimestres / duree_de_proratisation)
         return coefficient
+
+class regime_general_cnav_cotisation(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'cotisation retraite employeur'
+
+    def formula(individu, period):
+        return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
 
 class regime_general_cnav_cotisation_employeur(Variable):
     value_type = float
@@ -305,6 +218,41 @@ class regime_general_cnav_decote_trimestres(Variable):
         decote_trimestres = max_(0, np.trunc((aad * 12 - age_en_mois_a_la_liquidation) / 3))
         return decote_trimestres
 
+class regime_general_cnav_duree_assurance(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance (trimestres validés au régime général)"
+
+    def formula(individu, period, parameters):
+        duree_assurance_cotisee = individu('regime_general_cnav_duree_assurance_cotisee', period)
+        majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
+        return duree_assurance_cotisee + majoration_duree_assurance
+
+class regime_general_cnav_duree_assurance_cotisee(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance cotisée (trimestres cotisés au régime général)"
+
+    def formula(individu, period, parameters):
+        salaire_de_base = individu('salaire_de_base', period)
+        try:
+            salaire_validant_un_trimestre = parameters(period).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
+        except ParameterNotFound:
+            import openfisca_core.periods as periods
+            salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
+        trimestres_valides_avant_cette_annee = individu('regime_general_cnav_duree_assurance_cotisee', period.last_year)
+        trimestres_valides_dans_l_annee = min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
+        return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
+
+class regime_general_cnav_liquidation_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Date de liquidation'
+    default_value = datetime.max.date()
+
 class regime_general_cnav_majoration_duree_assurance(Variable):
     value_type = int
     entity = Person
@@ -322,6 +270,45 @@ class regime_general_cnav_majoration_pension(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Majoration de pension'
+
+class regime_general_cnav_pension(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension'
+
+    def formula(individu, period):
+        pension_brute = individu('regime_general_cnav_pension_brute', period)
+        majoration_pension = individu('regime_general_cnav_majoration_pension', period)
+        return pension_brute + majoration_pension
+
+class regime_general_cnav_pension_brute(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension brute'
+
+    def formula(individu, period):
+        coefficient_de_proratisation = individu('regime_general_cnav_coefficient_de_proratisation', period)
+        salaire_de_reference = individu('regime_general_cnav_salaire_de_reference', period)
+        taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
+        return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
+
+class regime_general_cnav_pension_maximale(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension maximale'
+
+    def formula(individu, period, parameters):
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
+        pension_plafond_hors_sucote = taux_plein * plafond_securite_sociale
+        pension_brute = individu('regime_general_cnav_pension_brute', period)
+        taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
+        surcote = individu('regime_general_cnav_surcote', period)
+        pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
+        return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
 
 class regime_general_cnav_pension_minimale(Variable):
     value_type = float
@@ -364,21 +351,22 @@ class regime_general_cnav_pension_minimale(Variable):
         avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
         return avts
 
-class regime_general_cnav_pension_maximale(Variable):
+class regime_general_cnav_pension_servie(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Pension maximale'
+    label = 'Pension servie'
 
     def formula(individu, period, parameters):
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
-        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
-        pension_plafond_hors_sucote = taux_plein * plafond_securite_sociale
-        pension_brute = individu('regime_general_cnav_pension_brute', period)
-        taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
-        surcote = individu('regime_general_cnav_surcote', period)
-        pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
-        return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(annee_de_liquidation > period.start.year):
+            return individu.empty_array()
+        last_year = period.start.period('year').offset(-1)
+        pension_servie_annee_precedente = individu('regime_general_cnav_pension_servie', last_year)
+        revalorisation = parameters(period).secteur_prive.regime_general_cnav.reval_p.coefficient
+        pension = individu('regime_general_cnav_pension', period)
+        pension_servie = select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
+        return pension_servie
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
@@ -479,3 +467,15 @@ class regime_general_cnav_surcote(Variable):
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aad = max_(0, np.trunc((age_en_mois_a_la_liquidation - aad * 12) / 3))
         return coefficient_majoration_par_trimestre * trimestres_apres_aad
+
+class regime_general_cnav_taux_de_liquidation(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Taux de liquidation de la pension'
+
+    def formula(individu, period, parameters):
+        decote = individu('regime_general_cnav_decote', period)
+        surcote = individu('regime_general_cnav_surcote', period)
+        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
+        return taux_plein * (1 - decote + surcote)

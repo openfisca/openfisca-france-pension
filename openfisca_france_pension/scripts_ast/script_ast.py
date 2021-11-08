@@ -70,7 +70,7 @@ def flatten_regime(
         parameters_prefix,
         variable_prefix,
         existing_variables_name,
-        output_node,
+        variables_node,
         ):
     new_variables_name = set()
     for node in regime_class_node.body:
@@ -89,7 +89,7 @@ def flatten_regime(
             parameters_prefix,
             variable_prefix,
             existing_variables_name,
-            output_node,
+            variables_node,
             )
 
     # Aplatit les variables de cette classe Regime.
@@ -102,7 +102,7 @@ def flatten_regime(
                     parameters_prefix,
                     variable_prefix,
                     ).visit(node))
-                output_node.body.append(node)
+                variables_node.append(node)
 
 
 def flatten_regimes(input_string, output_filename):
@@ -129,6 +129,7 @@ def flatten_regimes(input_string, output_filename):
 
     # Recrée un AST en aplatissant les classes Regime
     # (ie en en extrayant et renommant les variables OpenFisca).
+    variables_node = []
     for node in input_node.body:
         if type(node) == ast.ClassDef and "Regime" in node.name:
             if "Abstract" not in node.name:
@@ -140,10 +141,14 @@ def flatten_regimes(input_string, output_filename):
                     parameters_prefix,
                     variable_prefix,
                     set(),
-                    output_node,
+                    variables_node,
                     )
         else:
             output_node.body.append(node)
+    # Trie les variables OpenFisca par ordre alphabétique.
+    variables_node.sort(key = lambda variable_node: variable_node.name)
+    for variable_node in variables_node:
+        output_node.body.append(variable_node)
 
     # pour afficher le nouveau arbre AST faire une commande
     # print(ast.dump(output_node, indent=4))
