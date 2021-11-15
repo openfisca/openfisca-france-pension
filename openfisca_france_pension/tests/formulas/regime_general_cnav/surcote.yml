@@ -21,7 +21,7 @@
   output:
     regime_general_cnav_liquidation_date: 1970-11-30
     regime_general_cnav_surcote: .1
-    regime_general_cnav_pension_brute: 1000 * .44
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .44
 
 
 - name: Surcote entre 1984 et 2003 pour une personne de 66 ans
@@ -34,7 +34,7 @@
     regime_general_cnav_coefficient_de_proratisation: 1
   output:
     regime_general_cnav_surcote: 0
-    regime_general_cnav_pension_brute: 1000 * (.5)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * (.5)
 
 - name: Surcote entre 2004 et 2007 pour une personne de 66 ans et 160 trimestres
   absolute_error_margin: .001
@@ -48,7 +48,7 @@
     regime_general_cnav_coefficient_de_proratisation: 1
     regime_general_cnav_decote: 0
     regime_general_cnav_surcote: .03
-    regime_general_cnav_pension_brute: 1000 * .5 * (1 + 0.03)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5 * (1 + 0.03)
 
 
 - name: Surcote entre 2007 et 2009 pour une personne de 66 ans et 170 trimestres
@@ -63,7 +63,7 @@
     regime_general_cnav_coefficient_de_proratisation: 1
     regime_general_cnav_decote: 0
     regime_general_cnav_surcote: .05
-    regime_general_cnav_pension_brute: 1000 * .5 * (1 + 0.05)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5 * (1 + 0.05)
 
 
 - name: Surcote entre après 2009 pour une personne de 66 ans et 160 trimestres
@@ -78,4 +78,4 @@
     regime_general_cnav_coefficient_de_proratisation: 1
     regime_general_cnav_decote: 0
     regime_general_cnav_surcote: .05
-    regime_general_cnav_pension_brute: 1000 * .5 * (1 + 0.05)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5 * (1 + 0.05)

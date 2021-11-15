@@ -7,7 +7,7 @@
     regime_general_cnav_salaire_de_reference: 1000
     regime_general_cnav_coefficient_de_proratisation: 1
   output:
-    regime_general_cnav_pension_brute: 1000 * .4
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .4
 
 
 - name: Taux plein après 1971
@@ -20,4 +20,4 @@
     regime_general_cnav_duree_assurance: 160
     regime_general_cnav_coefficient_de_proratisation: 1
   output:
-    regime_general_cnav_pension_brute: 1000 * .5
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5

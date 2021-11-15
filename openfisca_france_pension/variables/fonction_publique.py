@@ -159,7 +159,7 @@ class fonction_publique_pension(Variable):
         majoration_pension = individu('fonction_publique_majoration_pension', period)
         return pension_brute + majoration_pension
 
-class fonction_publique_pension_brute(Variable):
+class fonction_publique_pension_avant_minimum_et_plafonnement(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
@@ -170,6 +170,15 @@ class fonction_publique_pension_brute(Variable):
         salaire_de_reference = individu('fonction_publique_salaire_de_reference', period)
         taux_de_liquidation = individu('fonction_publique_taux_de_liquidation', period)
         return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
+
+class fonction_publique_pension_brute(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension brute'
+
+    def formula(individu, period, parameters):
+        NotImplementedError
 
 class fonction_publique_pension_servie(Variable):
     value_type = float
