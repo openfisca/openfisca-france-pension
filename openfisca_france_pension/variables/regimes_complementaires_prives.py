@@ -120,6 +120,20 @@ class agirc_pension_brute(Variable):
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
 
+class agirc_pension_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(annee_de_liquidation > period.start.year):
+            return individu.empty_array()
+        pension = individu('agirc_pension', period)
+        pension_servie = select([annee_de_liquidation >= period.start.year, annee_de_liquidation < period.start.year], [pension, 0])
+        return pension_servie
+
 class agirc_points(Variable):
     value_type = float
     entity = Person
@@ -127,10 +141,17 @@ class agirc_points(Variable):
     label = 'Points'
 
     def formula(individu, period, parameters):
+        annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        last_year = period.start.period('year').offset(-1)
+        points_annee_precedente = individu('agirc_points', last_year)
         salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
         taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         cotisation = individu('agirc_cotisation', period)
-        return cotisation / salaire_de_reference / taux_appel
+        points_annee_courante = cotisation / salaire_de_reference / taux_appel
+        if all(points_annee_precedente == 0):
+            return points_annee_courante
+        points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annee_courante])
+        return points
 
 class agirc_points_minimum_garantis(Variable):
     value_type = float
@@ -257,6 +278,20 @@ class arrco_pension_brute(Variable):
         points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
+
+class arrco_pension_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(annee_de_liquidation > period.start.year):
+            return individu.empty_array()
+        pension = individu('arrco_pension', period)
+        pension_servie = select([annee_de_liquidation >= period.start.year, annee_de_liquidation < period.start.year], [pension, 0])
+        return pension_servie
 
 class arrco_points(Variable):
     value_type = float

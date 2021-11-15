@@ -204,10 +204,30 @@ class AbstractRegimeComplementaire(AbstractRegime):
         label = "Points"
 
         def formula(individu, period, parameters):
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            last_year = period.start.period('year').offset(-1)
+            points_annee_precedente = individu('regime_name_points', last_year)
+
             salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
             taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
             cotisation = individu("regime_name_cotisation", period)
-            return cotisation / salaire_de_reference / taux_appel
+            points_annee_courante = cotisation / salaire_de_reference / taux_appel
+
+            if all(points_annee_precedente == 0):
+                return points_annee_courante
+
+            points = select(
+                [
+                    period.start.year > annee_de_liquidation,
+                    period.start.year <= annee_de_liquidation,
+                    ],
+                [
+                    points_annee_precedente,
+                    points_annee_precedente + points_annee_courante,
+                    ]
+                )
+
+            return points
 
 #     def nb_points_enf(self, data, nombre_points):
 #         ''' Application de la majoration pour enfants à charge. Deux types de
@@ -293,3 +313,29 @@ class AbstractRegimeComplementaire(AbstractRegime):
             points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
             pension_brute = (points + points_minimum_garantis) * valeur_du_point
             return pension_brute
+
+    class pension_servie(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension servie"
+
+        def formula(individu, period, parameters):
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+
+            # Raccouci pour arrêter les calculs dans le passé quand toutes les liquidations ont lieu dans le futur
+            if all(annee_de_liquidation > period.start.year):
+                return individu.empty_array()
+
+            pension = individu('regime_name_pension', period)
+            pension_servie = select(
+                [
+                    annee_de_liquidation >= period.start.year,
+                    annee_de_liquidation < period.start.year,
+                    ],
+                [
+                    pension,
+                    0
+                    ]
+                )
+            return pension_servie
