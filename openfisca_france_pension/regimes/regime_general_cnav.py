@@ -17,6 +17,7 @@ from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTaux
 
 
 REVAL_S_YEAR_MIN = 1949
+EURO_EN_FRANCS = 6.55957
 
 
 def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
@@ -412,11 +413,83 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Majoration de pension"
 
-    def formula(individu, period, parameters):
-        # TODO Fix date, legislation parameters
-        nombre_enfants = individu('nombre_enfants', period)
-        pension_brute = individu('pension_brute', period)
-        return .1 * pension_brute * (nombre_enfants >= 3)
+        def formula(individu, period, parameters):
+            # TODO Fix date, legislation parameters
+            nombre_enfants = individu('nombre_enfants', period)
+            pension_brute = individu('regime_name_pension_brute', period)
+            return .1 * pension_brute * (nombre_enfants >= 3)
+
+    class pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
+
+        def formula(individu, period):
+            pension_brute = individu('regime_name_pension_brute', period)
+            majoration_pension = individu('regime_name_majoration_pension', period)
+            return pension_brute + majoration_pension
+
+    class pension_brute(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
+
+        # TODO: inspiré de Pensipp (rapidement donc revvérifier dans pensipp et ailleurs).
+        # - Il faut améliorer le condition de taux plein.
+        # - Il faut vérfieir si le mico s'applique avant bonif ou pas
+        def formula_2012(individu, period, parameters):
+            pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
+            minimum_contributif = individu('regime_name_pension_minimale', period)
+            minimum_contributif_plafond_annuel = 12 * parameters(period).regime_name.plafond_mico.minimum_contributif_plafond_mensuel
+            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
+            taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
+            a_atteint_taux_plein =  (taux_de_liquidation >= taux_plein)
+
+            pension_tous_regime_avant_minimum = (
+                pension_avant_minimum_et_plafonnement
+                + individu('arrco_pension', period)
+                + individu('agirc_pension', period)
+                + individu('fonction_publique_pension', period)
+                )
+            pension_apres_minimum = where(
+                (
+                    (pension_avant_minimum_et_plafonnement > 0)
+                    * a_atteint_taux_plein
+                    * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel)
+                    ),
+                max_(minimum_contributif, pension_avant_minimum_et_plafonnement),
+                pension_avant_minimum_et_plafonnement
+                )
+            autres_pensions = (
+                + individu('arrco_pension', period)
+                + individu('agirc_pension', period)
+                + individu('fonction_publique_pension', period)
+                )
+            pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
+            pension_brute = where(
+                (
+                    (pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel)
+                    * (pension_apres_minimum <= minimum_contributif)
+                    ),
+                minimum_contributif_plafond_annuel - autres_pensions,
+                pension_apres_minimum
+                )
+            return pension_brute
+
+        def formula_1984(individu, period, parameters):
+            pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
+            minimum_contributif = individu('regime_name_pension_minimale', period)
+            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
+            taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
+            a_atteint_taux_plein =  (taux_de_liquidation >= taux_plein)
+            pension_brute = where(
+                (pension_avant_minimum_et_plafonnement > 0) * a_atteint_taux_plein,
+                max_(minimum_contributif, pension_avant_minimum_et_plafonnement),
+                pension_avant_minimum_et_plafonnement
+                )
+            return pension_brute
 
     class pension_minimale(Variable):
         value_type = float
@@ -428,8 +501,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula_2004_01_01(individu, period, parameters):
             regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
             minimum_contributif = regime_general_cnav.montant_mico
-            mico = minimum_contributif.minimum_contributif
-            mico_majoration = minimum_contributif.minimum_contributif_majore - mico
+            mico = minimum_contributif.minimum_contributif.annuel
+            mico_majoration = minimum_contributif.minimum_contributif_majore.annuel - mico
 
             date_de_naissance = individu("date_de_naissance", period)
             duree_de_proratisation = regime_general_cnav.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
@@ -493,6 +566,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             denominateur_majoration = select(
                 [
                     mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete,
+                    polypensionne_cotisant_moins_que_duree_requise,
+                    polypensionne_cotisant_moins_plus_duree_requise,
                     ],
                 [
                     duree_de_proratisation,
@@ -509,25 +584,29 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 1,
                 numerateur_majoration / denominateur_majoration
                 )
+
             return (
                 coefficient_de_proratisation_montant_de_base * mico
                 + coefficient_de_proratisation_majoration * mico_majoration
                 )
 
-        def formula_1983_01_01(individu, period, parameters):
-            mico = parameters(period).secteur_prive.regime_general_cnav.montant_mico
+        def formula_1984_01_01(individu, period, parameters):
+            regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
+            minimum_contributif = regime_general_cnav.montant_mico
+            mico = minimum_contributif.minimum_contributif.annuel
             trimestres_regime = individu("regime_name_duree_assurance", period)
             date_de_naissance = individu("date_de_naissance", period)
             duree_de_proratisation = (
                 parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
                 )
             coefficient_de_proratisation = min_(1, trimestres_regime / duree_de_proratisation)
-            return coefficient_de_proratisation * mico
+            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            return coefficient_de_proratisation * mico * conversion_en_euros
 
         def formula_1941_01_01(indiivdu, period, parameters):
             # TODO limite d'âge bonification etc voir section 5 précis
             avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
-            return avts
+            return avts / EURO_EN_FRANCS
 
         # ''' MICO du régime général : allocation différentielle
         # RQ :

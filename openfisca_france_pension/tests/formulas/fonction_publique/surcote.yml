@@ -9,7 +9,7 @@
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0
-    fonction_publique_pension_brute: 1000 * .75
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75
 
 
 - name: Surcote dans le public à son intauration en 2006 (par l'âge)
@@ -24,4 +24,4 @@
   output:
     fonction_publique_surcote: .03
     fonction_publique_decote: 0
-    fonction_publique_pension_brute: 1000 * .75 * (1 + .03)
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .03)

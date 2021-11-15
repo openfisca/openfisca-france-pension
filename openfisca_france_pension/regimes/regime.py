@@ -118,7 +118,7 @@ class AbstractRegimeDeBase(AbstractRegime):
             majoration_pension = individu('regime_name_majoration_pension', period)
             return pension_brute + majoration_pension
 
-    class pension_brute(Variable):
+    class pension_avant_minimum_et_plafonnement(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR

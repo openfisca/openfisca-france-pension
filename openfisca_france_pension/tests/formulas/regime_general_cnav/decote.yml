@@ -10,7 +10,7 @@
     regime_general_cnav_liquidation_date: 1968-10-31
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: .1
-    regime_general_cnav_pension_brute: 1000 * .36
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .36
 
 
 - name: Décote avant 1971 pour une personne de 60 ans
@@ -24,7 +24,7 @@
   output:
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: .5
-    regime_general_cnav_pension_brute: 1000 * .2
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .2
 
 
 - name: Décote avant 1971 pour une personne de 63 ans
@@ -38,7 +38,7 @@
   output:
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: .2
-    regime_general_cnav_pension_brute: 1000 * .32
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .32
 
 
 - name: Décote entre 1971 et 1982 pour une personne de 60 ans
@@ -53,7 +53,7 @@
     regime_general_cnav_surcote: 0
     regime_general_cnav_liquidation_date: 1975-11-18
     regime_general_cnav_decote: .5
-    regime_general_cnav_pension_brute: 1000 * (.25)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * (.25)
 
 
 - name: Décote entre 1971 et 1982 pour une personne de 63 ans
@@ -67,7 +67,7 @@
   output:
     regime_general_cnav_liquidation_date: 1978-11-18
     regime_general_cnav_surcote: 0
-    regime_general_cnav_pension_brute: 1000 * (.4)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * (.4)
     regime_general_cnav_decote: .2
 
 - name: Décote entre 1971 et 1983 pour une personne de 65 ans
@@ -82,7 +82,7 @@
     regime_general_cnav_liquidation_date: 1980-11-18
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: 0
-    regime_general_cnav_pension_brute: 1000 * (.5)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * (.5)
 
 
 - name: Décote entre 1984 et 1993 pour une personne de 65 ans
@@ -96,7 +96,7 @@
   output:
     regime_general_cnav_decote: 0
     regime_general_cnav_surcote: 0
-    regime_general_cnav_pension_brute: 1000 * (.5)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * (.5)
 
 
 - name: Décote entre 1984 et 1993 pour une personne de 63 ans
@@ -110,7 +110,7 @@
   output:
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: 0.2
-    regime_general_cnav_pension_brute: 1000 * (.4)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * (.4)
 
 
 - name: Décote entre 1984 et 1993 pour une personne de 63 ans et 148 trimestres
@@ -125,7 +125,7 @@
   output:
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: 0.05
-    regime_general_cnav_pension_brute: 1000 * .5 * (1 - .05)
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5 * (1 - .05)
 
 
 - name: Décote entre 1993 et 2003 pour une personne de 60 ans et 148 trimestres
