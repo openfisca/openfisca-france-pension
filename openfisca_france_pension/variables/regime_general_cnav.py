@@ -309,11 +309,15 @@ class regime_general_cnav_pension_brute(Variable):
     def formula_2012(individu, period, parameters):
         pension_avant_minimum_et_plafonnement = individu('regime_general_cnav_pension_avant_minimum_et_plafonnement', period)
         minimum_contributif = individu('regime_general_cnav_pension_minimale', period)
-        minimum_contributif_plafond_annuel = 12 * parameters(period).secteur_prive.regime_general_cnav.plafond_mico.minimum_contributif_plafond_mensuel
-        taux_plein = taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
-        pension_tous_regime_avant_minimum = pension_avant_minimum_et_plafonnement + individu('arrco_pension', period) + individu('agirc_pension', period) + individu('fonction_publique_pension', period)
-        pension_apres_minimum = where((pension_avant_minimum_et_plafonnement > 0) * (taux_de_liquidation >= taux_plein) * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum_et_plafonnement), pension_avant_minimum_et_plafonnement)
+        minimum_contributif_plafond_annuel = 12 * parameters(period).secteur_prive.regime_general_cnav.plafond_mico.minimum_contributif_plafond_mensuel
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
+        a_atteint_taux_plein = taux_de_liquidation >= taux_plein
+        pension_avant_minimum_et_plafonnement_a_taux_plein = where(taux_de_liquidation > 0, taux_plein * pension_avant_minimum_et_plafonnement / (taux_de_liquidation + (taux_de_liquidation <= 0)), 0)
+        pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
+        pension_tous_regime_avant_minimum = pension_avant_minimum + individu('arrco_pension', period) + individu('agirc_pension', period) + individu('fonction_publique_pension', period)
+        pension_apres_minimum = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         autres_pensions = +individu('arrco_pension', period) + individu('agirc_pension', period) + individu('fonction_publique_pension', period)
         pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
         pension_brute = where((pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), minimum_contributif_plafond_annuel - autres_pensions, pension_apres_minimum)
@@ -322,9 +326,13 @@ class regime_general_cnav_pension_brute(Variable):
     def formula_1984(individu, period, parameters):
         pension_avant_minimum_et_plafonnement = individu('regime_general_cnav_pension_avant_minimum_et_plafonnement', period)
         minimum_contributif = individu('regime_general_cnav_pension_minimale', period)
-        taux_plein = taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
+        taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
-        pension_brute = where((pension_avant_minimum_et_plafonnement > 0) * (taux_de_liquidation >= taux_plein), max_(minimum_contributif, pension_avant_minimum_et_plafonnement), pension_avant_minimum_et_plafonnement)
+        a_atteint_taux_plein = taux_de_liquidation >= taux_plein
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        pension_avant_minimum_et_plafonnement_a_taux_plein = where(taux_de_liquidation > 0, taux_plein * pension_avant_minimum_et_plafonnement / (taux_de_liquidation + (taux_de_liquidation <= 0)), 0)
+        pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
+        pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein, max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         return pension_brute
 
 class regime_general_cnav_pension_maximale(Variable):
@@ -449,12 +457,18 @@ class regime_general_cnav_surcote(Variable):
     label = 'Surcote'
 
     def formula_2009_04_01(individu, period, parameters):
-        aod = 65
+        date_de_naissance = individu('date_de_naissance', period)
+        if date(period.start.year, period.start.month, period.start.day) < date(2011, 7, 1):
+            aod_annee = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.ne_avant_1951_07_01.annee
+            aod_mois = 0
+        else:
+            aod_annee = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].annee
+            aod_mois = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].mois
         taux_surcote = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['partir_65_ans']
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
+        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)) / 3))
         distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
         duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
         duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
@@ -462,7 +476,7 @@ class regime_general_cnav_surcote(Variable):
         return taux_surcote * trimestres_surcote
 
     def formula_2007_01_01(individu, period, parameters):
-        aod = 65
+        aod = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.ne_avant_1951_07_01.annee
         taux_surcote_par_trimestre = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004
         taux_surcote_par_trimestre_moins_de_4_trimestres = taux_surcote_par_trimestre['moins_de_4_trimestres']
         taux_surcote_par_trimestre_plus_de_5_trimestres = taux_surcote_par_trimestre['plus_de_5_trimestres']
@@ -470,7 +484,7 @@ class regime_general_cnav_surcote(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
+        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - 12 * aod) / 3))
         distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
         duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
         duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
@@ -481,12 +495,12 @@ class regime_general_cnav_surcote(Variable):
         return surcote
 
     def formula_2004_01_01(individu, period, parameters):
-        aod = 65
+        aod = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.ne_avant_1951_07_01.annee
         taux_surcote_par_trimestre_moins_de_4_trimestres = parameters(period).secteur_prive.regime_general_cnav.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['moins_de_4_trimestres']
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - aod * 12) / 3))
+        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - 12 * aod) / 3))
         distance_a_2004_en_trimestres = max_(0, np.trunc((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
         duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
         duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
