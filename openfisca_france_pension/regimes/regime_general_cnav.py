@@ -460,12 +460,13 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 pension_avant_minimum_et_plafonnement_a_taux_plein
                 ) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
 
-            pension_tous_regime_avant_minimum = (
-                pension_avant_minimum
-                + individu('arrco_pension', period)
-                + individu('agirc_pension', period)
-                + individu('fonction_publique_pension', period)
+            autres_pensions = (
+                individu('arrco_pension_servie', period)
+                + individu('agirc_pension_servie', period)
+                + individu('fonction_publique_pension_servie', period)
                 )
+
+            pension_tous_regime_avant_minimum = pension_avant_minimum + autres_pensions
             pension_apres_minimum = where(
                 (
                     (pension_avant_minimum > 0)
@@ -474,11 +475,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     ),
                 max_(minimum_contributif, pension_avant_minimum),
                 pension_avant_minimum
-                )
-            autres_pensions = (
-                + individu('arrco_pension', period)
-                + individu('agirc_pension', period)
-                + individu('fonction_publique_pension', period)
                 )
             pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
             pension_brute = where(

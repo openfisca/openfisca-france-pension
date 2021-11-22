@@ -316,9 +316,9 @@ class regime_general_cnav_pension_brute(Variable):
         a_atteint_taux_plein = taux_de_liquidation >= taux_plein
         pension_avant_minimum_et_plafonnement_a_taux_plein = where(taux_de_liquidation > 0, taux_plein * pension_avant_minimum_et_plafonnement / (taux_de_liquidation + (taux_de_liquidation <= 0)), 0)
         pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
-        pension_tous_regime_avant_minimum = pension_avant_minimum + individu('arrco_pension', period) + individu('agirc_pension', period) + individu('fonction_publique_pension', period)
+        autres_pensions = individu('arrco_pension_servie', period) + individu('agirc_pension_servie', period) + individu('fonction_publique_pension_servie', period)
+        pension_tous_regime_avant_minimum = pension_avant_minimum + autres_pensions
         pension_apres_minimum = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
-        autres_pensions = +individu('arrco_pension', period) + individu('agirc_pension', period) + individu('fonction_publique_pension', period)
         pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
         pension_brute = where((pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), minimum_contributif_plafond_annuel - autres_pensions, pension_apres_minimum)
         return pension_brute
