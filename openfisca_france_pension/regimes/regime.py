@@ -324,18 +324,18 @@ class AbstractRegimeComplementaire(AbstractRegime):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
 
             # Raccouci pour arrêter les calculs dans le passé quand toutes les liquidations ont lieu dans le futur
-            if all(annee_de_liquidation > period.start.year):
+            if all(period.start.year < annee_de_liquidation):
                 return individu.empty_array()
 
             pension = individu('regime_name_pension', period)
             pension_servie = select(
                 [
-                    annee_de_liquidation >= period.start.year,
-                    annee_de_liquidation < period.start.year,
+                    period.start.year >= annee_de_liquidation,
+                    period.start.year < annee_de_liquidation,
                     ],
                 [
                     pension,
-                    0
+                    0,
                     ]
                 )
             return pension_servie

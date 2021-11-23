@@ -128,10 +128,10 @@ class agirc_pension_servie(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        if all(annee_de_liquidation > period.start.year):
+        if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
         pension = individu('agirc_pension', period)
-        pension_servie = select([annee_de_liquidation >= period.start.year, annee_de_liquidation < period.start.year], [pension, 0])
+        pension_servie = select([period.start.year >= annee_de_liquidation, period.start.year < annee_de_liquidation], [pension, 0])
         return pension_servie
 
 class agirc_points(Variable):
@@ -287,10 +287,10 @@ class arrco_pension_servie(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        if all(annee_de_liquidation > period.start.year):
+        if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
         pension = individu('arrco_pension', period)
-        pension_servie = select([annee_de_liquidation >= period.start.year, annee_de_liquidation < period.start.year], [pension, 0])
+        pension_servie = select([period.start.year >= annee_de_liquidation, period.start.year < annee_de_liquidation], [pension, 0])
         return pension_servie
 
 class arrco_points(Variable):
