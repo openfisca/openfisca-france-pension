@@ -1,10 +1,10 @@
 image: python:3.9
 
 stages:
-  - unique
+  - test
 
 test:
-  stage: unique
+  stage: test
   only:
    changes:
     - .gitlab.ci.yml
@@ -14,3 +14,12 @@ test:
   script:
     - pip install -e .[dev]
     - make test
+
+validate_yaml:
+  stage: test
+  image: curlimages/curl:latest
+  variables:
+    PARAMETERS_PATH: openfisca_france_pension/parameters
+  script:
+    - |
+      env | curl --data-binary @- --fail-with-body --header "Content-Type: text/plain; charset=utf-8" --max-time 300 --silent https://control-center.tax-benefit.org/api/gitlab/ci
