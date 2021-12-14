@@ -1,0 +1,29 @@
+- name: Majoration enfants à charge
+  description: https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/majorations_enfants.pdf
+  absolute_error_margin: .01
+  period: 2016
+  max_spiral_loops: 40
+  input:
+    date_de_naissance: 1952-01-01
+    arrco_points:
+      2016: 5263.51
+      2015: 5263.51 - 38.23
+      2014: 5263.51 - 38.23 - 595.55 * 1.0 / 4
+      2013: 5263.51 - 38.23 - 595.55 * 2.0 / 4
+      2012: 5263.51 - 38.23 - 595.55 * 3.0 / 4
+      2011: 5263.51 - 38.23 - 595.55 * 4.0 / 4
+      1998: 5263.51 - 38.23 - 595.55 * 4.0 / 4 - 1800
+    agirc_points:
+      2016: 35000
+      2015: 31000
+      2014: 29500
+      2013: 28000
+      2012: 26500
+      2011: 25000
+    nombre_enfants: 3
+    nombre_enfants_a_charge: 1
+  output:
+    arrco_pension_brute: 6586.23
+    arrco_majoration_pension: 6586.23 * .05
+    agirc_pension_brute: 15232
+    agirc_majoration_pension: 1028.12

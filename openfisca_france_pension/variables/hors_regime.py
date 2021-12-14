@@ -91,6 +91,13 @@ class nombre_enfants(Variable):
     label = "Nombre d'enfants"
 
 
+class nombre_enfants_a_charge(Variable):
+    value_type = int
+    entity = Person
+    definition_period = ETERNITY
+    label = "Nombre d'enfants à charge"
+
+
 class salaire_de_base(Variable):
     value_type = float
     entity = Person

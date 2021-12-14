@@ -1,5 +1,5 @@
 - name: Revalorisation
-  absolute_error_margin: .001
+  absolute_error_margin: .005
   period: 2015
   max_spiral_loops: 25
   input:
@@ -10,11 +10,18 @@
     regime_general_cnav_liquidation_date: 2015-11-30
     regime_general_cnav_duree_assurance: 160
     regime_general_cnav_coefficient_de_proratisation: 1
+    regime_general_cnav_majoration_pension: 1000
   output:
     regime_general_cnav_pension_brute: 20000 * .5
+    regime_general_cnav_majoration_pension_servie:
+      2014: 0.0
+      2015: 1000
+      2016: 1000 * 1.001
+      2017: 1000 * 1.001 * 1.001
+      2018: 1000 * 1.001 * 1.001 * 1.008
     regime_general_cnav_pension_servie:
       2014: 0.0
-      2015: 20000 * .5
-      2016: 20000 * .5 * 1.001
-      2017: 20000 * .5 * 1.001 * 1.001
-      2018: 20000 * .5 * 1.001 * 1.001 * 1.008
+      2015: (20000 * .5 + 1000)
+      2016: (20000 * .5 + 1000) * 1.001
+      2017: (20000 * .5 + 1000) * 1.001 * 1.001
+      2018: (20000 * .5 + 1000) * 1.001 * 1.001 * 1.008
