@@ -51,7 +51,6 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         self.add_variables_from_directory(os.path.join(COUNTRY_DIR, 'variables'))
         param_path = os.path.join(COUNTRY_DIR, 'parameters')
         self.load_parameters(param_path)
-
         taux_plein = ParameterNode(
             "taux_plein",
             data = {
@@ -64,3 +63,15 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
             )
         self.parameters.secteur_public.add_child("taux_plein", taux_plein)
         build_regimes_prelevements_sociaux(self.parameters)
+
+        arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
+        unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
+        arrco.values_list = arrco.values_list + unirs.values_list
+
+        arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
+        unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
+        arrco.values_list = arrco.values_list + unirs.values_list
+
+        arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
+        arrco.values_list = arrco.values_list + unirs.values_list

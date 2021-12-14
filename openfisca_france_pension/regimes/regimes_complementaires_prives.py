@@ -99,48 +99,77 @@ class RegimeArrco(AbstractRegimeComplementaire):
                 [salarie_non_cadre, salarie_cadre],
                 )
 
-    class pension_brute(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Pension brute"
-
-        def formula_1999(individu, period, parameters):
-            valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
-            points = individu("regime_name_points", period)
-            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
-            pension_brute = (points + points_minimum_garantis) * valeur_du_point
-            return pension_brute
-
-        def formula_1957(individu, period, parameters):
-            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
-            points = individu("regime_name_points", period)
-            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
-            pension_brute = (points + points_minimum_garantis) * valeur_du_point
-            return pension_brute
-
 #     def pension(self, data, coefficient_age, pension_brute_b,
 #                 majoration_pension, trim_decote):
 #         ''' le régime Arrco ne tient pas compte du coefficient de
 #         minoration pour le calcul des majorations pour enfants '''
 
-    class points(Variable):
+    class points_enfants_a_charge(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Points"
+        label = "Points enfants à charge"
+        # https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/majorations_enfants.pdf
+        # TODO retirer paramètres en dur
+
+        def formula(individu, period, parameters):
+            points = individu('regime_name_points', period)
+            nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
+            return .05 * points * nombre_enfants_a_charge
+
+    class points_enfants_nes_et_eleves(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points enfants nés et élevés"
+        # https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/majorations_enfants.pdf
+        # TODO retirer paramètres en dur
+
+        def formula_2012(individu, period, parameters):
+            points = individu('regime_name_points', period) - individu('regime_name_points', 2011)
+            nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+            points_enfants_nes_et_eleves_anterieurs = individu('regime_name_points_enfants_nes_et_eleves', 2011)
+            return .1 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
 
         def formula_1999(individu, period, parameters):
-            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
-            cotisation = individu("regime_name_cotisation", period)
-            return cotisation / salaire_de_reference / taux_appel
+            points = individu('regime_name_points', period) - individu('regime_name_points', 1998)
+            nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+            points_enfants_nes_et_eleves_anterieurs = individu('regime_name_points_enfants_nes_et_eleves', 1998)
+            return .05 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
 
-        def formula_1957(individu, period, parameters):
-            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
-            cotisation = individu("regime_name_cotisation", period)
-            return cotisation / salaire_de_reference / taux_appel
+        def formula_1945(individu, period, parameters):
+            # TODO dépend de la caisse
+            return individu.empty_array()
+
+    #  def nb_points_enf(self, data, nombre_points):
+
+#         P = reduce(getattr, self.param_name.split('.'), self.P)
+#         P_long = reduce(getattr, self.param_name.split('.'), self.P_longit).maj_enf
+#         nb_pac = data.info_ind['nb_pac'].copy()
+#         nb_born = data.info_ind['nb_enf_all'].copy()
+#         # 1- Calcul des points pour enfants à charge
+#         taux_pac = P.maj_enf.pac.taux
+#         points_pac = nombre_points.sum(axis=1) * taux_pac * nb_pac
+
+#         # 2- Calcul des points pour enfants nés ou élevés
+#         points_born = zeros(len(nb_pac))
+#         nb_enf_maj = zeros(len(nb_pac))
+#         for num_dispo in [0, 1]:
+#             P_dispositif = getattr(P.maj_enf.born, 'dispositif' + str(num_dispo))
+#             selected_dates = getattr(P_long.born, 'dispositif' + str(num_dispo)).dates
+#             taux_dispositif = P_dispositif.taux
+#             nb_enf_min = P_dispositif.nb_enf_min
+#             nb_points_dates = multiply(nombre_points, selected_dates).sum(axis=1)
+#             nb_points_enf = nb_points_dates * taux_dispositif * (nb_born >= nb_enf_min)
+#             if hasattr(P_dispositif, 'taux_maj'):
+#                 taux_maj = P_dispositif.taux_maj
+#                 plaf_nb = P_dispositif.nb_enf_count
+#                 nb_enf_maj = maximum(minimum(nb_born, plaf_nb) - nb_enf_min, 0)
+#                 nb_points_enf += nb_enf_maj * taux_maj * nb_points_dates
+
+#             points_born += nb_points_enf
+#         # Retourne la situation la plus avantageuse
+#         return maximum(points_born, points_pac)
 
 
 class RegimeAgirc(AbstractRegimeComplementaire):
@@ -221,4 +250,42 @@ class RegimeAgirc(AbstractRegimeComplementaire):
             return (
                 (categorie_salarie == TypesCategorieSalarie.prive_cadre)
                 * salarie.agirc.calc(salaire_de_base, factor = plafond_securite_sociale)
+                )
+
+    class points_enfants_a_charge(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points enfants à charge"
+        # https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/majorations_enfants.pdf
+        # TODO retirer paramètres en dur
+
+        def formula_2012(individu, period, parameters):
+            points = individu('regime_name_points', period)
+            nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
+            return .05 * points * nombre_enfants_a_charge
+
+    class points_enfants_nes_et_eleves(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points enfants nés et élevés"
+        # https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/majorations_enfants.pdf
+        # TODO retirer paramètres en dur
+
+        def formula_2012(individu, period):
+            points = individu('regime_name_points', period) - individu('regime_name_points', 2011)
+            nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+            points_enfants_nes_et_eleves_anterieurs = individu('regime_name_points_enfants_nes_et_eleves', 2011)
+            return .1 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
+
+        def formula_1945(individu, period):
+            points = individu('regime_name_points', period)
+            nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+            return points * (
+                (nombre_enfants_nes_et_eleves == 3) * .08
+                + (nombre_enfants_nes_et_eleves == 4) * .12
+                + (nombre_enfants_nes_et_eleves == 5) * .16
+                + (nombre_enfants_nes_et_eleves == 6) * .20
+                + (nombre_enfants_nes_et_eleves >= 7) * .24
                 )

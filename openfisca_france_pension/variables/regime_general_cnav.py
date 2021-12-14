@@ -1,8 +1,12 @@
 """Abstract regimes definition."""
 from datetime import datetime
+import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
+
+def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
+    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
 'Régime de base du secteur privé: régime général de la CNAV.'
 import functools
 import numpy as np
@@ -277,6 +281,22 @@ class regime_general_cnav_majoration_pension(Variable):
         pension_brute = individu('regime_general_cnav_pension_brute', period)
         return 0.1 * pension_brute * (nombre_enfants >= 3)
 
+class regime_general_cnav_majoration_pension_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Majoration de pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(annee_de_liquidation > period.start.year):
+            return individu.empty_array()
+        last_year = period.start.period('year').offset(-1)
+        majoration_pension_servie_annee_precedente = individu('regime_general_cnav_majoration_pension_servie', last_year)
+        revalorisation = parameters(period).secteur_prive.regime_general_cnav.reval_p.coefficient
+        majoration_pension = individu('regime_general_cnav_majoration_pension', period)
+        return revalorise(majoration_pension_servie_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
+
 class regime_general_cnav_pension(Variable):
     value_type = float
     entity = Person
@@ -334,6 +354,22 @@ class regime_general_cnav_pension_brute(Variable):
         pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
         pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein, max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         return pension_brute
+
+class regime_general_cnav_pension_brute_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(annee_de_liquidation > period.start.year):
+            return individu.empty_array()
+        last_year = period.start.period('year').offset(-1)
+        pension_brute_servie_annee_precedente = individu('regime_general_cnav_pension_brute_servie', last_year)
+        revalorisation = parameters(period).secteur_prive.regime_general_cnav.reval_p.coefficient
+        pension_brute = individu('regime_general_cnav_pension_brute', period)
+        return revalorise(pension_brute_servie_annee_precedente, pension_brute, annee_de_liquidation, revalorisation, period)
 
 class regime_general_cnav_pension_maximale(Variable):
     value_type = float
@@ -409,8 +445,7 @@ class regime_general_cnav_pension_servie(Variable):
         pension_servie_annee_precedente = individu('regime_general_cnav_pension_servie', last_year)
         revalorisation = parameters(period).secteur_prive.regime_general_cnav.reval_p.coefficient
         pension = individu('regime_general_cnav_pension', period)
-        pension_servie = select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, pension, pension_servie_annee_precedente * revalorisation])
-        return pension_servie
+        return revalorise(pension_servie_annee_precedente, pension, annee_de_liquidation, revalorisation, period)
 
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float

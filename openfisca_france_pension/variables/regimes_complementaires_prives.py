@@ -1,8 +1,12 @@
 """Abstract regimes definition."""
 from datetime import datetime
+import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
+
+def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
+    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
 'Régimes complémentaires du secteur privé.'
 import numpy as np
 from openfisca_core.model_api import *
@@ -90,6 +94,35 @@ class agirc_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
+    def formula_2012(individu, period, parameters):
+        points_enfants = individu('agirc_points_enfants', period)
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        points_enfants = individu('agirc_points_enfants', period)
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
+
+    def formula_1999(individu, period, parameters):
+        points_enfants = individu('agirc_points_enfants', period)
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        return points_enfants * valeur_du_point
+
+    def formula(individu, period, parameters):
+        return individu.empty_array()
+
+class agirc_majoration_pension_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Majoration de pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(period.start.year < annee_de_liquidation):
+            return individu.empty_array()
+        majoration_pension = individu('agirc_majoration_pension', period)
+        return revalorise(majoration_pension, majoration_pension, annee_de_liquidation, 1, period)
+
 class agirc_pension(Variable):
     value_type = float
     entity = Person
@@ -120,6 +153,19 @@ class agirc_pension_brute(Variable):
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
 
+class agirc_pension_brute_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(period.start.year < annee_de_liquidation):
+            return individu.empty_array()
+        pension_brute = individu('agirc_pension_brute', period)
+        return revalorise(pension_brute, pension_brute, annee_de_liquidation, 1, period)
+
 class agirc_pension_servie(Variable):
     value_type = float
     entity = Person
@@ -131,8 +177,7 @@ class agirc_pension_servie(Variable):
         if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
         pension = individu('agirc_pension', period)
-        pension_servie = select([period.start.year >= annee_de_liquidation, period.start.year < annee_de_liquidation], [pension, 0])
-        return pension_servie
+        return revalorise(pension, pension, annee_de_liquidation, 1, period)
 
 class agirc_points(Variable):
     value_type = float
@@ -152,6 +197,51 @@ class agirc_points(Variable):
             return points_annee_courante
         points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annee_courante])
         return points
+
+class agirc_points_enfants(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points enfants'
+
+    def formula(individu, period, parameters):
+        """
+            Deux types de majorations pour enfants peuvent s'appliquer :
+                - pour enfant à charge au moment du départ en retraite
+                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
+                C'est la plus avantageuse qui s'applique.
+            """
+        points_enfants_a_charge = individu('agirc_points_enfants_a_charge', period)
+        points_enfants_nes_et_eleves = individu('agirc_points_enfants_nes_et_eleves', period)
+        return max_(points_enfants_a_charge, points_enfants_nes_et_eleves)
+
+class agirc_points_enfants_a_charge(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points enfants à charge'
+
+    def formula_2012(individu, period, parameters):
+        points = individu('agirc_points', period)
+        nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
+        return 0.05 * points * nombre_enfants_a_charge
+
+class agirc_points_enfants_nes_et_eleves(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points enfants nés et élevés'
+
+    def formula_2012(individu, period):
+        points = individu('agirc_points', period) - individu('agirc_points', 2011)
+        nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+        points_enfants_nes_et_eleves_anterieurs = individu('agirc_points_enfants_nes_et_eleves', 2011)
+        return 0.1 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
+
+    def formula_1945(individu, period):
+        points = individu('agirc_points', period)
+        nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+        return points * ((nombre_enfants_nes_et_eleves == 3) * 0.08 + (nombre_enfants_nes_et_eleves == 4) * 0.12 + (nombre_enfants_nes_et_eleves == 5) * 0.16 + (nombre_enfants_nes_et_eleves == 6) * 0.2 + (nombre_enfants_nes_et_eleves >= 7) * 0.24)
 
 class agirc_points_minimum_garantis(Variable):
     value_type = float
@@ -242,6 +332,35 @@ class arrco_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
+    def formula_2012(individu, period, parameters):
+        points_enfants = individu('arrco_points_enfants', period)
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        points_enfants = individu('arrco_points_enfants', period)
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
+
+    def formula_1999(individu, period, parameters):
+        points_enfants = individu('arrco_points_enfants', period)
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        return points_enfants * valeur_du_point
+
+    def formula(individu, period, parameters):
+        return individu.empty_array()
+
+class arrco_majoration_pension_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Majoration de pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(period.start.year < annee_de_liquidation):
+            return individu.empty_array()
+        majoration_pension = individu('arrco_majoration_pension', period)
+        return revalorise(majoration_pension, majoration_pension, annee_de_liquidation, 1, period)
+
 class arrco_pension(Variable):
     value_type = float
     entity = Person
@@ -265,19 +384,25 @@ class arrco_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
-    def formula_1999(individu, period, parameters):
+    def formula(individu, period, parameters):
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         points = individu('arrco_points', period)
         points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
 
-    def formula_1957(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
-        points = individu('arrco_points', period)
-        points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
-        pension_brute = (points + points_minimum_garantis) * valeur_du_point
-        return pension_brute
+class arrco_pension_brute_servie(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension servie'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(period.start.year < annee_de_liquidation):
+            return individu.empty_array()
+        pension_brute = individu('arrco_pension_brute', period)
+        return revalorise(pension_brute, pension_brute, annee_de_liquidation, 1, period)
 
 class arrco_pension_servie(Variable):
     value_type = float
@@ -290,8 +415,7 @@ class arrco_pension_servie(Variable):
         if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
         pension = individu('arrco_pension', period)
-        pension_servie = select([period.start.year >= annee_de_liquidation, period.start.year < annee_de_liquidation], [pension, 0])
-        return pension_servie
+        return revalorise(pension, pension, annee_de_liquidation, 1, period)
 
 class arrco_points(Variable):
     value_type = float
@@ -299,17 +423,67 @@ class arrco_points(Variable):
     definition_period = YEAR
     label = 'Points'
 
-    def formula_1999(individu, period, parameters):
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        last_year = period.start.period('year').offset(-1)
+        points_annee_precedente = individu('arrco_points', last_year)
         salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
         taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
         cotisation = individu('arrco_cotisation', period)
-        return cotisation / salaire_de_reference / taux_appel
+        points_annee_courante = cotisation / salaire_de_reference / taux_appel
+        if all(points_annee_precedente == 0):
+            return points_annee_courante
+        points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annee_courante])
+        return points
 
-    def formula_1957(individu, period, parameters):
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
-        taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
-        cotisation = individu('arrco_cotisation', period)
-        return cotisation / salaire_de_reference / taux_appel
+class arrco_points_enfants(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points enfants'
+
+    def formula(individu, period, parameters):
+        """
+            Deux types de majorations pour enfants peuvent s'appliquer :
+                - pour enfant à charge au moment du départ en retraite
+                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
+                C'est la plus avantageuse qui s'applique.
+            """
+        points_enfants_a_charge = individu('arrco_points_enfants_a_charge', period)
+        points_enfants_nes_et_eleves = individu('arrco_points_enfants_nes_et_eleves', period)
+        return max_(points_enfants_a_charge, points_enfants_nes_et_eleves)
+
+class arrco_points_enfants_a_charge(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points enfants à charge'
+
+    def formula(individu, period, parameters):
+        points = individu('arrco_points', period)
+        nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
+        return 0.05 * points * nombre_enfants_a_charge
+
+class arrco_points_enfants_nes_et_eleves(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points enfants nés et élevés'
+
+    def formula_2012(individu, period, parameters):
+        points = individu('arrco_points', period) - individu('arrco_points', 2011)
+        nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+        points_enfants_nes_et_eleves_anterieurs = individu('arrco_points_enfants_nes_et_eleves', 2011)
+        return 0.1 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
+
+    def formula_1999(individu, period, parameters):
+        points = individu('arrco_points', period) - individu('arrco_points', 1998)
+        nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+        points_enfants_nes_et_eleves_anterieurs = individu('arrco_points_enfants_nes_et_eleves', 1998)
+        return 0.05 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
+
+    def formula_1945(individu, period, parameters):
+        return individu.empty_array()
 
 class arrco_points_minimum_garantis(Variable):
     value_type = float
