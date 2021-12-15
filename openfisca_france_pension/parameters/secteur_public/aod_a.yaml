@@ -1,7 +1,7 @@
 description: Age légal de départ en retraiteFP active
 age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
   description: Age d'ouverture des droits pour la fonction publique active, selon l'année de naissance
-  ne_avant_1956_07_01:
+  before_1956_07_01:
     description: Né avant le 01/07/1956
     annee:
       description: Année
@@ -23,7 +23,7 @@ age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
       order:
       - annee
       - mois
-  ne_apres_1956_07_01:
+  after_1956_07_01:
     description: Né après le 01/07/1956
     annee:
       description: Année
@@ -45,7 +45,7 @@ age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
       order:
       - annee
       - mois
-  ne_apres_1957_01_01:
+  after_1957_01_01:
     description: Né après le 01/01/1957
     annee:
       description: Année
@@ -69,7 +69,7 @@ age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
       order:
       - annee
       - mois
-  ne_apres_1958_01_01:
+  after_1958_01_01:
     description: Né après le 01/01/1958
     annee:
       description: Année
@@ -93,7 +93,7 @@ age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
       order:
       - annee
       - mois
-  ne_apres_1959_01_01:
+  after_1959_01_01:
     description: Né après le 01/01/1959
     annee:
       description: Année
@@ -117,7 +117,7 @@ age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
       order:
       - annee
       - mois
-  ne_apres_1960_01_01:
+  after_1960_01_01:
     description: Né après le 01/01/1960
     annee:
       description: Année
@@ -143,7 +143,7 @@ age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
       order:
       - annee
       - mois
-  ne_apres_1961_01_01:
+  after_1961_01_01:
     description: Né après le 01/01/1961
     annee:
       description: Année
@@ -167,13 +167,13 @@ age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
       - mois
   metadata:
     order:
-    - ne_avant_1956_07_01
-    - ne_apres_1956_07_01
-    - ne_apres_1957_01_01
-    - ne_apres_1958_01_01
-    - ne_apres_1959_01_01
-    - ne_apres_1960_01_01
-    - ne_apres_1961_01_01
+    - before_1956_07_01
+    - after_1956_07_01
+    - after_1957_01_01
+    - after_1958_01_01
+    - after_1959_01_01
+    - after_1960_01_01
+    - after_1961_01_01
 metadata:
   order:
   - age_ouverture_droits_fonction_publique_active_selon_annee_naissance

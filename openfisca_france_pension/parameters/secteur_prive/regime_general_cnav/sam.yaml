@@ -1,14 +1,14 @@
 description: Nombre d'années prises en compte dans la calcul du SAM
 nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
   description: Nombre d'années de carrière entrant en jeu dans la détermination du salaire annuel moyen
-  ne_avant_1934_01_01:
+  before_1934_01_01:
     description: Avant 1934
     values:
       1972-01-01:
         value: 10.0
     metadata:
       ipp_csv_id: nbsam_base
-  ne_apres_1934_01_01:
+  after_1934_01_01:
     description: '1934'
     values:
       1994-01-01:
@@ -17,7 +17,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0134
-  ne_apres_1935_01_01:
+  after_1935_01_01:
     description: '1935'
     values:
       1994-01-01:
@@ -26,7 +26,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0135
-  ne_apres_1936_01_01:
+  after_1936_01_01:
     description: '1936'
     values:
       1994-01-01:
@@ -35,7 +35,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0136
-  ne_apres_1937_01_01:
+  after_1937_01_01:
     description: '1937'
     values:
       1994-01-01:
@@ -44,7 +44,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0137
-  ne_apres_1938_01_01:
+  after_1938_01_01:
     description: '1938'
     values:
       1994-01-01:
@@ -53,7 +53,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0138
-  ne_apres_1939_01_01:
+  after_1939_01_01:
     description: '1939'
     values:
       1994-01-01:
@@ -62,7 +62,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0139
-  ne_apres_1940_01_01:
+  after_1940_01_01:
     description: '1940'
     values:
       1994-01-01:
@@ -71,7 +71,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0140
-  ne_apres_1941_01_01:
+  after_1941_01_01:
     description: '1941'
     values:
       1994-01-01:
@@ -80,7 +80,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0141
-  ne_apres_1942_01_01:
+  after_1942_01_01:
     description: '1942'
     values:
       1994-01-01:
@@ -89,7 +89,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0142
-  ne_apres_1943_01_01:
+  after_1943_01_01:
     description: '1943'
     values:
       1994-01-01:
@@ -98,7 +98,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0143
-  ne_apres_1944_01_01:
+  after_1944_01_01:
     description: '1944'
     values:
       1994-01-01:
@@ -107,7 +107,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0144
-  ne_apres_1945_01_01:
+  after_1945_01_01:
     description: '1945'
     values:
       1994-01-01:
@@ -116,7 +116,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0145
-  ne_apres_1946_01_01:
+  after_1946_01_01:
     description: '1946'
     values:
       1994-01-01:
@@ -125,7 +125,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0146
-  ne_apres_1947_01_01:
+  after_1947_01_01:
     description: '1947'
     values:
       1994-01-01:
@@ -134,7 +134,7 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
         value: null
     metadata:
       ipp_csv_id: nbsam_0147
-  ne_apres_1948_01_01:
+  after_1948_01_01:
     description: '1948'
     values:
       1994-01-01:
@@ -145,22 +145,22 @@ nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen:
       ipp_csv_id: nbsam_0148
   metadata:
     order:
-    - ne_avant_1934_01_01
-    - ne_apres_1934_01_01
-    - ne_apres_1935_01_01
-    - ne_apres_1936_01_01
-    - ne_apres_1937_01_01
-    - ne_apres_1938_01_01
-    - ne_apres_1939_01_01
-    - ne_apres_1940_01_01
-    - ne_apres_1941_01_01
-    - ne_apres_1942_01_01
-    - ne_apres_1943_01_01
-    - ne_apres_1944_01_01
-    - ne_apres_1945_01_01
-    - ne_apres_1946_01_01
-    - ne_apres_1947_01_01
-    - ne_apres_1948_01_01
+    - before_1934_01_01
+    - after_1934_01_01
+    - after_1935_01_01
+    - after_1936_01_01
+    - after_1937_01_01
+    - after_1938_01_01
+    - after_1939_01_01
+    - after_1940_01_01
+    - after_1941_01_01
+    - after_1942_01_01
+    - after_1943_01_01
+    - after_1944_01_01
+    - after_1945_01_01
+    - after_1946_01_01
+    - after_1947_01_01
+    - after_1948_01_01
 metadata:
   order:
   - nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen
