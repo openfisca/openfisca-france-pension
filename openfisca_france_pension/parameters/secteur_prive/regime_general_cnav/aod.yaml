@@ -1,7 +1,7 @@
 description: Age d'ouverture des droits (dit "âge légal")
 age_ouverture_droits_age_legal_en_fonction_date_naissance:
   description: Age d'ouverture des droits (ou "âge légal") en fonction de la date de naissance
-  ne_avant_1951_07_01:
+  before_1951_07_01:
     description: Né avant le 01/07/1951
     annee:
       description: Année
@@ -19,7 +19,7 @@ age_ouverture_droits_age_legal_en_fonction_date_naissance:
       order:
       - annee
       - mois
-  ne_apres_1951_07_01:
+  after_1951_07_01:
     description: Né après le 01/07/1951
     annee:
       description: Année
@@ -41,7 +41,7 @@ age_ouverture_droits_age_legal_en_fonction_date_naissance:
       order:
       - annee
       - mois
-  ne_apres_1952_01_01:
+  after_1952_01_01:
     description: Né après le 01/01/1952
     annee:
       description: Année
@@ -65,7 +65,7 @@ age_ouverture_droits_age_legal_en_fonction_date_naissance:
       order:
       - annee
       - mois
-  ne_apres_1953_01_01:
+  after_1953_01_01:
     description: Né après le 01/01/1953
     annee:
       description: Année
@@ -89,7 +89,7 @@ age_ouverture_droits_age_legal_en_fonction_date_naissance:
       order:
       - annee
       - mois
-  ne_apres_1954_01_01:
+  after_1954_01_01:
     description: Né après le 01/01/1954
     annee:
       description: Année
@@ -113,7 +113,7 @@ age_ouverture_droits_age_legal_en_fonction_date_naissance:
       order:
       - annee
       - mois
-  ne_apres_1955_01_01:
+  after_1955_01_01:
     description: Né après le 01/01/1955
     annee:
       description: Année
@@ -139,7 +139,7 @@ age_ouverture_droits_age_legal_en_fonction_date_naissance:
       order:
       - annee
       - mois
-  ne_apres_1956_01_01:
+  after_1956_01_01:
     description: Né après le 01/01/1956
     annee:
       description: Année
@@ -163,13 +163,13 @@ age_ouverture_droits_age_legal_en_fonction_date_naissance:
       - mois
   metadata:
     order:
-    - ne_avant_1951_07_01
-    - ne_apres_1951_07_01
-    - ne_apres_1952_01_01
-    - ne_apres_1953_01_01
-    - ne_apres_1954_01_01
-    - ne_apres_1955_01_01
-    - ne_apres_1956_01_01
+    - before_1951_07_01
+    - after_1951_07_01
+    - after_1952_01_01
+    - after_1953_01_01
+    - after_1954_01_01
+    - after_1955_01_01
+    - after_1956_01_01
 metadata:
   order:
   - age_ouverture_droits_age_legal_en_fonction_date_naissance

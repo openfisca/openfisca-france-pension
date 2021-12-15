@@ -53,7 +53,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return aad_annee + aad_mois / 12
 
         def formula_1945(individu, period, parameters):
-            return parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance.ne_avant_1951_07_01.annee
+            return parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance.before_1951_07_01.annee
 
     class age_annulation_decote(Variable):
         value_type = float
@@ -248,7 +248,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula_1948(individu, period, parameters):
             trimestres = individu("regime_name_duree_assurance", period)
             duree_de_proratisation = (
-                parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.ne_avant_1944_01_01
+                parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.before_1944_01_01
                 )
             duree_assurance_corrigee = (
                 trimestres
@@ -259,7 +259,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula_1946(individu, period, parameters):
             duree_de_proratisation = (
-                parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.ne_avant_1944_01_01
+                parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation.before_1944_01_01
                 )
             trimestres = individu("regime_name_duree_assurance", period)
             coefficient = min_(1, trimestres / duree_de_proratisation)
@@ -322,7 +322,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula_1945(individu, period, parameters):
             decote_trimestres = individu('regime_name_decote_trimestres', period)
-            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.ne_avant_1944_01_01
+            coefficient_minoration_par_trimestre = parameters(period).regime_name.decote.coefficient_minoration_par_trimestres_manquants.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants.before_1944_01_01
             return coefficient_minoration_par_trimestre * decote_trimestres
 
     class decote_trimestres(Variable):
@@ -737,7 +737,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula_1972(individu, period, parameters):
             OFFSET = 10  # do not start working before 10 year
             # TODO test and adapt like 1994 formula
-            n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.ne_avant_1934_01_01
+            n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.before_1934_01_01
             mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
             annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
             revalorisation = dict()
@@ -775,7 +775,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula_2009_04_01(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             if date(period.start.year, period.start.month, period.start.day) < date(2011, 7, 1):
-                aod_annee = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.ne_avant_1951_07_01.annee
+                aod_annee = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
                 aod_mois = 0
             else:
                 aod_annee = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].annee
@@ -821,7 +821,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return taux_surcote * trimestres_surcote
 
         def formula_2007_01_01(individu, period, parameters):
-            aod = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.ne_avant_1951_07_01.annee
+            aod = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
             taux_surcote_par_trimestre = parameters(period).regime_name.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004
             taux_surcote_par_trimestre_moins_de_4_trimestres = taux_surcote_par_trimestre['moins_de_4_trimestres']
             taux_surcote_par_trimestre_plus_de_5_trimestres = taux_surcote_par_trimestre['plus_de_5_trimestres']
@@ -886,7 +886,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return surcote
 
         def formula_2004_01_01(individu, period, parameters):
-            aod = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.ne_avant_1951_07_01.annee
+            aod = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
 
             taux_surcote_par_trimestre_moins_de_4_trimestres = (
                 parameters(period).regime_name.surcote.taux_surcote_par_trimestre_cotise_selon_date_cotisation.apres_01_01_2004['moins_de_4_trimestres']

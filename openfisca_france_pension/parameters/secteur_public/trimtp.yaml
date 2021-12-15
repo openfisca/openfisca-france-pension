@@ -1,14 +1,14 @@
 description: Durée de service maximale cible pour le taux plein FP
 nombre_trimestres_cibles_taux_plein_par_generation:
   description: Nombre de trimestres cibles pour le taux plein par génération
-  ne_avant_1944_01_01:
+  before_1944_01_01:
     description: Avant 1944
     values:
       1948-01-01:
         value: 150.0
     metadata:
       ipp_csv_id: trimfp_base
-  ne_apres_1944_01_01:
+  after_1944_01_01:
     description: 1944-01-01
     values:
       2014-01-01:
@@ -19,7 +19,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0144
-  ne_apres_1945_01_01:
+  after_1945_01_01:
     description: 1945-01-01
     values:
       2014-01-01:
@@ -30,7 +30,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0145
-  ne_apres_1946_01_01:
+  after_1946_01_01:
     description: 1946-01-01
     values:
       2014-01-01:
@@ -41,7 +41,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0146
-  ne_apres_1947_01_01:
+  after_1947_01_01:
     description: 1947-01-01
     values:
       2014-01-01:
@@ -52,7 +52,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0147
-  ne_apres_1948_01_01:
+  after_1948_01_01:
     description: 1948-01-01
     values:
       2014-01-01:
@@ -63,7 +63,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0148
-  ne_apres_1949_01_01:
+  after_1949_01_01:
     description: 1949-01-01
     values:
       2003-01-01:
@@ -72,7 +72,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0149
-  ne_apres_1950_01_01:
+  after_1950_01_01:
     description: 1950-01-01
     values:
       2003-01-01:
@@ -81,7 +81,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0150
-  ne_apres_1951_01_01:
+  after_1951_01_01:
     description: 1951-01-01
     values:
       2003-01-01:
@@ -90,7 +90,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0151
-  ne_apres_1952_01_01:
+  after_1952_01_01:
     description: 1952-01-01
     values:
       2003-01-01:
@@ -99,7 +99,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0152
-  ne_apres_1953_01_01:
+  after_1953_01_01:
     description: 1953-01-01
     values:
       2011-01-01:
@@ -108,7 +108,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0153
-  ne_apres_1955_01_01:
+  after_1955_01_01:
     description: 1955-01-01
     values:
       2011-08-01:
@@ -117,7 +117,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0155
-  ne_apres_1958_01_01:
+  after_1958_01_01:
     description: 1958-01-01
     values:
       2014-01-01:
@@ -126,7 +126,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0158
-  ne_apres_1961_01_01:
+  after_1961_01_01:
     description: 1961-01-01
     values:
       2014-01-01:
@@ -135,7 +135,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0161
-  ne_apres_1964_01_01:
+  after_1964_01_01:
     description: 1964-01-01
     values:
       2014-01-01:
@@ -144,7 +144,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0164
-  ne_apres_1967_01_01:
+  after_1967_01_01:
     description: 1967-01-01
     values:
       2014-01-01:
@@ -153,7 +153,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0167
-  ne_apres_1970_01_01:
+  after_1970_01_01:
     description: 1970-01-01
     values:
       2014-01-01:
@@ -162,7 +162,7 @@ nombre_trimestres_cibles_taux_plein_par_generation:
         value: null
     metadata:
       ipp_csv_id: trimfp_0170
-  ne_apres_1973_01_01:
+  after_1973_01_01:
     description: 1973-01-01
     values:
       2014-01-01:
@@ -173,24 +173,24 @@ nombre_trimestres_cibles_taux_plein_par_generation:
       ipp_csv_id: trimfp_0173
   metadata:
     order:
-    - ne_avant_1944_01_01
-    - ne_apres_1944_01_01
-    - ne_apres_1945_01_01
-    - ne_apres_1946_01_01
-    - ne_apres_1947_01_01
-    - ne_apres_1948_01_01
-    - ne_apres_1949_01_01
-    - ne_apres_1950_01_01
-    - ne_apres_1951_01_01
-    - ne_apres_1952_01_01
-    - ne_apres_1953_01_01
-    - ne_apres_1955_01_01
-    - ne_apres_1958_01_01
-    - ne_apres_1961_01_01
-    - ne_apres_1964_01_01
-    - ne_apres_1967_01_01
-    - ne_apres_1970_01_01
-    - ne_apres_1973_01_01
+    - before_1944_01_01
+    - after_1944_01_01
+    - after_1945_01_01
+    - after_1946_01_01
+    - after_1947_01_01
+    - after_1948_01_01
+    - after_1949_01_01
+    - after_1950_01_01
+    - after_1951_01_01
+    - after_1952_01_01
+    - after_1953_01_01
+    - after_1955_01_01
+    - after_1958_01_01
+    - after_1961_01_01
+    - after_1964_01_01
+    - after_1967_01_01
+    - after_1970_01_01
+    - after_1973_01_01
 metadata:
   order:
   - nombre_trimestres_cibles_taux_plein_par_generation

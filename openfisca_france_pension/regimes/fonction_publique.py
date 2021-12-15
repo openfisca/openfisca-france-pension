@@ -192,7 +192,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             #     )
 
             if period.start.year <= 2011:
-                limite_age_sedentaire_annee = limite_age_sedentaire.ne_avant_1951_07_01.annee
+                limite_age_sedentaire_annee = limite_age_sedentaire.before_1951_07_01.annee
                 limite_age_sedentaire_mois = 0
             else:
                 limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
@@ -225,7 +225,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             # aod_active_annee = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].mois
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
             if period.start.year <= 2011:
-                aod_sedentaire_annee = aod_sedentaire.ne_avant_1951_07_01.annee
+                aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
                 aod_sedentaire_mois = 0
             else:
                 aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
@@ -297,7 +297,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             # aod_active_annee = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].mois
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
             if period.start.year <= 2011:
-                aod_sedentaire_annee = aod_sedentaire.ne_avant_1951_07_01.annee
+                aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
                 aod_sedentaire_mois = 0
             else:
                 aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee

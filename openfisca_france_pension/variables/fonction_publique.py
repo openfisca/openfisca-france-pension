@@ -79,7 +79,7 @@ class fonction_publique_decote(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
-            aod_sedentaire_annee = aod_sedentaire.ne_avant_1951_07_01.annee
+            aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
         else:
             aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
@@ -132,7 +132,7 @@ class fonction_publique_limite_d_age(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         limite_age_sedentaire = parameters(period).secteur_public.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
-            limite_age_sedentaire_annee = limite_age_sedentaire.ne_avant_1951_07_01.annee
+            limite_age_sedentaire_annee = limite_age_sedentaire.before_1951_07_01.annee
             limite_age_sedentaire_mois = 0
         else:
             limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
@@ -253,7 +253,7 @@ class fonction_publique_surcote(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
-            aod_sedentaire_annee = aod_sedentaire.ne_avant_1951_07_01.annee
+            aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
         else:
             aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
