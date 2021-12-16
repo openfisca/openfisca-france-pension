@@ -20,14 +20,7 @@
 
 ## Perfomance temps
 
-### apply_along_axis à mieux tetser (salaire de référence)
-
-### fonction dédiée compilée ?
-
 
 ## Législation
 
 ### Salaire validant un trimestre avant 1930 ?
-
-
-

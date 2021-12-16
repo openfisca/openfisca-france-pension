@@ -61,14 +61,14 @@ Le régime général de la sécurité sociale [`RegimeGeneralCnav`](openfisca_fr
 - `cotisation_employeur` et `cotisation_salarie`
 - `salaire_de_reference`
 - `duree_assurance`
-- `majoration_duree_assurance` (non implémentée)
+- `majoration_duree_assurance` (non implémentée complètement)
 - `coefficient_de_proratisation`
 - `decote_trimestres`
 - `decote`
 - `surcote`
-- `pension_minimale` (non implémentée)
+- `pension_minimale`
 - `pension_maximale`
-- `pension_majoration` (non implémentée)
+- `pension_majoration` (non implémentée complètement)
 
 #### Le régime de la fonction publique (héritant du régime abstrait de base)
 
@@ -91,10 +91,11 @@ Il définit les éléments essentiels d'un régime en points (points, coefficien
 
 #### Le régime Arrco
 
-Le régime de retraite complémentaire Arrco [`RegimeArrco`](openfisca_france_pension/regimes/regimes_complementaires_prives.py) avec un traitement différents des cadres et des non-cadres a été modélisé avec les variables suivantes (sans points enfants ni pensions de réversion):
+Le régime de retraite complémentaire Arrco [`RegimeArrco`](openfisca_france_pension/regimes/regimes_complementaires_prives.py) avec un traitement différents des cadres et des non-cadres a été modélisé avec les variables suivantes (sans pensions de réversion):
 - `coefficient_de_minoration`
 - `cotisation_employeur`
 - `cotisation_salarie`
+- `points_enfants`
 
 #### Le régime Agirc
 
@@ -102,6 +103,7 @@ Le régime de retraite complémentaire Agirc est spécifique aux cadres a été 
 - `coefficient_de_minoration`
 - `cotisation_employeur`
 - `cotisation_salarie`
+- `points_enfants`
 
 #### Le régime unifié Agirc-Arrco
 

@@ -38,7 +38,7 @@ Il a révélé que le branchement sur les données n'est pas particulièrement c
 
 ## Chemin critique
 
-- Lister les composantes du système de retraite restant à coder pour avoir un MVP:
+- 1. Lister les composantes du système de retraite restant à coder pour avoir un MVP:
 
   - l'idéal serait de connaître exactement ce qui a été fait dans PENSIPP pour égaler la couverture atteinte;
 
@@ -46,27 +46,27 @@ Il a révélé que le branchement sur les données n'est pas particulièrement c
 
   - une hiérarchisation des étapes serait également possible.
 
-- Brancher les données EIR-EIC en les restreignant aux cas couverts par le MVP pour tester la législation:
+- 2. Brancher les données EIR-EIC en les restreignant aux cas couverts par le MVP pour tester la législation:
 
   - en effet, on ne dispose pas de base de cas type de carrières à tester;
 
   - on peut profiter que l'on peut utiliser des données hors CASD pour faire cela dans une CI et itérer rapidement;
 
-  - on disposera d'une mesure de la couverture de la législation sur les cas pertiennts pour les chiffrages;
+  - on disposera d'une mesure de la couverture de la législation sur les cas pertinents pour les chiffrages;
 
   - une CI fonctionnelle avec des données d'enquête nous permet de disposer d'un cas d'usage en état de marche facilement reproductible.
 
-- S'en servir pour les travaux sur les inégalités de pension (reproduire et compléter les travaux NBER).
+- 3. S'en servir pour les travaux sur les inégalités de pension (reproduire et compléter les travaux NBER).
 
-- Ajouter un Régime abstrait de type comptes notionnels pour élargir le cadre des Réformes possibles
+- 4. Ajouter un Régime abstrait de type comptes notionnels pour élargir le cadre des Réformes possibles
 
-- Préparer le branchement avec les données projetées par taxipp-life:
+- 5. Préparer le branchement avec les données projetées par taxipp-life:
 
   - Brancher sur les données projetées quand celles-ci seront de bonne qualité;
 
   - Comparer avec les résultats obtenus avec PENSIPP.
 
-- Brancher sur le RGCU.
+- 6. Brancher sur le RGCU.
 
 Les 4 voire les 5 derniers points peuvent être menés en parallèle.
 
