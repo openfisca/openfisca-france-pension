@@ -132,3 +132,20 @@ $ openfisca test openfisca_france_pension/tests/formulas/regime_general_cnav/dec
       regime_general_cnav_surcote<2008> >> [0.]
 ...
 ```
+
+## Point d'épate
+
+### Bilan
+
+- Sont bien avancés : Régime général CAV, Agirc, Arrco et fonction publique (moins)
+- Sont testés avec EIR 2012 Régime général et Arrco
+
+### Développements futurs
+
+- Approfondir un régime qui fonctionne bien avec outlier EIR 2012
+- Étendre un régime qui fonctionne bien avec autres années EIR
+- Étendre aux régimes proches tests avec EIR (Agirc)
+- Étendre aux régimes plus lointains tests avec EIR (Fonction publique)
+- Coder les indépendants
+- Coder une réforme type compte notionnel
+- Faire un exercice type NBER
