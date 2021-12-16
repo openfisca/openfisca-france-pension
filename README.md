@@ -68,7 +68,8 @@ Le régime général de la sécurité sociale [`RegimeGeneralCnav`](openfisca_fr
 - `surcote`
 - `pension_minimale`
 - `pension_maximale`
-- `pension_majoration` (non implémentée complètement)
+- `majoration_pension` (non implémentée complètement)
+- `pension_servie`
 
 #### Le régime de la fonction publique (héritant du régime abstrait de base)
 
@@ -96,6 +97,8 @@ Le régime de retraite complémentaire Arrco [`RegimeArrco`](openfisca_france_pe
 - `cotisation_employeur`
 - `cotisation_salarie`
 - `points_enfants`
+- `majoration_pension` (uniquement enfants)
+- `pension_servie`
 
 #### Le régime Agirc
 
@@ -104,6 +107,8 @@ Le régime de retraite complémentaire Agirc est spécifique aux cadres a été 
 - `cotisation_employeur`
 - `cotisation_salarie`
 - `points_enfants`
+- `majoration_pension` (uniquement enfants)
+- `pension_servie`
 
 #### Le régime unifié Agirc-Arrco
 
