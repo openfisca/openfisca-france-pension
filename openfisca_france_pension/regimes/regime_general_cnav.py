@@ -138,47 +138,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             aad_droit_commun = 65
             return aad_droit_commun
 
-    class duree_assurance(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance (trimestres validés au régime général)"
-
-        def formula(individu, period, parameters):
-            duree_assurance_cotisee = individu("regime_name_duree_assurance_cotisee", period)
-            majoration_duree_assurance = individu("regime_name_majoration_duree_assurance", period)
-            return duree_assurance_cotisee + majoration_duree_assurance
-
-    class duree_assurance_cotisee(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance cotisée (trimestres cotisés au régime général)"
-
-        def formula(individu, period, parameters):
-            salaire_de_base = individu("salaire_de_base", period)
-            try:
-                salaire_validant_un_trimestre = parameters(period).regime_name.salval.salaire_validant_trimestre.metropole
-            except ParameterNotFound:
-                import openfisca_core.periods as periods
-                salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
-            trimestres_valides_avant_cette_annee = individu("regime_name_duree_assurance_cotisee", period.last_year)
-            trimestres_valides_dans_l_annee = min_(
-                (salaire_de_base / salaire_validant_un_trimestre).astype(int),
-                4
-                )
-            return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
-
-    # def trim_maj_ini(self, trim_maj_mda_ini):  # sert à comparer avec pensipp
-    #     return trim_maj_mda_ini
-
-    # def trim_maj(self, data, trim_maj_mda):
-    #     if 'maj_other_RG' in data.info_ind.dtype.names:
-    #         trim_maj = trim_maj_mda + data.info_ind.trim_other_RG
-    #     else:
-    #         trim_maj = trim_maj_mda
-    #     return trim_maj
-
     class coefficient_de_proratisation(Variable):
         value_type = float
         entity = Person
@@ -393,6 +352,53 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 )
             return decote_trimestres
+
+    class duree_assurance(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance (trimestres validés au régime général)"
+
+        def formula(individu, period, parameters):
+            duree_assurance_cotisee = individu("regime_name_duree_assurance_cotisee", period)
+            majoration_duree_assurance = individu("regime_name_majoration_duree_assurance", period)
+            return duree_assurance_cotisee + majoration_duree_assurance
+
+    class duree_assurance_cotisee_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance cotisée annuelle (trimestres cotisés au régime général pour l'année considérée)"
+
+        def formula(individu, period, parameters):
+            salaire_de_base = individu("salaire_de_base", period)
+            try:
+                salaire_validant_un_trimestre = parameters(period).regime_name.salval.salaire_validant_trimestre.metropole
+            except ParameterNotFound:
+                import openfisca_core.periods as periods
+                salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
+
+            return min_(
+                (salaire_de_base / salaire_validant_un_trimestre).astype(int),
+                4
+                )
+
+    class duree_assurance_cotisee(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance cotisée cummulée (trimestres cotisés au régime général depuis l'entrée dans le régme)"
+
+        def formula(individu, period, parameters):
+            # TODO: hack to avoid infinite recursion depth loop
+            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
+            if all(duree_assurance_cotisee_annuelle == 0):
+                return individu.empty_array()
+
+            return (
+                individu("regime_name_duree_assurance_cotisee", period.last_year)
+                + duree_assurance_cotisee_annuelle
+                )
 
     class majoration_duree_assurance(Variable):
         value_type = int

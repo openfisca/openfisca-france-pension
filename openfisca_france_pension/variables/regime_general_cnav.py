@@ -238,7 +238,19 @@ class regime_general_cnav_duree_assurance_cotisee(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance cotisée (trimestres cotisés au régime général)"
+    label = "Durée d'assurance cotisée cummulée (trimestres cotisés au régime général depuis l'entrée dans le régme)"
+
+    def formula(individu, period, parameters):
+        duree_assurance_cotisee_annuelle = individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period)
+        if all(duree_assurance_cotisee_annuelle == 0):
+            return individu.empty_array()
+        return individu('regime_general_cnav_duree_assurance_cotisee', period.last_year) + duree_assurance_cotisee_annuelle
+
+class regime_general_cnav_duree_assurance_cotisee_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance cotisée annuelle (trimestres cotisés au régime général pour l'année considérée)"
 
     def formula(individu, period, parameters):
         salaire_de_base = individu('salaire_de_base', period)
@@ -247,9 +259,7 @@ class regime_general_cnav_duree_assurance_cotisee(Variable):
         except ParameterNotFound:
             import openfisca_core.periods as periods
             salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
-        trimestres_valides_avant_cette_annee = individu('regime_general_cnav_duree_assurance_cotisee', period.last_year)
-        trimestres_valides_dans_l_annee = min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
-        return trimestres_valides_avant_cette_annee + trimestres_valides_dans_l_annee
+        return min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
 
 class regime_general_cnav_liquidation_date(Variable):
     value_type = date

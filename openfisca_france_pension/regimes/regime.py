@@ -104,11 +104,17 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Durée d'assurance (en trimestres)"
 
+    class duree_assurance_cotisee_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance cotisée annuelle (en trimestres cotisés seulement l'année considérée)"
+
     class duree_assurance_cotisee(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance cotisée (en trimestres cotisés)"
+        label = "Durée d'assurance cotisée (en trimestres cotisés jusqu'à l'année considérée)"
 
     class majoration_pension(Variable):
         value_type = float

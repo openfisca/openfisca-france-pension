@@ -122,6 +122,12 @@ class fonction_publique_duree_assurance_cotisee(Variable):
     definition_period = YEAR
     label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
 
+class fonction_publique_duree_assurance_cotisee_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance cotisée annuelle (en trimestres cotisés seulement l'année considérée)"
+
 class fonction_publique_limite_d_age(Variable):
     value_type = int
     entity = Person
