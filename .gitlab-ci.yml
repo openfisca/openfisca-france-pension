@@ -7,7 +7,7 @@ test:
   stage: test
   only:
    changes:
-    - .gitlab.ci.yml
+    - .gitlab-ci.yml
     - setup.{cfg,py}
     - Makefile
     - openfisca_france_pension/*.py
