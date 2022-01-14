@@ -377,8 +377,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             # except ParameterNotFound:
             #     smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smig.smig_brut_mensuel * 3
 
-            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            avpf = avpf * conversion_en_euros
+            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            avpf = avpf * conversion_en_francs
             return min_((avpf / smic_trimestriel).astype(int), 4)
 
     class duree_assurance_travail_emploi_annuelle(Variable):
@@ -395,8 +395,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 import openfisca_core.periods as periods
                 salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
 
-            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            salaire_validant_un_trimestre = salaire_validant_un_trimestre * conversion_en_euros
+            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            conversion_en_francs = conversion_en_francs * 100 if period.start.year < 1960
+            salaire_validant_un_trimestre = salaire_validant_un_trimestre * conversion_en_francs
             return min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
 
     class duree_assurance_periode_assimilee_chomage_annuelle(Variable):
@@ -710,14 +711,14 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
                 )
             coefficient_de_proratisation = min_(1, trimestres_regime / duree_de_proratisation)
-            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            return coefficient_de_proratisation * mico * conversion_en_euros
+            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            return coefficient_de_proratisation * mico * conversion_en_francs
 
         def formula_1941_01_01(indiivdu, period, parameters):
             # TODO limite d'âge bonification etc voir section 5 précis
             avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
-            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            return avts * conversion_en_euros
+            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            return avts * conversion_en_francs
 
         # ''' MICO du régime général : allocation différentielle
         # RQ :

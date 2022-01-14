@@ -312,8 +312,8 @@ class regime_general_cnav_duree_assurance_travail_avpf_annuelle(Variable):
     def formula_1972(individu, period, parameters):
         avpf = individu('avpf', period)
         smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3
-        conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-        avpf = avpf * conversion_en_euros
+        conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+        avpf = avpf * conversion_en_francs
         return min_((avpf / smic_trimestriel).astype(int), 4)
 
 class regime_general_cnav_duree_assurance_travail_emploi_annuelle(Variable):
@@ -329,8 +329,8 @@ class regime_general_cnav_duree_assurance_travail_emploi_annuelle(Variable):
         except ParameterNotFound:
             import openfisca_core.periods as periods
             salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
-        conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-        salaire_validant_un_trimestre = salaire_validant_un_trimestre * conversion_en_euros
+        conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+        salaire_validant_un_trimestre = salaire_validant_un_trimestre * conversion_en_francs
         return min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
 
 class regime_general_cnav_liquidation_date(Variable):
@@ -506,13 +506,13 @@ class regime_general_cnav_pension_minimale(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         duree_de_proratisation = parameters(period).secteur_prive.regime_general_cnav.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
         coefficient_de_proratisation = min_(1, trimestres_regime / duree_de_proratisation)
-        conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-        return coefficient_de_proratisation * mico * conversion_en_euros
+        conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+        return coefficient_de_proratisation * mico * conversion_en_francs
 
     def formula_1941_01_01(indiivdu, period, parameters):
         avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
-        conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-        return avts * conversion_en_euros
+        conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+        return avts * conversion_en_francs
 
 class regime_general_cnav_pension_servie(Variable):
     value_type = float
