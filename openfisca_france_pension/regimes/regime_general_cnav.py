@@ -405,7 +405,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
 
-
     class duree_assurance_periode_assimilee_maladie_annuelle(Variable):
         value_type = int
         entity = Person
@@ -429,7 +428,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
-
 
     class duree_assurance_periode_assimilee_autre_annuelle(Variable):
         value_type = int
@@ -478,10 +476,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 4
                 )
             duree_assurance_cotisee_annee_precedente = individu("regime_name_duree_assurance_cotisee", period.last_year)
-            if all(
-                (duree_assurance_annuelle == 0)
-                & (duree_assurance_cotisee_annee_precedente == 0)
-                ):
+            if all((duree_assurance_annuelle == 0) & (duree_assurance_cotisee_annee_precedente == 0)):
                 return individu.empty_array()
 
             return (
