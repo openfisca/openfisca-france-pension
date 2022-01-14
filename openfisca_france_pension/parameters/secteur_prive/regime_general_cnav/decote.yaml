@@ -71,7 +71,7 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0149
         unit: /1
-    ne_apres_1950_01_01:
+    after_1950_01_01:
       description: 1950-01-01
       values:
         2004-01-01:
@@ -127,7 +127,6 @@ coefficient_minoration_par_trimestres_manquants:
 metadata:
   order:
   - coefficient_minoration_par_trimestres_manquants
-  - taux_minore_taux_plein_1_decote_nombre_trimestres_manquants
   reference:
     2004-01-01:
       title: Décret 2004-144 du 13/02/2004, art. 5-II
