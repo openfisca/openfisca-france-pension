@@ -479,10 +479,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             if all((duree_assurance_annuelle == 0) & (duree_assurance_cotisee_annee_precedente == 0)):
                 return individu.empty_array()
 
-            return (
-                individu("regime_name_duree_assurance_cotisee", period.last_year)
-                + duree_assurance_annuelle
-                )
+            return individu("regime_name_duree_assurance_cotisee", period.last_year) + duree_assurance_annuelle
 
     class majoration_duree_assurance(Variable):
         value_type = int
