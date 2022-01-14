@@ -2,8 +2,14 @@ description: Salaire de référence IRCANTEC
 salaire_reference_ircantec:
   description: Salaire de référence IRCANTEC
   values:
+    2021-01-01:
+      value: 5.028
+    2020-01-01:
+      value: 5.008
     2019-01-01:
       value: 4.958
+    2018-01-01:
+      value: 4.943
     2017-01-01:
       value: 4.904
     2016-01-01:
@@ -278,4 +284,4 @@ metadata:
   description_en: Reference wage IRCANTEC
 documentation: |
   Sources :
-  Barèmes fournis par l'Ircantec.
+  Barèmes fournis par l'Ircantec. Voir https://baseircantec.retraites.fr/docrestreint.api/4366/e95d26380efa88eae65891b8edec12e685df073e/pdf/anx0801_externe_tx_theoriques_sal_ref2021.pdf pour plus d'informations.

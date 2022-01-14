@@ -11,7 +11,7 @@ taux:
   metadata:
     ipp_csv_id: tx_rev_rg
     unit: year
-age_ouverture:
+age_ouverture_reversion:
   description: Âge d'ouverture de la réversion
   values:
     2009-01-01:
@@ -29,7 +29,7 @@ age_ouverture:
     unit: year
 metadata:
   order:
-  - age_ouverture
+  - age_ouverture_reversion
   - taux
   reference:
     2009-01-01:

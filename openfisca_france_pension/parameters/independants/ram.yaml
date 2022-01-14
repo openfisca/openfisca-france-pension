@@ -134,7 +134,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
         value: null
     metadata:
       ipp_csv_id: nbsam_0152
-  apres_1953:
+  after_1953_01_01:
     description: Après 1953
     values:
       2004-01-01:

@@ -2,6 +2,10 @@ description: Valeur du point RAFP
 valeur_acquisition_point_rafp:
   description: Valeur d'acquisition du point RAFP
   values:
+    2021-01-01:
+      value: 1.2452
+    2020-01-01:
+      value: 1.2452
     2019-01-01:
       value: 1.2317
     2018-01-01:
@@ -24,26 +28,30 @@ valeur_acquisition_point_rafp:
       value: 1.05095
     2009-01-01:
       value: 1.04572
-    2008-09-01:
-      value: 1.03537
     2008-01-01:
-      value: 1.03022
+      value: 1.03537
     2007-01-01:
-      value: 1.017
+      value: 1.03022
     2006-01-01:
+      value: 1.017
+    2005-01-01:
       value: 1.0
   metadata:
     unit: currency-EUR
 valeur_service_point_rafp:
   description: Valeur de service du point RAFP
   values:
+    2021-01-01:
+      value: 0.04675
+    2020-01-01:
+      value: 0.04656
     2019-01-01:
       value: 0.04605
     2018-01-01:
       value: 0.04532
     2017-01-01:
       value: 0.04487
-    2016-01-01:
+    2016-04-01:
       value: 0.04474
     2014-01-01:
       value: 0.04465
@@ -57,12 +65,10 @@ valeur_service_point_rafp:
       value: 0.04283
     2009-01-01:
       value: 0.04261
-    2008-09-01:
-      value: 0.04219
     2008-01-01:
-      value: 0.04153
+      value: 0.04219
     2007-01-01:
-      value: 0.0408
+      value: 0.04153
     2006-01-01:
       value: 0.04
   metadata:
@@ -73,4 +79,4 @@ metadata:
   - valeur_service_point_rafp
   description_en: Point value RAFP
 documentation: |
-  Source: Site internet du RAFP, décisions du Conseil administration.
+  Source: Site internet du RAFP, voir https://www.rafp.fr/sites/rafp_fr/files/file/evolution_valeurs_du_point_6.pdf
