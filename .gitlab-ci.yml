@@ -11,6 +11,7 @@ test:
     - setup.{cfg,py}
     - Makefile
     - openfisca_france_pension/*.py
+    - openfisca_france_pension/parameters
   script:
     - pip install -e .[dev]
     - make test
@@ -30,4 +31,3 @@ tax-benefit_deploy:
   script:
     - |
       env | curl --data-binary @- --fail-with-body --header "Content-Type: text/plain; charset=utf-8" --max-time 300 --silent https://control-center.tax-benefit.org/api/gitlab/ci
-
