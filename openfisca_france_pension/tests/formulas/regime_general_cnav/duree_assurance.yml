@@ -1,4 +1,20 @@
-- name: Trimestres cotisés calculés à partir du salaire de base
+- name: Trimestres cotisés calculés à partir du salaire de base (anciens francs)
+  absolute_error_margin: .001
+  period: 1958
+  input:
+    date_de_naissance: 1906-11-19
+    salaire_de_base:
+      year:1958: (20000 / 6.559) / 100
+    statut_du_cotisant:
+      year:1958: emploi
+    regime_general_cnav_duree_assurance_cotisee:
+      year:1957: 0
+
+  output:
+    regime_general_cnav_duree_assurance: 1
+
+
+- name: Trimestres cotisés calculés à partir du salaire de base (francs francais 1970)
   absolute_error_margin: .001
   period: 1970
   input:

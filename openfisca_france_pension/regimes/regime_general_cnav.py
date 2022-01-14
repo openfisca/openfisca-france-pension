@@ -17,7 +17,20 @@ from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTaux
 
 
 REVAL_S_YEAR_MIN = 1949
-EURO_EN_FRANCS = 6.55957
+
+
+def conversion_en_monnaie_courante(period):
+    euro_en_frans = 6.55957
+    if period.start.year < 1960:
+        return 100 * euro_en_frans
+    elif period.start.year < 2002:
+        return euro_en_frans
+    else:
+        return 1
+
+
+def conversion_parametre_en_euros(period):
+    return 1 / conversion_en_monnaie_courante(period)
 
 
 def compute_salaire_de_reference(mean_over_largest, arr, salaire_de_refererence, filter):
@@ -371,14 +384,11 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         label = "Durée d'assurance cotisée avpf (en trimestres cotisés jusqu'à l'année considérée)"
 
         def formula_1972(individu, period, parameters):
+            # l'avpf est en euros
             avpf = individu("avpf", period)
-            # try:
+            # le paramètres est en monnaie courante
             smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3
-            # except ParameterNotFound:
-            #     smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smig.smig_brut_mensuel * 3
-
-            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            avpf = avpf * conversion_en_francs
+            avpf = avpf * conversion_en_monnaie_courante(period)
             return min_((avpf / smic_trimestriel).astype(int), 4)
 
     class duree_assurance_travail_emploi_annuelle(Variable):
@@ -395,10 +405,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 import openfisca_core.periods as periods
                 salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
 
-            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            conversion_en_francs = conversion_en_francs * 100 if period.start.year < 1960
-            salaire_validant_un_trimestre = salaire_validant_un_trimestre * conversion_en_francs
-            return min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
+            return min_((salaire_de_base * conversion_en_monnaie_courante(period) / salaire_validant_un_trimestre).astype(int), 4)
 
     class duree_assurance_periode_assimilee_chomage_annuelle(Variable):
         value_type = int
@@ -711,14 +718,12 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 parameters(period).regime_name.prorat.nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation[date_de_naissance]
                 )
             coefficient_de_proratisation = min_(1, trimestres_regime / duree_de_proratisation)
-            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            return coefficient_de_proratisation * mico * conversion_en_francs
+            return coefficient_de_proratisation * mico * conversion_parametre_en_euros(period)
 
         def formula_1941_01_01(indiivdu, period, parameters):
             # TODO limite d'âge bonification etc voir section 5 précis
             avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
-            conversion_en_francs = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
-            return avts * conversion_en_francs
+            return avts * conversion_parametre_en_euros(period)
 
         # ''' MICO du régime général : allocation différentielle
         # RQ :
