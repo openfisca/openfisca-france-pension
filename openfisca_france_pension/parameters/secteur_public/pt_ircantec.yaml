@@ -2,6 +2,10 @@ description: Valeur du point IRCANTEC
 valeur_point_ircantec_en_euros:
   description: Valeur du point IRCANTEC (en euros)
   values:
+    2021-01-01:
+      value: 0.48705
+    2020-01-01:
+      value: 0.48511
     2019-01-01:
       value: 0.48031
     2017-10-01:
@@ -31,93 +35,93 @@ valeur_point_ircantec_en_euros:
     2004-01-01:
       value: 0.40939
     2003-07-01:
-      value: 0.40208
-    2003-01-01:
       value: 0.40301
+    2003-01-01:
+      value: 0.40208
     2002-07-01:
-      value: 0.39776
-    2002-01-01:
       value: 0.40021
+    2002-01-01:
+      value: 0.39776
     2001-07-01:
-      value: 0.38021
-    2001-01-01:
       value: 0.39118
+    2001-01-01:
+      value: 0.38021
     2000-07-01:
-      value: 0.37746
-    2000-01-01:
       value: 0.37899
+    2000-01-01:
+      value: 0.37746
     1999-07-01:
-      value: 0.36771
-    1999-01-01:
       value: 0.37289
+    1999-01-01:
+      value: 0.36771
     1998-07-01:
-      value: 0.36024
-    1998-01-01:
       value: 0.36466
+    1998-01-01:
+      value: 0.36024
     1997-07-01:
-      value: 0.35688
-    1997-01-01:
       value: 0.35841
+    1997-01-01:
+      value: 0.35688
     1996-07-01:
-      value: 0.35582
-    1996-01-01:
       value: 0.35658
+    1996-01-01:
+      value: 0.35582
     1995-07-01:
-      value: 0.34728
-    1995-01-01:
       value: 0.3517
+    1995-01-01:
+      value: 0.34728
     1994-07-01:
-      value: 0.34133
-    1994-01-01:
       value: 0.34362
+    1994-01-01:
+      value: 0.34133
     1993-07-01:
-      value: 0.33585
-    1993-01-01:
       value: 0.33966
+    1993-01-01:
+      value: 0.33585
     1992-07-01:
-      value: 0.32609
-    1992-01-01:
       value: 0.32944
+    1992-01-01:
+      value: 0.32609
     1991-07-01:
-      value: 0.31648
-    1991-01-01:
       value: 0.31923
+    1991-01-01:
+      value: 0.31648
     1990-07-01:
-      value: 0.30856
-    1990-01-01:
       value: 0.31374
+    1990-01-01:
+      value: 0.30856
     1989-07-01:
-      value: 0.30017
-    1989-01-01:
       value: 0.30414
+    1989-01-01:
+      value: 0.30017
     1988-07-01:
-      value: 0.29133
-    1988-01-01:
       value: 0.29423
+    1988-01-01:
+      value: 0.29133
     1987-07-01:
-      value: 0.28508
-    1987-01-01:
       value: 0.28935
+    1987-01-01:
+      value: 0.28508
     1986-07-01:
-      value: 0.28416
-    1986-01-01:
       value: 0.28477
+    1986-01-01:
+      value: 0.28416
     1985-07-01:
-      value: 0.27182
-    1985-01-01:
       value: 0.27868
+    1985-01-01:
+      value: 0.27182
     1984-07-01:
-      value: 0.25932
-    1984-01-01:
       value: 0.26496
+    1984-01-01:
+      value: 0.25932
     1983-07-01:
-      value: 0.23874
-    1983-01-01:
       value: 0.25093
+    1983-01-01:
+      value: 0.23874
     1982-07-01:
-      value: 0.21495
-    1982-01-01:
       value: 0.22837
+    1982-01-01:
+      value: 0.21495
     1981-07-01:
       value: 0.19788
     1981-01-01:
@@ -234,4 +238,4 @@ metadata:
   description_en: Point value IRCANTEC
 documentation: |
   Sources :
-  Barèmes fournis par l'Ircantec.
+  Barèmes fournis par l'Ircantec. Voir https://baseircantec.retraites.fr/docrestreint.api/2811/738e6c3ba7fddbb55a2e0aa8a0a508dc9bee8bc1/pdf/anx0901_externe_valeur_du_point.pdf pour la valeur du point entre 1971 et 2021.

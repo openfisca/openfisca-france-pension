@@ -2,6 +2,8 @@ description: Valeur du point AGIRC
 valeur_point_en_nominal:
   description: Valeur du point AGIRC (en nominal)
   values:
+    2019-01-01:
+      value: null
     2018-11-01:
       value: 0.4378
     2013-04-01:

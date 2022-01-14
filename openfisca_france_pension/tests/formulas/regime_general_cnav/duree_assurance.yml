@@ -4,7 +4,9 @@
   input:
     date_de_naissance: 1906-11-19
     salaire_de_base:
-      year:1970: 2000
+      year:1970: 2000 / 6.559
+    statut_du_cotisant:
+      year:1970: emploi
     regime_general_cnav_duree_assurance_cotisee:
       year:1969: 0
 
@@ -18,7 +20,9 @@
   input:
     date_de_naissance: 1906-11-19
     salaire_de_base:
-      year:1970: 1500
+      year:1970: 1500 / 6.559
+    statut_du_cotisant:
+      year:1970: emploi
     regime_general_cnav_duree_assurance_cotisee:
       year:1969: 3
 

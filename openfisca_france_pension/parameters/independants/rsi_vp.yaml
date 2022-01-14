@@ -1,11 +1,15 @@
-description: "Régime social des indépendants : valeur du point retraite"
+description: "Régime social des indépendants : valeur du point retraite de base"
 valeur_annuelle_point_retraite:
-  description: Valeur annuelle du point retraite
-  retraite_base:
-    description: Retraite de base
+  description: Valeur annuelle du point retraite en fonction du montant total brut mensuel des retraites de base et complémentaires
+  retraite_inferieure_a_2000:
+    description: Montant inférieur ou égal à 2000€
     artisans:
       description: Artisans
       values:
+        2021-01-01:
+          value: 9.3532
+        2020-01-01:
+          value: 9.3160
         2019-01-01:
           value: 9.2238
         2017-10-01:
@@ -17,6 +21,10 @@ valeur_annuelle_point_retraite:
     commercants:
       description: Commerçants
       values:
+        2021-01-01:
+          value: 12.89757
+        2020-01-01:
+          value: 12.84619
         2019-01-01:
           value: 12.719
         2017-10-01:
@@ -29,95 +37,162 @@ valeur_annuelle_point_retraite:
       order:
       - artisans
       - commercants
-  retraite_complementaire:
-    description: Retraite complémentaire
-    independants_rci_depuis_2013:
-      description: Indépendants, RCI (depuis 2013)
+
+  retraite_sup_2000_inf_egale_2008:
+    description: Montant supérieur à 2000€, inférieur ou égal à 2008€
+    artisans:
+      description: Artisans
       values:
+        2021-01-01:
+          value: 9.3532
+        2020-01-01:
+          value: 9.2975
         2019-01-01:
-          value: 1.187
+          value: 9.2238
         2017-10-01:
-          value: 1.187
+          value: 9.1963
         2015-10-01:
-          value: 1.178
+          value: 9.1234
       metadata:
         unit: currency-EUR
-    commercants_nrco_2004_2012:
-      description: Commerçants, NRCO (2004-2012)
+    commercants:
+      description: Commerçants
       values:
+        2021-01-01:
+          value: 12.89757
+        2020-01-01:
+          value: 12.82075
+        2019-01-01:
+          value: 12.719
         2017-10-01:
-          value: 1.187
+          value: 12.68096
         2015-10-01:
-          value: 1.178
-      metadata:
-        unit: currency-EUR
-    commercants_rc_1973_2004:
-      description: Commerçants, RC (1973-2004)
-      values:
-        2017-10-01:
-          value: 1.187
-        2015-10-01:
-          value: 1.178
-      metadata:
-        unit: currency-EUR
-    artisans_rco_1996_2012:
-      description: Artisans, RCO (1996-2012)
-      values:
-        2017-10-01:
-          value: 1.187
-        2015-10-01:
-          value: 1.178
-      metadata:
-        unit: currency-EUR
-    artisans_rco_1979_1996:
-      description: Artisans, RCO (1979-1996)
-      values:
-        2017-10-01:
-          value: 1.13
-        2015-10-01:
-          value: 1.125
-      metadata:
-        unit: currency-EUR
-    reconstitution_carriere_rco_avant_1979:
-      description: Reconstitution de carrière, RCO (avant 1979)
-      values:
-        2017-10-01:
-          value: 1.111
-        2015-10-01:
-          value: 1.108
+          value: 12.58032
       metadata:
         unit: currency-EUR
     metadata:
       order:
-      - independants_rci_depuis_2013
-      - commercants_nrco_2004_2012
-      - commercants_rc_1973_2004
-      - artisans_rco_1996_2012
-      - artisans_rco_1979_1996
-      - reconstitution_carriere_rco_avant_1979
-  metadata:
-    order:
-    - retraite_base
-    - retraite_complementaire
-valeur_acquisition_point:
-  description: Valeur d'acquisition du point
-  artisans_commercants:
-    description: Artisans et commerçants
-    values:
-      2017-10-01:
-        value: 17.456
-      2015-10-01:
-        value: 17.34
+      - artisans
+      - commercants
+
+  retraite_sup_2008_inf_egale_2012:
+    description: Montant supérieur à 2008€, inférieur ou égal à 2012€
+    artisans:
+      description: Artisans
+      values:
+        2021-01-01:
+          value: 9.3532
+        2020-01-01:
+          value: 9.2791
+        2019-01-01:
+          value: 9.2238
+        2017-10-01:
+          value: 9.1963
+        2015-10-01:
+          value: 9.1234
+      metadata:
+        unit: currency-EUR
+    commercants:
+      description: Commerçants
+      values:
+        2021-01-01:
+          value: 12.89757
+        2020-01-01:
+          value: 12.79531
+        2019-01-01:
+          value: 12.719
+        2017-10-01:
+          value: 12.68096
+        2015-10-01:
+          value: 12.58032
+      metadata:
+        unit: currency-EUR
     metadata:
-      unit: currency-EUR
+      order:
+      - artisans
+      - commercants
+
+  retraite_sup_2012_inf_egale_2014:
+    description: Montant supérieur à 2012€, inférieur ou égal à 2014€
+    artisans:
+      description: Artisans
+      values:
+        2021-01-01:
+          value: 9.3532
+        2020-01-01:
+          value: 9.2606
+        2019-01-01:
+          value: 9.2238
+        2017-10-01:
+          value: 9.1963
+        2015-10-01:
+          value: 9.1234
+      metadata:
+        unit: currency-EUR
+    commercants:
+      description: Commerçants
+      values:
+        2021-01-01:
+          value: 12.89757
+        2020-01-01:
+          value: 12.76987
+        2019-01-01:
+          value: 12.719
+        2017-10-01:
+          value: 12.68096
+        2015-10-01:
+          value: 12.58032
+      metadata:
+        unit: currency-EUR
+    metadata:
+      order:
+      - artisans
+      - commercants
+
+  retraite_superieure_a_2014:
+    description: Montant supérieur à 2014€
+    artisans:
+      description: Artisans
+      values:
+        2021-01-01:
+          value: 9.3532
+        2020-01-01:
+          value: 9.2514
+        2019-01-01:
+          value: 9.2238
+        2017-10-01:
+          value: 9.1963
+        2015-10-01:
+          value: 9.1234
+      metadata:
+        unit: currency-EUR
+    commercants:
+      description: Commerçants
+      values:
+        2021-01-01:
+          value: 12.89757
+        2020-01-01:
+          value: 12.75715
+        2019-01-01:
+          value: 12.719
+        2017-10-01:
+          value: 12.68096
+        2015-10-01:
+          value: 12.58032
+      metadata:
+        unit: currency-EUR
+    metadata:
+      order:
+      - artisans
+      - commercants
   metadata:
     order:
-    - artisans_commercants
-metadata:
-  order:
-  - valeur_annuelle_point_retraite
-  - valeur_acquisition_point
-  description_en: "Social scheme for independent workers: annual value of the pension point"
+    - retraite_inferieure_a_2000
+    - retraite_sup_2000_inf_egale_2008
+    - retraite_sup_2008_inf_egale_2012
+    - retraite_sup_2012_inf_egale_2014
+    - retraite_superieure_a_2014
+    description_en: Usage value of points accrued by independant workers within their main pension scheme. 
 documentation: |
   Sources:
-  https://www.rsi.fr/baremes/prestations-vieillesse-et-invalidite-deces.html
+  https://www.legislation.cnav.fr/Pages/bareme.aspx?Nom=ti_prestation_valeur_point_retraite_commercant_bar

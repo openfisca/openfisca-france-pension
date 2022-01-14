@@ -94,7 +94,7 @@ metadata:
     2006-01-01:
       title: Loi 2003-775 du 21/08/2003, art. 66
       href: https://www.legifrance.gouv.fr/affichTexteArticle.do?idArticle=LEGIARTI000006758610&cidTexte=JORFTEXT000000781627
-  date_parution_jo:
+  official_journal_date:
     2006-01-01: 2003-08-22
   description_en: Full rate age
 documentation: |

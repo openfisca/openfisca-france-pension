@@ -12,7 +12,7 @@ from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import mean_over_k_nonzero_largest
-from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
+from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie, TypesStatutDuCotisant
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 
@@ -364,11 +364,28 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             majoration_duree_assurance = individu("regime_name_majoration_duree_assurance", period)
             return duree_assurance_cotisee + majoration_duree_assurance
 
-    class duree_assurance_cotisee_annuelle(Variable):
+    class duree_assurance_travail_avpf_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance cotisée annuelle (trimestres cotisés au régime général pour l'année considérée)"
+        label = "Durée d'assurance cotisée avpf (en trimestres cotisés jusqu'à l'année considérée)"
+
+        def formula_1972(individu, period, parameters):
+            avpf = individu("avpf", period)
+            # try:
+            smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3
+            # except ParameterNotFound:
+            #     smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smig.smig_brut_mensuel * 3
+
+            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            avpf = avpf * conversion_en_euros
+            return min_((avpf / smic_trimestriel).astype(int), 4)
+
+    class duree_assurance_travail_emploi_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance cotisée en emploi (en trimestres cotisés jusqu'à l'année considérée)"
 
         def formula(individu, period, parameters):
             salaire_de_base = individu("salaire_de_base", period)
@@ -378,9 +395,62 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 import openfisca_core.periods as periods
                 salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
 
-            return min_(
-                (salaire_de_base / salaire_validant_un_trimestre).astype(int),
-                4
+            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            salaire_validant_un_trimestre = salaire_validant_un_trimestre * conversion_en_euros
+            return min_((salaire_de_base / salaire_validant_un_trimestre).astype(int), 4)
+
+    class duree_assurance_periode_assimilee_chomage_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
+
+
+    class duree_assurance_periode_assimilee_maladie_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_periode_assimilee_accident_du_travail_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_periode_assimilee_invalidite_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_periode_assimilee_service_national_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
+
+
+    class duree_assurance_periode_assimilee_autre_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_travail_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance cotisée donc hors majoration de durée d'assurance (en trimestres cotisés l'année considérée)"
+
+        def formula(individu, period, parameters):
+            statut_du_cotisant = individu("statut_du_cotisant", period)
+            duree_assurance_travail_emploi_annuelle = individu("regime_name_duree_assurance_travail_emploi_annuelle", period)
+            duree_assurance_travail_avpf_annuelle = individu("regime_name_duree_assurance_travail_avpf_annuelle", period)
+            return where(
+                (statut_du_cotisant == TypesStatutDuCotisant.emploi) | (statut_du_cotisant == TypesStatutDuCotisant.avpf),
+                min_(duree_assurance_travail_emploi_annuelle + duree_assurance_travail_avpf_annuelle, 4),
+                0
                 )
 
     class duree_assurance_cotisee(Variable):
@@ -391,13 +461,32 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             # TODO: hack to avoid infinite recursion depth loop
-            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
-            if all(duree_assurance_cotisee_annuelle == 0):
+            duree_assurance_travail_annuelle = individu("regime_name_duree_assurance_travail_annuelle", period)
+            duree_assurance_periodes_assimilees_annuelles = sum(
+                individu(f"regime_name_duree_assurance_periode_assimilee_{periode_assimilee}_annuelle", period)
+                for periode_assimilee in [
+                    "chomage",
+                    "maladie",
+                    "accident_du_travail",
+                    "invalidite",
+                    "service_national",
+                    "autre",
+                    ]
+                )
+            duree_assurance_annuelle = min_(
+                duree_assurance_travail_annuelle + duree_assurance_periodes_assimilees_annuelles,
+                4
+                )
+            duree_assurance_cotisee_annee_precedente = individu("regime_name_duree_assurance_cotisee", period.last_year)
+            if all(
+                (duree_assurance_annuelle == 0)
+                & (duree_assurance_cotisee_annee_precedente == 0)
+                ):
                 return individu.empty_array()
 
             return (
                 individu("regime_name_duree_assurance_cotisee", period.last_year)
-                + duree_assurance_cotisee_annuelle
+                + duree_assurance_annuelle
                 )
 
     class majoration_duree_assurance(Variable):
@@ -635,7 +724,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula_1941_01_01(indiivdu, period, parameters):
             # TODO limite d'âge bonification etc voir section 5 précis
             avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
-            return avts / EURO_EN_FRANCS
+            conversion_en_euros = 1 / EURO_EN_FRANCS if period.start.year < 2002 else 1
+            return avts * conversion_en_euros
 
         # ''' MICO du régime général : allocation différentielle
         # RQ :
