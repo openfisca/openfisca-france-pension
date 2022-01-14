@@ -149,7 +149,6 @@ salaire_validant_trimestre:
       unit:
         2002-01-01: currency-EUR
         1936-01-01: currency-FRF
-        1930-01-01: cotisations
   guadeloupe_guyane_martinique:
     description: Guadeloupe Guyane Martinique
     values:
@@ -481,7 +480,7 @@ metadata:
     1930-01-01:
       title: Décret 45-0179 du 29/12/1945, art. 71, §2
       href: https://www.legifrance.gouv.fr/affichTexteArticle.do?idArticle=LEGIARTI000006760608&cidTexte=JORFTEXT000000682675
-  date_parution_jo:
+  official_journal_date:
     2020-01-01: 2019-12-18
     2019-01-01: 2018-12-20
     2014-01-01: 2014-03-20

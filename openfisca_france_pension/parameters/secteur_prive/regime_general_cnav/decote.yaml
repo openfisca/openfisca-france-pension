@@ -71,8 +71,8 @@ coefficient_minoration_par_trimestres_manquants:
       metadata:
         ipp_csv_id: decote_0149
         unit: /1
-    after_1950_01_17:
-      description: 1950-01-17
+    ne_apres_1950_01_01:
+      description: 1950-01-01
       values:
         2004-01-01:
           value: 0.01625
@@ -120,7 +120,7 @@ coefficient_minoration_par_trimestres_manquants:
       - after_1947_01_01
       - after_1948_01_01
       - after_1949_01_01
-      - after_1950_01_17
+      - after_1950_01_01
       - after_1951_01_01
       - after_1952_01_01
       - after_1953_01_01
@@ -140,7 +140,7 @@ metadata:
     1946-01-01:
     - title: Ordonnance 45-2454 du 19/10/1945
       href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000333985
-  date_parution_jo:
+  official_journal_date:
     2004-01-01: 2004-02-15
     1972-01-01: 1972-01-05
     1946-01-01: 1945-10-20

@@ -1,4 +1,4 @@
-description: Age légal de départ en retraiteFP active
+description: Age légal de départ en retraite FP active
 age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
   description: Age d'ouverture des droits pour la fonction publique active, selon l'année de naissance
   before_1956_07_01:
@@ -190,7 +190,7 @@ metadata:
     1976-01-01:
       title: Loi 75-1280 du 30/12/1975
       href: https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000000699206
-  date_parution_jo:
+  official_journal_date:
     2012-01-01: 2011-12-31
     2011-07-01: 10/11/2010 ; 29/06/2011
     1985-01-01: 1984-09-14

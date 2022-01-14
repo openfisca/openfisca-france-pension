@@ -42,7 +42,7 @@ setup(
             "pycodestyle >=2.6.0",
             ],
         "scenario": [
-            "OpenFisca-Survey-Manager >=0.46.1,<1.0.0",
+            "OpenFisca-Survey-Manager >=0.46.6,<1.0.0",
             "pyreadr>=0.4.2,<1.0.0",
             ]
         },

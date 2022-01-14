@@ -116,17 +116,23 @@ class fonction_publique_duree_assurance(Variable):
     definition_period = YEAR
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
+class fonction_publique_duree_assurance_assimilee_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance validée au titre des périodes assimilées (en trimestres cotisés seulement l'année considérée)"
+
 class fonction_publique_duree_assurance_cotisee(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
 
-class fonction_publique_duree_assurance_cotisee_annuelle(Variable):
+class fonction_publique_duree_assurance_travail_annuelle(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance cotisée annuelle (en trimestres cotisés seulement l'année considérée)"
+    label = "Durée d'assurance annuelle pour les périodes cotisées ou faisant l'objet d'un report de salaire au compte (en trimestres cotisés seulement l'année considérée)"
 
 class fonction_publique_limite_d_age(Variable):
     value_type = int

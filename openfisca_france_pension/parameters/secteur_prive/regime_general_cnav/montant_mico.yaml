@@ -6,7 +6,7 @@ minimum_contributif:
     values:
       2021-01-01:
         value: 7746.02
-      2020-01-01: 
+      2020-01-01:
         value: 7715.16
       2019-10-01:
         value: 7638.78
@@ -107,7 +107,7 @@ minimum_contributif:
       2021-01-01:
         value: 645.50
       2020-01-01:
-        value: 642.93    
+        value: 642.93
       2019-10-01:
         value: 636.56
       2017-10-01:
@@ -213,7 +213,7 @@ minimum_contributif_majore:
       2021-01-01:
         value: 8464.28
       2020-01-01:
-        value: 8430.56    
+        value: 8430.56
       2019-10-01:
         value: 8347.09
       2017-10-01:
@@ -253,7 +253,7 @@ minimum_contributif_majore:
       2021-01-01:
         value: 705.35
       2020-01-01:
-        value: 702.54  
+        value: 702.54
       2019-10-01:
         value: 695.59
       2017-10-01:
@@ -376,7 +376,7 @@ metadata:
     1985-01-01: Circulaire CNAV 130/84 du 27/12/1984
     1984-07-01: Circulaire CNAV 62/84 du 06/06/1984
     1984-01-01: Circulaire CNAV 4/84 du 05/01/1984
-  date_parution_jo:
+  official_journal_date:
     2020-01-01: 2019-12-24
     2008-01-01: 2007-12-03
     2006-01-01: 2005-12-31

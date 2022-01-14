@@ -2,6 +2,8 @@ description: Salaire de référence AGIRC
 salaire_reference_en_nominal:
   description: Salaire de référence AGIRC (prix d'achat) valeur nominale
   values:
+    2019-01-01:
+      value: null
     2018-01-01:
       value: 5.8166
     2017-01-01:
@@ -317,6 +319,7 @@ metadata:
     2006-04-01: Circ. Agirc 2006-02-DRE du 19/05/2006
     2005-04-01: Circ. Agirc 2005-02-DT du 21/03/2005
   notes:
+    2019-01-01: Fusion des régimes Agirc et Arrco en 2019.
     2014-04-01: Pas d'évolution en 2015.
   description_en: Reference wage AGIRC
 documentation: |

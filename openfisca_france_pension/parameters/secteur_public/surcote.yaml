@@ -19,7 +19,7 @@ metadata:
     2004-01-01:
       title: Loi 2003-775 du 21/08/2003, art. 51
       href: https://www.legifrance.gouv.fr/affichTexteArticle.do?idArticle=LEGIARTI000006758594&cidTexte=JORFTEXT000000781627
-  date_parution_jo:
+  official_journal_date:
     2009-01-01: 2008-12-18
     2004-01-01: 2003-08-22
   description_en: Pension bonus for later retirement

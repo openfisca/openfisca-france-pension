@@ -364,7 +364,7 @@ metadata:
   - plafond_securite_sociale_mensuel
   - plafond_securite_sociale_annuel
   reference:
-    2020-01-01: 
+    2020-01-01:
       title: Arrêté du 02/12/2019
       href: https://www.legifrance.gouv.fr/eli/arrete/2019/12/2/SSAS1934384A/jo/texte
     2019-01-01: Arrêté du 11/12/2018
@@ -548,7 +548,7 @@ metadata:
     1937-01-01: Loi du 26/08/1936 modifiée
     1936-01-01: Décret-loi du 28/10/1935 art. 2 § 2
     1930-07-01: Loi du 05/04/1928 modifiée
-  date_parution_jo:
+  official_journal_date:
     2020-01-01: 2019-12-03
     2019-01-01: 2018-12-15
     2018-01-01: 2017-12-09

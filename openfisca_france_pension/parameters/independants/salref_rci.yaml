@@ -2,6 +2,10 @@ description: "Régime complémentaire des indépendants : valeur d'achat du poin
 valeur_annuelle_acquisition_point_rsi:
   description: Valeur annuelle d'acquisition du point RSI
   values:
+    2021-01-01:
+      value: 17.765 
+    2020-01-01:
+      value: 17.691 
     2019-01-01:
       value: 17.515 
     2017-10-01:
@@ -21,5 +25,5 @@ metadata:
   description_en: "Complementary scheme of self-employed : reference wage"
 documentation: |
   Sources :
-  rsi.fr
-  http://www.rsi.fr/baremes/prestations-vieillesse-et-invalidite-deces.html#c5206
+  legislation CNAV
+  https://www.legislation.cnav.fr/Pages/bareme.aspx?Nom=rci_valeur_achat_point_bar

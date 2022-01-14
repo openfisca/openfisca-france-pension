@@ -176,7 +176,7 @@ age_annulation_decote_en_fonction_date_naissance:
         title: Loi 2010-1330 du 9/11/2010, art. 20
         href: https://www.legifrance.gouv.fr/eli/loi/2010/11/9/2010-1330/jo/article_20
       1983-04-01: Ordonnance 82-270 du 26/03/1982, art. 9
-    date_parution_jo:
+    official_journal_date:
       2011-07-01: 2010-11-10
       1983-04-01: 1982-03-28
     notes:
@@ -202,7 +202,7 @@ age_annulation_decote_anciens_deportes:
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000317514
       - title: loi 77-773 du 12/07/1973
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000704792
-    date_parution_jo:
+    official_journal_date:
       1965-05-01: 1965-04-24; 1968-08-01; 1973-07-13
 
 age_annulation_decote_inaptitude:
@@ -217,7 +217,7 @@ age_annulation_decote_inaptitude:
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000508794
       - title: Décret 72-433 du 19/05/1972
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000677631
-    date_parution_jo:
+    official_journal_date:
       1972-01-01: 1972-01-05; 1972-05-28
 
 age_annulation_decote_anciens_combattants:
@@ -234,7 +234,7 @@ age_annulation_decote_anciens_combattants:
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000322528
       - title: Décret 74-1194 du 31/12/1974
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000700829
-    date_parution_jo:
+    official_journal_date:
       1974-01-01: 1973-11-22; 1975-01-05
 
 travailleurs_manuels:
@@ -256,7 +256,7 @@ travailleurs_manuels:
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000699032
       - title: Décret 76-404 du 10/05/1976
         href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000855584
-    date_parution_jo:
+    official_journal_date:
       1976-07-01: 1975-12-31; 1976-05-12
     order:
     - age_annulation_decote

@@ -66,7 +66,7 @@ minimum_contributif_plafond_mensuel:
   metadata:
     ipp_csv_id: min_cont
     unit: currency-EUR
-    date_parution_jo:
+    official_journal_date:
       2012-07-01: 2018-12-20; 2012-06-29
       2012-01-01: 2011-11-30
     description_en: Earning cap of the "minimum contributif"

@@ -75,3 +75,8 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
         arrco.values_list = arrco.values_list + unirs.values_list
+
+        self.cache_blacklist = [
+            "duree_assurance_travail_avpf_annuelle",
+            "duree_assurance_travail_emploi_annuelle",
+            ]

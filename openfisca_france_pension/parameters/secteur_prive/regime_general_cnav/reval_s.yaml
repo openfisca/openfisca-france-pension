@@ -368,7 +368,7 @@ metadata:
   - associe
   reference:
     2021-01-01: Circ. interministérielle DSS/SD3A/2020/230  du  23/12/2020
-    2020-01-01: Circ. interministérielle DSS/SD3A/2019/266  du  27/12/2019     
+    2020-01-01: Circ. interministérielle DSS/SD3A/2019/266  du  27/12/2019
     2019-01-01: Article 68 de la loi de financement de la sécurité sociale pour 2019
     2017-10-01: Circ. interministérielle DSS/SD3A/2017/272 du 15/09/2017
     2016-10-01: Pas de revalorisation au 01/10/2015
@@ -486,7 +486,7 @@ metadata:
     1951-01-01: Arrêté du 16/04/1951
     1950-01-01: Arrêté du 19/04/1950
     1949-01-01: Arrêté du 23/06/1949
-  date_parution_jo:
+  official_journal_date:
     2019-01-01: 2018-12-23
     2008-01-01: 2007-12-28
     2007-01-01: 2006-12-30
@@ -577,7 +577,7 @@ metadata:
     2013-04-01: Circulaire CNAV 2013/29 du 18/04/2013
     2012-01-01: Circulaire CNAV 2012/35 du 17/04/2012
     2011-04-01: Circulaire CNAV 2011/30 du 14/04/2011
-    2009-04-01: 
+    2009-04-01:
       title: Circulaire CNAV 2009/31 du 16/04/2009
       href: https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2009031_16042009
     2008-07-31: Circulaire CNAV 2008/45 du 12/08/2008
