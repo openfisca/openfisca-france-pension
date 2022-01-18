@@ -1,5 +1,6 @@
 """Régime de base du secteur privé: régime général de la CNAV."""
 
+
 import functools
 
 import numpy as np
@@ -46,6 +47,13 @@ def make_mean_over_largest(k):
         return mean_over_k_nonzero_largest(vector, k = int(k))
 
     return mean_over_largest
+
+
+class TypesSalaireValidantTrimestre(Enum):
+    __order__ = 'metropole guadeloupe_guyane_martinique reunion'
+    metropole = "Métropole"
+    guadeloupe_guyane_martinique = "Guadeloupe, Guyane et Martinique"
+    reunion = "Réunion"
 
 
 class RegimeGeneralCnav(AbstractRegimeDeBase):
@@ -372,10 +380,12 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Durée d'assurance (trimestres validés au régime général)"
 
-        def formula(individu, period, parameters):
+        def formula(individu, period):
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            liquidation = (annee_de_liquidation == period.start.year)
             duree_assurance_cotisee = individu("regime_name_duree_assurance_cotisee", period)
             majoration_duree_assurance = individu("regime_name_majoration_duree_assurance", period)
-            return duree_assurance_cotisee + majoration_duree_assurance
+            return duree_assurance_cotisee + majoration_duree_assurance * liquidation
 
     class duree_assurance_travail_avpf_annuelle(Variable):
         value_type = int
@@ -399,11 +409,12 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             salaire_de_base = individu("salaire_de_base", period)
+            salaire_validant_trimestre = individu("regime_name_salaire_validant_trimestre", period)
             try:
-                salaire_validant_un_trimestre = parameters(period).regime_name.salval.salaire_validant_trimestre.metropole
+                salaire_validant_un_trimestre = parameters(period).regime_name.salval.salaire_validant_trimestre[salaire_validant_trimestre]
             except ParameterNotFound:
                 import openfisca_core.periods as periods
-                salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre.metropole
+                salaire_validant_un_trimestre = parameters(periods.period(1930)).regime_name.salval.salaire_validant_trimestre[salaire_validant_trimestre]
 
             return min_((salaire_de_base * conversion_en_monnaie_courante(period) / salaire_validant_un_trimestre).astype(int), 4)
 
@@ -492,15 +503,15 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
     class majoration_duree_assurance(Variable):
         value_type = int
         entity = Person
-        definition_period = YEAR
+        definition_period = ETERNITY
         label = "Majoration de durée d'assurance (trimestres augmentant la durée d'assurance au régime général)"
 
-        def formula(individu, period, parameters):
-            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-            liquidation = (annee_de_liquidation == period.start.year)
+        def formula(individu, period):
+            # annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            # liquidation = (annee_de_liquidation == period.start.year)
             # TODO créer une variable dédiée pour refléter la législation voir précis de législation retraite
             majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 8
-            return liquidation * majoration_duree_assurance_enfant
+            return majoration_duree_assurance_enfant
 
     class majoration_pension(Variable):
         value_type = float
@@ -859,6 +870,15 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     ]),
                 )
             return salaire_de_refererence
+
+    class salaire_validant_trimestre(Variable):
+        value_type = Enum
+        possible_values = TypesSalaireValidantTrimestre
+        default_value = TypesSalaireValidantTrimestre.metropole
+        entity = Person
+        label = "Salaire validant un trimestre utilisé"
+        definition_period = YEAR
+        set_input = set_input_dispatch_by_period
 
     class surcote(Variable):
         value_type = float

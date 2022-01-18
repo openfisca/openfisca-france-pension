@@ -42,6 +42,12 @@ def make_mean_over_largest(k):
         return mean_over_k_nonzero_largest(vector, k=int(k))
     return mean_over_largest
 
+class TypesSalaireValidantTrimestre(Enum):
+    __order__ = 'metropole guadeloupe_guyane_martinique reunion'
+    metropole = 'Métropole'
+    guadeloupe_guyane_martinique = 'Guadeloupe, Guyane et Martinique'
+    reunion = 'Réunion'
+
 class regime_general_cnav_age_annulation_decote(Variable):
     value_type = float
     entity = Person
@@ -240,10 +246,12 @@ class regime_general_cnav_duree_assurance(Variable):
     definition_period = YEAR
     label = "Durée d'assurance (trimestres validés au régime général)"
 
-    def formula(individu, period, parameters):
+    def formula(individu, period):
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        liquidation = annee_de_liquidation == period.start.year
         duree_assurance_cotisee = individu('regime_general_cnav_duree_assurance_cotisee', period)
         majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
-        return duree_assurance_cotisee + majoration_duree_assurance
+        return duree_assurance_cotisee + majoration_duree_assurance * liquidation
 
 class regime_general_cnav_duree_assurance_assimilee_annuelle(Variable):
     value_type = int
@@ -334,11 +342,12 @@ class regime_general_cnav_duree_assurance_travail_emploi_annuelle(Variable):
 
     def formula(individu, period, parameters):
         salaire_de_base = individu('salaire_de_base', period)
+        salaire_validant_trimestre = individu('regime_general_cnav_salaire_validant_trimestre', period)
         try:
-            salaire_validant_un_trimestre = parameters(period).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
+            salaire_validant_un_trimestre = parameters(period).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre[salaire_validant_trimestre]
         except ParameterNotFound:
             import openfisca_core.periods as periods
-            salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre.metropole
+            salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre[salaire_validant_trimestre]
         return min_((salaire_de_base * conversion_en_monnaie_courante(period) / salaire_validant_un_trimestre).astype(int), 4)
 
 class regime_general_cnav_liquidation_date(Variable):
@@ -351,14 +360,12 @@ class regime_general_cnav_liquidation_date(Variable):
 class regime_general_cnav_majoration_duree_assurance(Variable):
     value_type = int
     entity = Person
-    definition_period = YEAR
+    definition_period = ETERNITY
     label = "Majoration de durée d'assurance (trimestres augmentant la durée d'assurance au régime général)"
 
-    def formula(individu, period, parameters):
-        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        liquidation = annee_de_liquidation == period.start.year
+    def formula(individu, period):
         majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 8
-        return liquidation * majoration_duree_assurance_enfant
+        return majoration_duree_assurance_enfant
 
 class regime_general_cnav_majoration_pension(Variable):
     value_type = float
@@ -573,6 +580,15 @@ class regime_general_cnav_salaire_de_reference(Variable):
             revalorisation[annee_salaire] = np.prod(np.array([parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient for _annee in range(annee_salaire + 1, period.start.year + 1)]))
         salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[annee_salaire] for year in range(period.start.year, max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), -1)]))
         return salaire_de_refererence
+
+class regime_general_cnav_salaire_validant_trimestre(Variable):
+    value_type = Enum
+    possible_values = TypesSalaireValidantTrimestre
+    default_value = TypesSalaireValidantTrimestre.metropole
+    entity = Person
+    label = 'Salaire validant un trimestre utilisé'
+    definition_period = YEAR
+    set_input = set_input_dispatch_by_period
 
 class regime_general_cnav_surcote(Variable):
     value_type = float
