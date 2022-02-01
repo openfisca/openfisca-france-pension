@@ -28,6 +28,8 @@ validate_yaml:
 tax-benefit_deploy:
   stage: test
   image: curlimages/curl:latest
+  variables:
+    PYTHON_PACKAGE: openfisca_france_pension
   script:
     - |
       env | curl --data-binary @- --fail-with-body --header "Content-Type: text/plain; charset=utf-8" --max-time 300 --silent https://control-center.tax-benefit.org/api/gitlab/ci
