@@ -157,7 +157,7 @@ def flatten_regimes(input_string, output_filename):
     output_string = ast.unparse(output_node)
 
     # sauvegarder
-    with open(output_filename, "w") as file:
+    with open(output_filename, "w", encoding='utf-8') as file:
         file.write(output_string)
 
     log.info(f"Result saved as {output_filename}")
