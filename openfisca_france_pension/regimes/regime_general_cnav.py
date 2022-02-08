@@ -814,7 +814,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 mean_over_largest = make_mean_over_largest(k)
                 revalorisation = dict()
                 revalorisation[period.start.year] = 1
-                # TODO on doit pouvoir faire plus efficace en sortant de la boucle
+                # TODO: on doit pouvoir faire plus efficace en sortant de la boucle
                 for annee_salaire in range(max(_annee_de_naissance + OFFSET, REVAL_S_YEAR_MIN), period.start.year + 1):
                     # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
                     revalorisation[annee_salaire] = (
@@ -826,7 +826,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                             )
                         )
                 filter = annee_de_naissance == _annee_de_naissance,
-                # TODO try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
+                # TODO: try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
                 arr = np.vstack([
                     min_(
                         individu('salaire_de_base', period = year)[filter],
@@ -841,7 +841,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula_1972(individu, period, parameters):
             OFFSET = 10  # do not start working before 10 year
-            # TODO test and adapt like 1994 formula
+            # TODO: test and adapt like 1994 formula
             n = parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.before_1934_01_01
             mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
             annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()

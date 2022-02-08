@@ -254,67 +254,6 @@ class AbstractRegimeComplementaire(AbstractRegime):
         definition_period = YEAR
         label = "Coefficient de minoration"
 
-    class points(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points"
-
-        def formula(individu, period, parameters):
-            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-            last_year = period.start.period('year').offset(-1)
-            points_annee_precedente = individu('regime_name_points', last_year)
-
-            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
-            cotisation = individu("regime_name_cotisation", period)
-            points_annee_courante = cotisation / salaire_de_reference / taux_appel
-
-            if all(points_annee_precedente == 0):
-                return points_annee_courante
-
-            points = select(
-                [
-                    period.start.year > annee_de_liquidation,
-                    period.start.year <= annee_de_liquidation,
-                    ],
-                [
-                    points_annee_precedente,
-                    points_annee_precedente + points_annee_courante,
-                    ]
-                )
-
-            return points
-
-    class points_enfants_a_charge(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points enfants à charge"
-
-    class points_enfants_nes_et_eleves(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points enfants nés et élevés"
-
-    class points_enfants(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points enfants"
-
-        def formula(individu, period, parameters):
-            """
-            Deux types de majorations pour enfants peuvent s'appliquer :
-                - pour enfant à charge au moment du départ en retraite
-                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
-                C'est la plus avantageuse qui s'applique.
-            """
-            points_enfants_a_charge = individu('regime_name_points_enfants_a_charge', period)
-            points_enfants_nes_et_eleves = individu('regime_name_points_enfants_nes_et_eleves', period)
-            return max_(points_enfants_a_charge, points_enfants_nes_et_eleves)
-
     class majoration_pension(Variable):
         value_type = float
         entity = Person
@@ -355,12 +294,6 @@ class AbstractRegimeComplementaire(AbstractRegime):
                 return individu.empty_array()
             majoration_pension = individu('regime_name_majoration_pension', period)
             return revalorise(majoration_pension, majoration_pension, annee_de_liquidation, 1, period)
-
-    class points_minimum_garantis(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points minimum garantis"
 
     class pension(Variable):
         value_type = float
@@ -425,6 +358,73 @@ class AbstractRegimeComplementaire(AbstractRegime):
 
             pension = individu('regime_name_pension', period)
             return revalorise(pension, pension, annee_de_liquidation, 1, period)
+
+    class points(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points"
+
+        def formula(individu, period, parameters):
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            last_year = period.start.period('year').offset(-1)
+            points_annee_precedente = individu('regime_name_points', last_year)
+
+            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
+            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            cotisation = individu("regime_name_cotisation", period)
+            points_annee_courante = cotisation / salaire_de_reference / taux_appel
+
+            if all(points_annee_precedente == 0):
+                return points_annee_courante
+
+            points = select(
+                [
+                    period.start.year > annee_de_liquidation,
+                    period.start.year <= annee_de_liquidation,
+                    ],
+                [
+                    points_annee_precedente,
+                    points_annee_precedente + points_annee_courante,
+                    ]
+                )
+
+            return points
+
+    class points_enfants_a_charge(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points enfants à charge"
+
+    class points_enfants_nes_et_eleves(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points enfants nés et élevés"
+
+    class points_enfants(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points enfants"
+
+        def formula(individu, period, parameters):
+            """
+            Deux types de majorations pour enfants peuvent s'appliquer :
+                - pour enfant à charge au moment du départ en retraite
+                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
+                C'est la plus avantageuse qui s'applique.
+            """
+            points_enfants_a_charge = individu('regime_name_points_enfants_a_charge', period)
+            points_enfants_nes_et_eleves = individu('regime_name_points_enfants_nes_et_eleves', period)
+            return max_(points_enfants_a_charge, points_enfants_nes_et_eleves)
+
+    class points_minimum_garantis(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points minimum garantis"
 
 
 def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
