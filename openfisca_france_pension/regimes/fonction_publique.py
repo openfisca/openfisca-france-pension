@@ -126,10 +126,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             duree_de_service_effective = individu("regime_name_duree_assurance", period)
-            # (
-            #     individu('regime_name_liquidation_date', period)
-            #     - individu('regime_name_service_debut_date', period)
-            #     )
             # TODO
             bonification_cpcm = 0
             super_actif = False  # individu('regime_name_super_actif', period)
@@ -222,7 +218,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
             # aod_active_annee = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].annee
-            # aod_active_annee = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].mois
+            # aod_active_mois = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].mois
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
             if period.start.year <= 2011:
                 aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee

@@ -1,6 +1,6 @@
 description: Valeur du point d'indice de la Fonction Publique (1970-)
 point_indice_en_euros:
-  description: Valeur annuelle en euros du point d'indice
+  description: Valeur annuelle en euros du point d'indice (en euros)
   values:
     2017-02-01:
       value: 56.2323

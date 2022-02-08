@@ -1,8 +1,6 @@
 # TODO
 
-## Législation
-
-### Max et minima de pension et finir calcul des pensions à points (dont GMP Agirc)
+## Législation à coder
 
 ### Cotisations cet etc pour Agirc-Arrco
 
@@ -21,6 +19,6 @@
 ## Perfomance temps
 
 
-## Législation
+## Législation: paramè_ters à compléter
 
 ### Salaire validant un trimestre avant 1930 ?
