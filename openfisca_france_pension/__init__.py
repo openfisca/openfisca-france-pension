@@ -17,7 +17,6 @@ script_ast.main(verbose=True)
 
 
 def build_regimes_prelevements_sociaux(parameters):
-
     regime_general_cnav = parameters.prelevements_sociaux.cotisations_securite_sociale_regime_general.cnav
     parameters.secteur_prive.regime_general_cnav.add_child(
         "prelevements_sociaux",
@@ -42,6 +41,14 @@ def build_regimes_prelevements_sociaux(parameters):
     parameters.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.add_child(
         "agirc_arrco",
         agirc_arrco,
+        )
+
+
+def build_secteur_public_reval_p(parameters):
+    reval_p = parameters.secteur_prive.regime_general_cnav.reval_p
+    parameters.secteur_public.add_child(
+        "reval_p",
+        reval_p,
         )
 
 
@@ -75,6 +82,8 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
         arrco.values_list = arrco.values_list + unirs.values_list
+
+        build_secteur_public_reval_p(self.parameters)
 
         self.cache_blacklist = [
             "duree_assurance_travail_avpf_annuelle",

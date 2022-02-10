@@ -138,7 +138,7 @@ class sexe(Variable):
     entity = Person
     definition_period = ETERNITY
     label = 'Sexe'  # True for women
-    set_input = set_input_dispatch_by_period
+
 
 class taux_de_prime(Variable):
     value_type = float

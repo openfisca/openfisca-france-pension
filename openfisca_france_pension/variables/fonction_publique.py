@@ -88,13 +88,13 @@ class fonction_publique_decote(Variable):
         aod_annee = aod_sedentaire_annee
         aod_mois = aod_sedentaire_mois
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
-        aad_en_mois = individu('fonction_publique_limite_d_age', period) * 12 + (annee_age_ouverture_droits >= 2006) * aad_en_nombre_trimestres_par_rapport_limite_age[max_(2006, annee_age_ouverture_droits)] * 3
+        aad_en_mois = individu('fonction_publique_limite_d_age', period) * 12 + (2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006) * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)] * 3
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = max_(0, np.trunc((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres))
-        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).secteur_public.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[max_(2006, annee_age_ouverture_droits)]
+        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).secteur_public.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[np.clip(annee_age_ouverture_droits, 2006, 2015)]
         return taux_decote * decote_trimestres
 
 class fonction_publique_dernier_indice_atteint(Variable):

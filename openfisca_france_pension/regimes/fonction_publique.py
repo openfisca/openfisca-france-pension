@@ -248,13 +248,16 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     + aod_mois
                     ) / 12
                 ).astype(int)
-            aad_en_mois = (
-                individu("regime_name_limite_d_age", period) * 12
-                + (
-                    (annee_age_ouverture_droits >= 2006)
-                    * aad_en_nombre_trimestres_par_rapport_limite_age[max_(2006, annee_age_ouverture_droits)] * 3
-                    )
+            reduction_add_en_mois = where(
+                # Double condition car cette réduction de l'AAD s'éteint en 2020 et vaut -1 en 2019
+                (2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006),
+                # aad_en_nombre_trimestres_par_rapport_limite_age est négatif et non renseigné en 2020 ni avant 2006 exclu
+                # d'où le clip pour éviter l'erreur
+                3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)],
+                0
                 )
+
+            aad_en_mois = individu("regime_name_limite_d_age", period) * 12 + reduction_add_en_mois
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
@@ -275,8 +278,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     )
                 )
             taux_decote = (
-                (annee_age_ouverture_droits >= 2006)
-                * parameters(period).regime_name.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[max_(2006, annee_age_ouverture_droits)]
+                (annee_age_ouverture_droits >= 2006)  # TODO check condtion on 2015 ?
+                * parameters(period).regime_name.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[
+                    np.clip(annee_age_ouverture_droits, 2006, 2015)
+                    ]
                 )
             return taux_decote * decote_trimestres
 
