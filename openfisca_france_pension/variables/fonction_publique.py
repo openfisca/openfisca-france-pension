@@ -88,9 +88,10 @@ class fonction_publique_decote(Variable):
         aod_annee = aod_sedentaire_annee
         aod_mois = aod_sedentaire_mois
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
-        aad_en_mois = individu('fonction_publique_limite_d_age', period) * 12 + (2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006) * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)] * 3
+        reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
+        aad_en_mois = individu('fonction_publique_limite_d_age', period) * 12 + reduction_add_en_mois
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_avant_aad = max_(0, np.trunc((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
+        trimestres_avant_aad = max_(0, np.ceil((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres))
@@ -135,7 +136,7 @@ class fonction_publique_duree_assurance_travail_annuelle(Variable):
     label = "Durée d'assurance annuelle pour les périodes cotisées ou faisant l'objet d'un report de salaire au compte (en trimestres cotisés seulement l'année considérée)"
 
 class fonction_publique_limite_d_age(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = ETERNITY
     label = "Limite d'âge"
@@ -149,7 +150,7 @@ class fonction_publique_limite_d_age(Variable):
         else:
             limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
             limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
-        return limite_age_sedentaire_annee + limite_age_sedentaire_mois / 4
+        return limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
 
 class fonction_publique_liquidation_date(Variable):
     value_type = date

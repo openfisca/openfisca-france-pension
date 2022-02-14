@@ -1,4 +1,4 @@
-- name: Coeffiicent de proratisation
+- name: Coefficient de proratisation en 1980 cotisation dans public
   absolute_error_margin: .001
   period: 1980
   input:
@@ -7,8 +7,7 @@
     fonction_publique_coefficient_de_proratisation: 1
 
 
-
-- name: Coeffiicent de proratisation
+- name: Coefficient de proratisation en 1980 pas cotisation dans public
   absolute_error_margin: .001
   period: 1980
   input:
@@ -17,17 +16,57 @@
     fonction_publique_coefficient_de_proratisation: 0
 
 
-- name: Coeffiicent de proratisation
+- name: Coefficient de proratisation en 2013
   absolute_error_margin: .001
-  period: 2010
+  period: 2013
   input:
-    date_de_naissance: 1960-01-01
+    date_de_naissance: 1950-01-01
+    fonction_publique_duree_assurance: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 150 / 162
+
+
+- name: Coefficient de proratisation en 2015, montée en charge de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2015
+  input:
+    date_de_naissance: 1951-01-01
+    fonction_publique_duree_assurance: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 150 / 163
+
+
+- name: Coefficient de proratisation en 2017, montée en charge de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2017
+  input:
+    date_de_naissance: 1952-01-01
     fonction_publique_duree_assurance: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 164
 
 
-- name: Coeffiicent de proratisation
+- name: Coefficient de proratisation en 2019, montée en charge de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2019
+  input:
+    date_de_naissance: 1953-01-01
+    fonction_publique_duree_assurance: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 150 / 165
+
+ 
+- name: Coefficient de proratisation en 2025 après réforme 2010
+  absolute_error_margin: .001
+  period: 2025
+  input:
+    date_de_naissance: 1960-01-01
+    fonction_publique_duree_assurance: 150
+  output:
+    fonction_publique_coefficient_de_proratisation: 150 / 167
+
+
+- name: Coefficient de proratisation en 2030 après réforme 2010
   absolute_error_margin: .001
   period: 2030
   input:
@@ -37,7 +76,7 @@
     fonction_publique_coefficient_de_proratisation: 150 / 171
 
 
-- name: Coeffiicent de proratisation
+- name: Coeffiicent de proratisation en 2030 après réforme 2010
   absolute_error_margin: .001
   period: 2030
   input:

@@ -172,7 +172,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
 
     class limite_d_age(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = ETERNITY
         label = "Limite d'âge"
@@ -194,7 +194,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
                 limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
 
-            return limite_age_sedentaire_annee + limite_age_sedentaire_mois / 4
+            return limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
 
     # def trim_decote(self, data, trimesters_tot, trim_maj_enf_tot):
     #     ''' Détermination de la décote à appliquer aux pensions '''
@@ -262,9 +262,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
+
+
             trimestres_avant_aad = max_(
                 0,
-                np.trunc(
+                np.ceil(
                     (aad_en_mois - age_en_mois_a_la_liquidation) / 3
                     )
                 )
