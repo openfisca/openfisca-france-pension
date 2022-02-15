@@ -364,11 +364,14 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             return dernier_indice_atteint * valeur_point_indice
 
-    # def plafond_pension(self, pension_brute):
-    #     return pension_brute
+    class pension_brute(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = 'Pension brute'
 
-    # def minimum_pension(self, nb_trimesters, pension_brute):
-    #     return 0 * pension_brute
+        def formula(individu, period):
+            return individu("regime_name_pension_avant_minimum_et_plafonnement", period)
 
     # def cotisations(self, data):
     #     ''' Calcul des cotisations passées par année'''

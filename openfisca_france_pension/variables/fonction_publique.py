@@ -210,8 +210,8 @@ class fonction_publique_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
-    def formula(individu, period, parameters):
-        NotImplementedError
+    def formula(individu, period):
+        return individu('fonction_publique_pension_avant_minimum_et_plafonnement', period)
 
 class fonction_publique_pension_brute_servie(Variable):
     value_type = float
