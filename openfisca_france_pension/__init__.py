@@ -1,5 +1,6 @@
 """OpenFisca France Pension tax-benefit system."""
 
+import logging
 import os
 
 from openfisca_core.parameters import ParameterNode
@@ -11,9 +12,12 @@ from openfisca_france_pension.scripts_ast import script_ast
 
 COUNTRY_DIR = os.path.dirname(os.path.abspath(__file__))
 
+logging.getLogger('numba.core.ssa').disabled = True
+logging.getLogger('numba.core.byteflow').disabled = True
+logging.getLogger('numba.core.interpreter').disabled = True
 
 # Convert regimes classes to OpenFisca variables.
-script_ast.main(verbose=True)
+script_ast.main(verbose = False)
 
 
 def build_regimes_prelevements_sociaux(parameters):
