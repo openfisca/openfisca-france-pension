@@ -8,10 +8,25 @@ from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
 
+class TypesCategorieActivite(Enum):
+    __order__ = 'sedentaire actif'  # Needed to preserve the enum order in Python 2
+    sedentaire = 'Sédentaire'
+    actif = "Actif"
+
+
 class RegimeFonctionPublique(AbstractRegimeDeBase):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
     parameters_prefix = "secteur_public"
+
+    class categorie_activite(Variable):
+        value_type = Enum
+        possible_values = TypesCategorieActivite
+        default_value = TypesCategorieActivite.sedentaire
+        entity = Person
+        label = "Catégorie d'activité des emplois publics"
+        definition_period = YEAR
+        set_input = set_input_dispatch_by_period
 
     class duree_assurance(Variable):
         value_type = int
@@ -217,29 +232,34 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         def formula_2006(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
-            # aod_active_annee = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].annee
-            # aod_active_mois = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].mois
+            aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
             if period.start.year <= 2011:
                 aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
                 aod_sedentaire_mois = 0
+                aod_active_annee = aod_active.before_1956_07_01.annee
+                aod_active_mois = 0
             else:
                 aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
                 aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
+                aod_active_annee = aod_active[date_de_naissance].annee
+                aod_active_mois = aod_active[date_de_naissance].mois
 
             # Âge d'annulation de la décôte
             aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
 
-            # statut = individu('statut', period)
+            categorie_activite = individu('regime_name_categorie_activite', period)
             # TODO
             # actif pour les fonctionnaires actif en fin de carrière ou carrière mixte ayant une durée de service actif
             # suffisante
-            # aod = select(
-            #     [statut == 'fonction_publique_active', statut == 'fonction_publique_sedentaire'],
-            #     [aod_active, aod_sedentaire, 99]
-            #     )
-            aod_annee = aod_sedentaire_annee
-            aod_mois = aod_sedentaire_mois
+            aod_annee = select(
+                [categorie_activite == TypesCategorieActivite.sedentaire, categorie_activite == TypesCategorieActivite.actif],
+                [aod_sedentaire_annee, aod_active_annee]
+                )
+            aod_mois = select(
+                [categorie_activite == TypesCategorieActivite.sedentaire, categorie_activite == TypesCategorieActivite.actif],
+                [aod_sedentaire_mois, aod_active_mois]
+                )
             annee_age_ouverture_droits = np.trunc(
                 date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
                 + aod_annee
