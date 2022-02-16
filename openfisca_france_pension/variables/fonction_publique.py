@@ -11,6 +11,7 @@ def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_li
 'Régime de base de la fonction publique.'
 import numpy as np
 from openfisca_core.model_api import *
+from openfisca_france_pension import YEAR_ORIGIN
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
@@ -18,6 +19,19 @@ class TypesCategorieActivite(Enum):
     __order__ = 'sedentaire actif'
     sedentaire = 'Sédentaire'
     actif = 'Actif'
+
+class fonction_publique_actif_a_la_liquidation(Variable):
+    value_type = bool
+    entity = Person
+    definition_period = YEAR
+    label = "Atteinte des quinze ans d'activité"
+
+    def formula(individu, period, parameters):
+        date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
+        actif_annee = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+        actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
+        print('actif:', actif)
+        return actif
 
 class fonction_publique_aod(Variable):
     value_type = int
@@ -29,8 +43,8 @@ class fonction_publique_aod(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
-        statut = individu('statut', period)
-        return select([statut == 'fonction_publique_active', statut == 'fonction_publique_sedentaire'], [aod_active, aod_sedentaire, 99])
+        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
 class fonction_publique_bonification_cpcm(Variable):
     value_type = float
@@ -109,6 +123,12 @@ class fonction_publique_cotisation_salarie(Variable):
     def formula(individu, period, parameters):
         NotImplementedError
 
+class fonction_publique_date_quinze_ans_actif(Variable):
+    value_type = date
+    entity = Person
+    definition_period = YEAR
+    label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+
 class fonction_publique_decote(Variable):
     value_type = float
     entity = Person
@@ -130,9 +150,9 @@ class fonction_publique_decote(Variable):
             aod_active_annee = aod_active[date_de_naissance].annee
             aod_active_mois = aod_active[date_de_naissance].mois
         aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
-        categorie_activite = individu('fonction_publique_categorie_activite', period)
-        aod_annee = select([categorie_activite == TypesCategorieActivite.sedentaire, categorie_activite == TypesCategorieActivite.actif], [aod_sedentaire_annee, aod_active_annee])
-        aod_mois = select([categorie_activite == TypesCategorieActivite.sedentaire, categorie_activite == TypesCategorieActivite.actif], [aod_sedentaire_mois, aod_active_mois])
+        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
+        aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
         reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
         aad_en_mois = individu('fonction_publique_limite_d_age', period) * 12 + reduction_add_en_mois
@@ -184,19 +204,27 @@ class fonction_publique_duree_assurance_travail_annuelle(Variable):
 class fonction_publique_limite_d_age(Variable):
     value_type = float
     entity = Person
-    definition_period = ETERNITY
+    definition_period = YEAR
     label = "Limite d'âge"
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
+        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        limite_age_active = parameters(period).secteur_public.la_a.age_limite_fonction_publique_active_selon_annee_naissance
         limite_age_sedentaire = parameters(period).secteur_public.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
+            limite_age_active_annee = limite_age_active.before_1956_07_01.annee
+            limite_age_active_mois = 0
             limite_age_sedentaire_annee = limite_age_sedentaire.before_1951_07_01.annee
             limite_age_sedentaire_mois = 0
         else:
+            limite_age_active_annee = limite_age_active[date_de_naissance].annee
+            limite_age_active_mois = limite_age_active[date_de_naissance].mois
             limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
             limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
-        return limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
+        limite_age_actif = limite_age_active_annee + limite_age_active_mois / 12
+        limite_age_sedentaire = limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
+        return where(actif_a_la_liquidation, limite_age_actif, limite_age_sedentaire)
 
 class fonction_publique_liquidation_date(Variable):
     value_type = date
@@ -227,11 +255,20 @@ class fonction_publique_majoration_pension_servie(Variable):
         majoration_pension = individu('fonction_publique_majoration_pension', period)
         return revalorise(majoration_pension_servie_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
 
-class fonction_publique_nombre_enfants_nes_avant_2004(Variable):
-    value_type = int
+class fonction_publique_nombre_annees_actif(Variable):
+    value_type = float
     entity = Person
-    label = "Nombre d'enfants nés avant 2004"
-    definition_period = ETERNITY
+    definition_period = YEAR
+    label = "Nombre d'années travaillant en tant qu'actif"
+
+    def formula(individu, period):
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(period.start.year > annee_de_liquidation):
+            return individu.empty_array()
+        last_year = period.start.period('year').offset(-1)
+        nombre_annees_actif_annee_precedente = individu('fonction_publique_nombre_annees_actif', last_year)
+        categorie_activite = individu('fonction_publique_categorie_activite', period)
+        return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
 
 class fonction_publique_pension(Variable):
     value_type = float
@@ -323,16 +360,15 @@ class fonction_publique_surcote(Variable):
         else:
             aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
             aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
-        aod_annee = aod_sedentaire_annee
-        aod_mois = aod_sedentaire_mois
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor
-        trimestres_apres_aod = max_(0, arrondi_trimestres_aod((age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)) / 3))
+        trimestres_apres_aod = max_(0, arrondi_trimestres_aod((age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3))
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
         trimestres_surcote = max_(0, np.ceil(min_(trimestres_apres_aod, duree_assurance_excedentaire)))
+        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
         taux_surcote = parameters(period).secteur_public.surcote.taux_surcote_par_trimestre
-        return taux_surcote * trimestres_surcote
+        return where(actif_a_la_liquidation, 0, taux_surcote * trimestres_surcote)
 
 class fonction_publique_taux_de_liquidation(Variable):
     value_type = float

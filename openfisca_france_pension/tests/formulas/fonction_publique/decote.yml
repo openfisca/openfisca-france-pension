@@ -34,6 +34,7 @@
     fonction_publique_liquidation_date: 2006-05-01
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_categorie_activite: sedentaire
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 4 * .00125
@@ -48,6 +49,7 @@
     fonction_publique_liquidation_date: 2011-05-01
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_categorie_activite: sedentaire
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 11 * .0075
@@ -62,6 +64,7 @@
     fonction_publique_liquidation_date: 2013-04-01
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_categorie_activite: sedentaire
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 6 * 0.0075
@@ -76,6 +79,7 @@
     fonction_publique_liquidation_date: 2014-05-01
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_categorie_activite: sedentaire
   output:
     fonction_publique_surcote: 0
     fonction_publique_limite_d_age: 65 + 9 / 12
@@ -91,6 +95,7 @@
     fonction_publique_liquidation_date: 2016-05-01
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_categorie_activite: sedentaire
   output:
     fonction_publique_surcote: 0
     fonction_publique_limite_d_age: 66 + 7 / 12
@@ -106,6 +111,7 @@
     fonction_publique_liquidation_date: 2018-05-01
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_categorie_activite: sedentaire
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 14 * 0.0125

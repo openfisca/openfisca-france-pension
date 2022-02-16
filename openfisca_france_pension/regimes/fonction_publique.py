@@ -4,6 +4,7 @@ import numpy as np
 
 from openfisca_core.model_api import *
 
+from openfisca_france_pension import YEAR_ORIGIN
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
@@ -19,6 +20,39 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     variable_prefix = "fonction_publique"
     parameters_prefix = "secteur_public"
 
+    class date_quinze_ans_actif(Variable):
+        value_type = date
+        entity = Person
+        definition_period = YEAR
+        label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+
+    class nombre_annees_actif(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Nombre d'années travaillant en tant qu'actif"
+
+        def formula(individu, period):
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            if all(period.start.year > annee_de_liquidation):
+                return individu.empty_array()
+            last_year = period.start.period('year').offset(-1)
+            nombre_annees_actif_annee_precedente = individu('regime_name_nombre_annees_actif', last_year)
+            categorie_activite = individu('regime_name_categorie_activite', period)
+            return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
+
+    class actif_a_la_liquidation(Variable):
+        value_type = bool
+        entity = Person
+        definition_period = YEAR
+        label = "Atteinte des quinze ans d'activité"
+
+        def formula(individu, period,parameters):
+            date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
+            actif_annee = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+            actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
+            return actif
+
     class categorie_activite(Variable):
         value_type = Enum
         possible_values = TypesCategorieActivite
@@ -27,6 +61,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Catégorie d'activité des emplois publics"
         definition_period = YEAR
         set_input = set_input_dispatch_by_period
+
 
     class duree_assurance(Variable):
         value_type = int
@@ -39,9 +74,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
-
     # Utiliser la duréee de service
-
     # def FP_to_RG(self, data, trim_cot_by_year, sal_cot):
     #     ''' Détermine les personnes à rapporter au régime général'''
     #     P = reduce(getattr, self.param_name.split('.'), self.P)
@@ -210,50 +243,39 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
-            statut = individu('statut', period)
-            # TODO
-            # actif pour les fonctionnaires actif en fin de carrière ou carrière mixte ayant une durée de service actif
-            # suffisante
-            return select(
-                [statut == 'fonction_publique_active', statut == 'fonction_publique_sedentaire'],
-                [aod_active, aod_sedentaire, 99]
-                )
+            actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+            return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
     class limite_d_age(Variable):
         value_type = float
         entity = Person
-        definition_period = ETERNITY
+        definition_period = YEAR
         label = "Limite d'âge"
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
+            actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+            limite_age_active = parameters(period).regime_name.la_a.age_limite_fonction_publique_active_selon_annee_naissance
             limite_age_sedentaire = parameters(period).regime_name.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
-            # limite_age_active = parameters(period).regime_name.la_a.age_limite_fonction_publique_active_selon_annee_naissance
-            # statut = individu('statut', period)
-            # return select(
-            #     [statut == 'fonction_publique_active', statut == 'fonction_publique_sedentaire'],
-            #     [limite_age_active, limite_age_sedentaire, 99]
-            #     )
-
             if period.start.year <= 2011:
+                limite_age_active_annee = limite_age_active.before_1956_07_01.annee
+                limite_age_active_mois = 0
                 limite_age_sedentaire_annee = limite_age_sedentaire.before_1951_07_01.annee
                 limite_age_sedentaire_mois = 0
+
             else:
+                limite_age_active_annee = limite_age_active[date_de_naissance].annee
+                limite_age_active_mois = limite_age_active[date_de_naissance].mois
                 limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
                 limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
 
-            return limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
-
-    # def trim_decote(self, data, trimesters_tot, trim_maj_enf_tot):
-    #     ''' Détermination de la décote à appliquer aux pensions '''
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     if P.decote.nb_trim_max != 0:
-    #         agem = data.info_ind['agem']
-    #         trim_decote = nb_trim_decote(trimesters_tot, trim_maj_enf_tot,
-    #                                      agem, P)
-    #         return trim_decote
-    #     else:
-    #         return zeros(data.info_ind.shape[0])
+            limite_age_actif = limite_age_active_annee + limite_age_active_mois / 12
+            limite_age_sedentaire = limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
+            return where(
+                actif_a_la_liquidation,
+                limite_age_actif,
+                limite_age_sedentaire
+                )
 
     class decote(Variable):
         value_type = float
@@ -281,18 +303,9 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             # Âge d'annulation de la décôte
             aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
 
-            categorie_activite = individu('regime_name_categorie_activite', period)
-            # TODO
-            # actif pour les fonctionnaires actif en fin de carrière ou carrière mixte ayant une durée de service actif
-            # suffisante
-            aod_annee = select(
-                [categorie_activite == TypesCategorieActivite.sedentaire, categorie_activite == TypesCategorieActivite.actif],
-                [aod_sedentaire_annee, aod_active_annee]
-                )
-            aod_mois = select(
-                [categorie_activite == TypesCategorieActivite.sedentaire, categorie_activite == TypesCategorieActivite.actif],
-                [aod_sedentaire_mois, aod_active_mois]
-                )
+            actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
+            aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
+            aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
             annee_age_ouverture_droits = np.trunc(
                 date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
                 + aod_annee
@@ -348,8 +361,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         def formula_2004(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
-            # aod_active_annee = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].annee
-            # aod_active_annee = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance].mois
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
             if period.start.year <= 2011:
                 aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
@@ -358,8 +369,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
                 aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
 
-            aod_annee = aod_sedentaire_annee
-            aod_mois = aod_sedentaire_mois
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
@@ -369,7 +378,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 0,
                 arrondi_trimestres_aod(
                     (
-                        age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
+                        age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)
                         ) / 3
                     )
                 )
@@ -386,8 +395,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ))
                 )
             # TODO correction réforme 2013 voir guide page 1937
+
+            actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
-            return taux_surcote * trimestres_surcote
+            return where(actif_a_la_liquidation,0, taux_surcote * trimestres_surcote)
 
     class dernier_indice_atteint(Variable):
         value_type = float

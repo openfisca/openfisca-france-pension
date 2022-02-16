@@ -1,0 +1,71 @@
+- name: Calcul du nombre d'années actif
+  absolute_error_margin: .01
+  period: 2010
+  input:
+    fonction_publique_liquidation_date: 2015-01-01
+    fonction_publique_nombre_annees_actif:
+      2008: 13
+      2009: 14
+    fonction_publique_categorie_activite: actif
+  output:
+    fonction_publique_nombre_annees_actif: 15
+
+
+- name: Le nombre de trimestres cotisés est pour être considéré comme actif avant la réforme de 2011
+  absolute_error_margin: .01
+  period: 2010
+  input:
+    fonction_publique_date_quinze_ans_actif: 2010-11-20
+    fonction_publique_nombre_annees_actif: 15
+  output:
+    fonction_publique_actif_a_la_liquidation: True
+
+
+- name: Le nombre de trimestres cotisés n'est pas suffisant pour être considéré comme actif pendant la montée en puissance de la réforme de 2011
+  absolute_error_margin: .01
+  period: 2015
+  input:
+    fonction_publique_date_quinze_ans_actif: 2011-12-30
+    fonction_publique_nombre_annees_actif: 15
+  output:
+    fonction_publique_actif_a_la_liquidation: False
+
+
+- name: Le nombre de trimestres cotisés est suffisant pour être considéré comme actif pendant la montée en puissance de la réforme de 2011
+  absolute_error_margin: .01
+  period: 2015
+  input:
+    fonction_publique_date_quinze_ans_actif: 2012-08-30
+    fonction_publique_nombre_annees_actif: 16
+  output:
+    fonction_publique_actif_a_la_liquidation: True
+
+
+- name: Le nombre de trimestres cotisés n'est pas suffisant pour être considéré comme actif pendant la montée en puissance de la réforme de 2011
+  absolute_error_margin: .01
+  period: 2015
+  input:
+    fonction_publique_date_quinze_ans_actif: 2013-08-30
+    fonction_publique_nombre_annees_actif: 16
+  output:
+    fonction_publique_actif_a_la_liquidation: False
+
+
+- name: Le nombre de trimestres cotisés est suffisant pour être considéré comme actif pendant la montée en puissance de la réforme de 2011
+  absolute_error_margin: .01
+  period: 2015
+  input:
+    fonction_publique_date_quinze_ans_actif: 2014-05-30
+    fonction_publique_nombre_annees_actif: 16.7
+  output:
+    fonction_publique_actif_a_la_liquidation: True
+
+
+- name: Le nombre de trimestres cotisés n'est pas suffisant pour être considéré comme actif après la réforme de 2011
+  absolute_error_margin: .01
+  period: 2017
+  input:
+    fonction_publique_date_quinze_ans_actif: 2016-05-30
+    fonction_publique_nombre_annees_actif: 15.7
+  output:
+    fonction_publique_actif_a_la_liquidation: False

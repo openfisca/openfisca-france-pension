@@ -10,6 +10,7 @@ metadata:
   - surcote
   - prorat
   - trimtp
+  - duree_seuil_actif
   - pt_ircantec
   - salref_ircantec
   - ra
