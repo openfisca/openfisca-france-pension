@@ -12,7 +12,7 @@
     fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75
 
 
-- name: Surcote dans le public à son intauration en 2006 (par l'âge)
+- name: Surcote dans le public après son intauration en 2006 (par l'âge)
   absolute_error_margin: .001
   period: 2007
   input:
@@ -85,6 +85,7 @@
     fonction_publique_surcote: .0125
     fonction_publique_decote: 0
     fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .0125)
+
 
 - name: Surcote dans le public en 2018 après la mise en place de la réforme de 2010
   absolute_error_margin: .001
