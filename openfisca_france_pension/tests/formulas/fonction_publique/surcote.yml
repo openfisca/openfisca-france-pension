@@ -14,14 +14,88 @@
 
 - name: Surcote dans le public à son intauration en 2006 (par l'âge)
   absolute_error_margin: .001
-  period: 2006
+  period: 2007
   input:
     date_de_naissance: 1945-11-19
-    fonction_publique_liquidation_date: 2006-11-30
-    fonction_publique_duree_assurance: 160
+    fonction_publique_liquidation_date: 2007-03-21
+    fonction_publique_duree_assurance: 171
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
   output:
-    fonction_publique_surcote: .03
+    fonction_publique_surcote: .045
     fonction_publique_decote: 0
-    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .03)
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .045)
+
+
+- name: Surcote dans le public en 2014 pendant la mise en puissance de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2014
+  input:
+    date_de_naissance: 1951-11-19
+    fonction_publique_liquidation_date: 2014-11-30
+    fonction_publique_duree_assurance: 169
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: .075
+    fonction_publique_decote: 0
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .075)
+
+
+- name: Surcote dans le public en 2013 pendant la mise en puissance de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2013
+  input:
+    date_de_naissance: 1952-11-19
+    fonction_publique_liquidation_date: 2013-11-30
+    fonction_publique_duree_assurance: 170
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: .0125
+    fonction_publique_decote: 0
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .0125)
+
+
+- name: Surcote dans le public en 2015 pendant la mise en puissance de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2015
+  input:
+    date_de_naissance: 1953-07-12
+    fonction_publique_liquidation_date: 2015-11-30
+    fonction_publique_duree_assurance: 185
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: .05
+    fonction_publique_decote: 0
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .05)
+
+
+- name: Surcote dans le public en 2016 pendant la mise en puissance de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2016
+  input:
+    date_de_naissance: 1954-03-03
+    fonction_publique_liquidation_date: 2016-04-16
+    fonction_publique_duree_assurance: 166
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: .0125
+    fonction_publique_decote: 0
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .0125)
+
+- name: Surcote dans le public en 2018 après la mise en place de la réforme de 2010
+  absolute_error_margin: .001
+  period: 2018
+  input:
+    date_de_naissance: 1955-03-03
+    fonction_publique_liquidation_date: 2018-06-01
+    fonction_publique_duree_assurance: 171
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+  output:
+    fonction_publique_surcote: .05
+    fonction_publique_decote: 0
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 + .05)

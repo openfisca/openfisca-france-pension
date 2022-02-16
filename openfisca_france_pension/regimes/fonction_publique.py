@@ -308,15 +308,26 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
             aod_annee = aod_sedentaire_annee
             aod_mois = aod_sedentaire_mois
-
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_apres_aod = max_(
+            if period.start.year <= 2009:
+                trimestres_apres_aod = max_(
                 0,
-                np.trunc(
-                    (age_en_mois_a_la_liquidation - 12 * aod_annee + aod_mois) / 3
+                np.ceil(
+                    (
+                        age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
+                        ) / 3
+                    )
+                )
+            else:
+                trimestres_apres_aod = max_(
+                0,
+                np.floor(
+                    (
+                        age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
+                        ) / 3
                     )
                 )
             duree_assurance_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
@@ -326,10 +337,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             trimestres_surcote = max_(
                 0,
-                min_(
+                np.ceil(min_(
                     trimestres_apres_aod,
                     duree_assurance_excedentaire
-                    )
+                    ))
                 )
             # TODO correction réforme 2013 voir guide page 1937
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre

@@ -274,10 +274,13 @@ class fonction_publique_surcote(Variable):
         aod_annee = aod_sedentaire_annee
         aod_mois = aod_sedentaire_mois
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        trimestres_apres_aod = max_(0, np.trunc((age_en_mois_a_la_liquidation - 12 * aod_annee + aod_mois) / 3))
+        if period.start.year <= 2009:
+            trimestres_apres_aod = max_(0, np.ceil((age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)) / 3))
+        else:
+            trimestres_apres_aod = max_(0, np.floor((age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)) / 3))
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
-        trimestres_surcote = max_(0, min_(trimestres_apres_aod, duree_assurance_excedentaire))
+        trimestres_surcote = max_(0, np.ceil(min_(trimestres_apres_aod, duree_assurance_excedentaire)))
         taux_surcote = parameters(period).secteur_public.surcote.taux_surcote_par_trimestre
         return taux_surcote * trimestres_surcote
 
