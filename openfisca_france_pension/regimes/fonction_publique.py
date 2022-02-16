@@ -312,21 +312,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            if period.start.year <= 2009:
-                trimestres_apres_aod = max_(
+            arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor
+            trimestres_apres_aod = max_(
                 0,
-                np.ceil(
+                arrondi_trimestres_aod(
                     (
-                        age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
-                        ) / 3
-                    )
-                )
-            else:
-                trimestres_apres_aod = max_(
-                0,
-                np.floor(
-                    (
-                        age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
+                    age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
                         ) / 3
                     )
                 )
