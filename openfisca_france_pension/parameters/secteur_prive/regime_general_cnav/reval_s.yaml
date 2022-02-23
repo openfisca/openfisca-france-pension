@@ -2,20 +2,28 @@ description: Revalorisation des salaires portés aux comptes
 coefficient:
   description: Coefficient
   values:
+    2022-01-01:
+      value: 1.011
     2021-01-01:
       value: 1.004
     2020-01-01:
-      value: 1.001
+      value: 1.01
     2019-01-01:
       value: 1.015
+    2018-01-01:
+      value: 1.0
     2017-10-01:
       value: 1.008
     2016-10-01:
       value: 1.0
     2015-10-01:
       value: 1.001
+    2014-04-01:
+      value: 1.0
     2013-04-01:
       value: 1.013
+    2012-04-01:
+      value: 1.021
     2011-04-01:
       value: 1.021
     2010-04-01:
@@ -26,6 +34,8 @@ coefficient:
       value: 1.008
     2008-01-01:
       value: 1.011
+    2007-01-01:
+      value: 1.018
     2006-01-01:
       value: 1.018
     2005-01-01:
@@ -34,6 +44,8 @@ coefficient:
       value: 1.017
     2003-01-01:
       value: 1.015
+    2002-01-01:
+      value: 1.022
     2001-01-01:
       value: 1.022
     2000-01-01:
@@ -197,6 +209,8 @@ associe:
       value: 0.0009999999999998899
     2013-04-01:
       value: 0.0129999999999999
+    2012-04-01:
+      value: 0.021
     2011-04-01:
       value: 0.021
     2010-04-01:
@@ -207,6 +221,8 @@ associe:
       value: 0.008
     2008-01-01:
       value: 0.011
+    2007-01-01:
+      value: 0.018000000000000016
     2006-01-01:
       value: 0.018000000000000016
     2005-01-01:
@@ -367,25 +383,40 @@ metadata:
   - coefficient
   - associe
   reference:
-    2021-01-01: Circ. interministérielle DSS/SD3A/2020/230  du  23/12/2020
-    2020-01-01: Circ. interministérielle DSS/SD3A/2019/266  du  27/12/2019
+    2022-01-01:
+      title: Instruction interministérielle DSS/SD3A/2021/260 du 22/12/2021
+      href: https://www.legislation.cnav.fr/Documents/instruction_ministerielle_2021_260_22122021.pdf
+    2021-01-01:
+      title: Instruction interministérielle DSS/SD3A/2020/230 du 23/12/2020
+      href: https://www.legislation.cnav.fr/Documents/instruction_ministerielle_2021_260_22122021.pdf
+    2020-01-01:
+      title: Instruction interministérielle DSS/SD3A/2019/266 du 27/12/2019
+      href: https://www.legislation.cnav.fr/Documents/instruction_ministerielle_2019_266_27122019.pdf
     2019-01-01: Article 68 de la loi de financement de la sécurité sociale pour 2019
-    2017-10-01: Circ. interministérielle DSS/SD3A/2017/272 du 15/09/2017
+    2017-10-01: Instruction interministérielle DSS/SD3A/2017/272 du 15/09/2017
     2016-10-01: Pas de revalorisation au 01/10/2015
-    2015-10-01: Circ. interministérielle DSS/3A/2015/299 du 01/10/2015
-    2013-04-01: Circ. interministérielle DSS/3A/2013/110 du 19/03/2013
-    2012-01-01: Circ. interministérielle DSS/3A/2012/128 du 28/03/2012
-    2011-04-01: Circ. interministérielle DSS/3A/2011/108 du 29/03/2011
+    2015-10-01: Instruction interministérielle DSS/3A/2015/299 du 01/10/2015
+    2013-04-01: Instruction interministérielle DSS/3A/2013/110 du 19/03/2013
+    2012-04-01:
+      title: Instruction interministérielle DSS/3A/2012/128 du 28/03/2012
+      href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2012_35_17042012_circmin_28032012.pdf
+    2011-04-01: Instruction interministérielle DSS/3A/2011/108 du 29/03/2011
     2010-04-01: Lettre ministérielle 2010/95 du 24/03/2010
     2009-04-01: Lettre ministérielle du 25/03/2009
     2008-07-31: Lettre ministérielle du 31/07/2008
     2008-01-01: Arrêté du 21/12/2007
-    2007-01-01: Arrêté du 19/12/2006
-    2006-01-01: Arrêté du 23/12/2005
+    2007-01-01:
+      title: Arrêté du 19/12/2006
+      href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000820419
+    2006-01-01:
+      title: Arrêté du 23/12/2005
+      href: https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006053088/
     2005-01-01: Arrêté du 16/12/2004
     2004-01-01: Arrêté du 23/12/2003
     2003-01-01: Arrêté du 31/12/2002
-    2002-01-01: Arrêté du 25/01/2002
+    2002-01-01:
+      title: Arrêté du 25/01/2002
+      href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000399330
     2001-01-01: Arrêté du 26/12/2000
     2000-01-01: Arrêté du 29/12/1999
     1999-01-01: Arrêté du 29/12/1998
@@ -570,13 +601,21 @@ metadata:
     1950-01-01: 1950-04-26
     1949-01-01: 1949-06-29
   notes:
-    2019-01-01: Circulaire CNAV 2019/4 du 09/01/2019. Pas de revalorisation en novembre 2018 car la date de revalorisation est désormais fixée au 1er janvier. Coefficient non indexé sur l’inflation.
+    2020-01-01:
+      title: Circulaire CNAV 2020/9 du 04/02/2020. Annule et remplace la circulaire CNAV 2020/5 du 09/01/2020
+      href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2020_09_04022020.pdf
+    2019-01-01: Circulaire CNAV 2019/4 du 09/01/2019.
+    2018-01-01: Pas de revalorisation en novembre 2018 car la date de revalorisation est désormais fixée au 1er janvier. Coefficient non indexé sur l’inflation.
     2017-10-01: Circulaire CNAV 2017/32 du 26/09/2017
     2016-10-01: Circulaire CNAV 2016/13 du 16/02/2016
     2015-10-01: Circulaire CNAV 2016/13 du 16/02/2016
     2013-04-01: Circulaire CNAV 2013/29 du 18/04/2013
-    2012-01-01: Circulaire CNAV 2012/35 du 17/04/2012
-    2011-04-01: Circulaire CNAV 2011/30 du 14/04/2011
+    2012-04-01:
+      title: Circulaire CNAV 2012/35 du 17/04/2012
+      href: https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2011030_14042011
+    2011-04-01:
+      title: Circulaire CNAV 2011/30 du 14/04/2011
+      href: https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2011030_14042011
     2009-04-01:
       title: Circulaire CNAV 2009/31 du 16/04/2009
       href: https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2009031_16042009
@@ -605,6 +644,6 @@ documentation: |
   (1) A partir de cet arrêté la revalorisation est effective jusqu'à l'année n-1 : pour déterminer la revalorisation des salaires à d'une année n, la série chronologique des revalorisations en n-1 (définie jusqu'en n-2) est multipliée
   par le coefficient indiqué dans l'arrêté et les salaires de l'année n-1 sont revalorisés par ce coefficent. De plus, le coefficient est alligné sur celui de revalorisation des pensions déjà liquidées (cf onglet précédent). Ici, la série
   précédente est multipliée par 1,02 et le coefficient 1,02 sert également à la revalorisation des salaires perçus en 1993 (n-1) et 1992 (n-2).
-  (2) Cet arrêté gèle la revalorisation du second semestre : revalorisation n-2 durant toute l'année (série chronologique précédente multipliée par 1,013. Le coefficient de revalorisation de 1991 est ainsi 1,031 = 1,018* 1, 013 ).
+  (2) Cet arrêté gèle la revalorisation du second semestre : revalorisation n-2 durant toute l'année (série chronologique précédente multipliée par 1,013. Le coefficient de revalorisation de 1991 est ainsi 1,031 = 1,018 * 1,013 ).
   (3) La revalorisation s'applique de nouveau jusqu'à l'année n-1 pour le second semestre, elle s'applique toujours à l'année n-2 pour le premier semestre. Il s'agit ici du second semectre de 1974, la revalorisation est donc
   de 1,067 pour l'année 1973. Pour les années antérieures, multiplier la série chronologique précédente par le coefficient. Ce mode de calcul est valable du 01/07/1974 au 31/12/1992 (avec un décalage temporel pour l'année 1986).

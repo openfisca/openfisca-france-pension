@@ -20,4 +20,4 @@
       2020: 10000
       2019: 10000
   output:
-    regime_general_cnav_salaire_de_reference: 10000 * (1.004  + 1.004 * 1.001) / 2
+    regime_general_cnav_salaire_de_reference: 10000 * (1.004  + 1.01404) / 2

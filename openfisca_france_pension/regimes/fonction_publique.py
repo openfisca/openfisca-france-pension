@@ -283,7 +283,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
 
-
             trimestres_avant_aad = max_(
                 0,
                 np.ceil(
