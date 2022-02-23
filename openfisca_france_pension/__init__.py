@@ -8,7 +8,7 @@ from openfisca_core.taxbenefitsystems import TaxBenefitSystem
 
 from openfisca_france_pension import entities
 from openfisca_france_pension.scripts_ast import script_ast
-
+from openfisca_france_pension.revalorisation import build_coefficient_by_annee_salaire
 
 COUNTRY_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -54,6 +54,9 @@ def build_secteur_public_reval_p(parameters):
         "reval_p",
         reval_p,
         )
+
+
+build_coefficient_by_annee_salaire()
 
 
 class CountryTaxBenefitSystem(TaxBenefitSystem):
