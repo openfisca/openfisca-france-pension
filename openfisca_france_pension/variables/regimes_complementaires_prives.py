@@ -3,10 +3,11 @@ from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
+from openfisca_france_pension import YEAR_ORIGIN
 from openfisca_france_pension.entities import Person
 
 def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
-    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
+    return select([(annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN), annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
 'Régimes complémentaires du secteur privé.'
 import numpy as np
 from openfisca_core.model_api import *
