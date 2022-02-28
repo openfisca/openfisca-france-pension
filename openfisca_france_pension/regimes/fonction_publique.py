@@ -336,7 +336,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 0,
                 arrondi_trimestres_aod(
                     (
-                    age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
+                        age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois)
                         ) / 3
                     )
                 )

@@ -3,10 +3,11 @@ from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
+from openfisca_france_pension import YEAR_ORIGIN
 from openfisca_france_pension.entities import Person
 
 def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
-    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
+    return select([(annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN), annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
 'Régime de base de la fonction publique.'
 import numpy as np
 from openfisca_core.model_api import *
@@ -193,7 +194,7 @@ class fonction_publique_majoration_pension_servie(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        if all(annee_de_liquidation > period.start.year):
+        if all((annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN)):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         majoration_pension_servie_annee_precedente = individu('fonction_publique_majoration_pension_servie', last_year)
@@ -241,7 +242,7 @@ class fonction_publique_pension_brute_servie(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        if all(annee_de_liquidation > period.start.year):
+        if all((annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN)):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         pension_brute_servie_annee_precedente = individu('fonction_publique_pension_brute_servie', last_year)
@@ -257,7 +258,7 @@ class fonction_publique_pension_servie(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        if all(annee_de_liquidation > period.start.year):
+        if all((annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN)):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         pension_servie_annee_precedente = individu('fonction_publique_pension_servie', last_year)
