@@ -126,11 +126,44 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     #     return minimum(divide(maximum(nb_trimesters, N_CP) + trim_maj_mda_ini,
     #                           N_CP),
     #                    divide(taux_bonif, taux))
-
     # def coeff_proratisation_Destinie(self, nb_trimesters, trim_maj_mda_ini):
     #     P = self.P.public.fp
     #     N_CP = P.plein.n_trim
     #     return minimum(divide(nb_trimesters + trim_maj_mda_ini, N_CP), 1)
+
+    class nombre_enfants_nes_avant_2004(Variable):
+        value_type = int
+        entity = Person
+        label = "Nombre d'enfants nés avant 2004"
+        definition_period = ETERNITY
+
+    class bonification_cpcm(Variable):
+        value_type = float
+        entity = Person
+        label = "bonification pour enfants"
+        definition_period = YEAR
+
+        def formula_2004(individu, period, parameters):
+            bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+            nombre_enfants_nes_avant_2004 = individu('regime_name_nombre_enfants_nes_avant_2004', period)
+            bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
+            bonification_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+            nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
+            bonification_cpcm = (
+                bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
+                + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
+                )
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            liquidation = (annee_de_liquidation == period.start.year)
+            return bonification_cpcm * liquidation
+
+        def formula_1948(individu, period, parameters):
+            bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+            nombre_enfants = individu('nombre_enfants', period)
+            bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            liquidation = (annee_de_liquidation == period.start.year)
+            return bonification_cpcm * liquidation
 
     class coefficient_de_proratisation(Variable):
         value_type = float
@@ -142,7 +175,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             duree_de_service_effective = individu("regime_name_duree_assurance", period)
             # TODO
-            bonification_cpcm = 0
+            bonification_cpcm = individu('fonction_publique_bonification_cpcm', period)
             super_actif = False  # individu('regime_name_super_actif', period)
             bonification_du_cinquieme = (
                 super_actif * min_(

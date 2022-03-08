@@ -1,0 +1,33 @@
+- name: Coefficient de bonification pour enfant né avant 2004
+  absolute_error_margin: .001
+  period: 2008
+  input:
+    date_naissance_enfant: 2003-04-11
+    fonction_publique_liquidation_date: 2008-04-11
+    nombre_enfants: 6
+    fonction_publique_nombre_enfants_nes_avant_2004: 6
+  output:
+    fonction_publique_bonification_cpcm: 24
+
+
+- name: Coefficient de bonification pour enfant né avant 2004 (nul car pas de liquidation)
+  absolute_error_margin: .001
+  period: 2008
+  input:
+    date_naissance_enfant: 2003-04-11
+    fonction_publique_liquidation_date: 2009-04-11
+    nombre_enfants: 6
+    fonction_publique_nombre_enfants_nes_avant_2004: 6
+  output:
+    fonction_publique_bonification_cpcm: 0
+
+
+- name: Coefficient de bonification pour enfant né après 2004
+  absolute_error_margin: .001
+  period: 2008
+  input:
+    fonction_publique_liquidation_date: 2008-04-11
+    nombre_enfants: 1
+    date_naissance_enfant: 2005-04-11
+  output:
+    fonction_publique_bonification_cpcm: 2
