@@ -73,6 +73,13 @@ class date_de_naissance(Variable):
     label = 'Date de naissance'
 
 
+class date_naissance_enfant(Variable):
+    value_type = date
+    entity = Person
+    definition_period = ETERNITY
+    label = "Date de naissance des enfants"
+
+
 class duree_assurance_cotisee_tous_regimes(Variable):
     value_type = int
     entity = Person

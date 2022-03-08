@@ -96,6 +96,8 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         build_secteur_public_reval_p(self.parameters)
 
         self.cache_blacklist = [
-            "duree_assurance_travail_avpf_annuelle",
-            "duree_assurance_travail_emploi_annuelle",
+            "fonction_publique_aod",
+            "fonction_publique_salaire_de_reference",
+            "regime_general_cnav_duree_assurance_travail_avpf_annuelle",
+            "regime_general_cnav_duree_assurance_travail_emploi_annuelle",
             ]

@@ -19,6 +19,6 @@
 ## Perfomance temps
 
 
-## Législation: paramè_ters à compléter
+## Législation: parameters à compléter
 
 ### Salaire validant un trimestre avant 1930 ?

@@ -32,6 +32,31 @@ class fonction_publique_aod(Variable):
         statut = individu('statut', period)
         return select([statut == 'fonction_publique_active', statut == 'fonction_publique_sedentaire'], [aod_active, aod_sedentaire, 99])
 
+class fonction_publique_bonification_cpcm(Variable):
+    value_type = float
+    entity = Person
+    label = 'bonification pour enfants'
+    definition_period = YEAR
+
+    def formula_2004(individu, period, parameters):
+        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        nombre_enfants_nes_avant_2004 = individu('fonction_publique_nombre_enfants_nes_avant_2004', period)
+        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
+        bonification_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+        nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
+        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        liquidation = annee_de_liquidation == period.start.year
+        return bonification_cpcm * liquidation
+
+    def formula_1948(individu, period, parameters):
+        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        nombre_enfants = individu('nombre_enfants', period)
+        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        liquidation = annee_de_liquidation == period.start.year
+        return bonification_cpcm * liquidation
+
 class fonction_publique_categorie_activite(Variable):
     value_type = Enum
     possible_values = TypesCategorieActivite
@@ -50,7 +75,7 @@ class fonction_publique_coefficient_de_proratisation(Variable):
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
         duree_de_service_effective = individu('fonction_publique_duree_assurance', period)
-        bonification_cpcm = 0
+        bonification_cpcm = individu('fonction_publique_bonification_cpcm', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
@@ -201,6 +226,12 @@ class fonction_publique_majoration_pension_servie(Variable):
         revalorisation = parameters(period).secteur_public.reval_p.coefficient
         majoration_pension = individu('fonction_publique_majoration_pension', period)
         return revalorise(majoration_pension_servie_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
+
+class fonction_publique_nombre_enfants_nes_avant_2004(Variable):
+    value_type = int
+    entity = Person
+    label = "Nombre d'enfants nés avant 2004"
+    definition_period = ETERNITY
 
 class fonction_publique_pension(Variable):
     value_type = float
