@@ -4,7 +4,6 @@ import numpy as np
 
 from openfisca_core.model_api import *
 
-from openfisca_france_pension import YEAR_ORIGIN
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
@@ -19,7 +18,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
     parameters_prefix = "secteur_public"
-
 
     class nombre_annees_actif(Variable):
         value_type = float
@@ -36,7 +34,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             categorie_activite = individu('regime_name_categorie_activite', period)
             return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
 
-
     class date_quinze_ans_actif(Variable):
         value_type = date
         entity = Person
@@ -45,11 +42,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period):
             last_year = period.start.period('year').offset(-1)
-            print("last year:",last_year)
+            print("last year:", last_year)
             nombre_annees_actif_annee_courante = individu('regime_name_nombre_annees_actif', period)
-            print("nombre_annees_actif_annee_courante:",nombre_annees_actif_annee_courante)
+            print("nombre_annees_actif_annee_courante:", nombre_annees_actif_annee_courante)
             date_actif_annee_precedente = individu('regime_name_date_quinze_ans_actif', last_year)
-            print("date_actif_annee_precedente:",date_actif_annee_precedente)
+            print("date_actif_annee_precedente:", date_actif_annee_precedente)
             date = select(
                 [
                     date_actif_annee_precedente < np.datetime64("2099-01-01"),
@@ -63,9 +60,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ],
                 default = np.datetime64("2099-01-01")
                 )
-            print("date;",date)
+            print("date;", date)
             return date
-
 
     class actif_a_la_liquidation(Variable):
         value_type = bool
@@ -73,7 +69,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Atteinte des quinze ans d'activité"
 
-        def formula(individu, period,parameters):
+        def formula(individu, period, parameters):
             date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
             actif_annee = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
             actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
@@ -87,7 +83,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Catégorie d'activité des emplois publics"
         definition_period = YEAR
         set_input = set_input_dispatch_by_period
-
 
     class duree_assurance(Variable):
         value_type = int
@@ -424,7 +419,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
-            return where(actif_a_la_liquidation,0, taux_surcote * trimestres_surcote)
+            return where(actif_a_la_liquidation, 0, taux_surcote * trimestres_surcote)
 
     class dernier_indice_atteint(Variable):
         value_type = float

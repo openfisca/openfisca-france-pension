@@ -11,7 +11,6 @@ def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_li
 'Régime de base de la fonction publique.'
 import numpy as np
 from openfisca_core.model_api import *
-from openfisca_france_pension import YEAR_ORIGIN
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
