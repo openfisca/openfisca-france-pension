@@ -30,7 +30,6 @@ class fonction_publique_actif_a_la_liquidation(Variable):
         date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
         actif_annee = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
         actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
-        print('actif:', actif)
         return actif
 
 class fonction_publique_aod(Variable):
@@ -128,6 +127,17 @@ class fonction_publique_date_quinze_ans_actif(Variable):
     entity = Person
     definition_period = YEAR
     label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+
+    def formula(individu, period):
+        last_year = period.start.period('year').offset(-1)
+        print('last year:', last_year)
+        nombre_annees_actif_annee_courante = individu('fonction_publique_nombre_annees_actif', period)
+        print('nombre_annees_actif_annee_courante:', nombre_annees_actif_annee_courante)
+        date_actif_annee_precedente = individu('fonction_publique_date_quinze_ans_actif', last_year)
+        print('date_actif_annee_precedente:', date_actif_annee_precedente)
+        date = select([date_actif_annee_precedente < np.datetime64('2099-01-01'), nombre_annees_actif_annee_courante <= 15, date_actif_annee_precedente == np.datetime64('2099-01-01')], [date_actif_annee_precedente, np.datetime64('2099-01-01'), np.datetime64(str(period.start))], default=np.datetime64('2099-01-01'))
+        print('date;', date)
+        return date
 
 class fonction_publique_decote(Variable):
     value_type = float
@@ -269,6 +279,12 @@ class fonction_publique_nombre_annees_actif(Variable):
         nombre_annees_actif_annee_precedente = individu('fonction_publique_nombre_annees_actif', last_year)
         categorie_activite = individu('fonction_publique_categorie_activite', period)
         return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
+
+class fonction_publique_nombre_enfants_nes_avant_2004(Variable):
+    value_type = int
+    entity = Person
+    label = "Nombre d'enfants nés avant 2004"
+    definition_period = ETERNITY
 
 class fonction_publique_pension(Variable):
     value_type = float

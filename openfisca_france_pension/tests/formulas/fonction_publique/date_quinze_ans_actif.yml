@@ -1,0 +1,9 @@
+- name: Actif l'année précédente
+  absolute_error_margin: .001
+  period: 2006
+  input:
+    fonction_publique_nombre_annees_actif: 16
+    fonction_publique_date_quinze_ans_actif:
+      2005: 1996-01-01
+  output:
+    fonction_publique_actif_a_la_liquidation: True
