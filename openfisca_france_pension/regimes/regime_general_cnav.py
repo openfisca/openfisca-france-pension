@@ -177,10 +177,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 liquidation_date
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            # TODO definition exacte trimestres ?
             trimestres_apres_aad = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )
@@ -207,10 +206,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 liquidation_date
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            # TODO definition exacte trimestres ?
             trimestres_apres_aad = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )
@@ -321,7 +319,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_avant_aad = np.trunc(
+            trimestres_avant_aad = np.ceil(
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
             duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
@@ -344,7 +342,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 individu("regime_name_liquidation_date", period)
                 - individu("date_de_naissance", period)
                 ).astype("timedelta64[M]").astype(int)
-            trimestres_avant_aad = np.trunc(
+            trimestres_avant_aad = np.ceil(
                 (aad * 12 - age_en_mois_a_la_liquidation) / 3
                 )
             duree_assurance_tous_regimes = individu("duree_assurance_tous_regimes", period)
@@ -365,10 +363,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 liquidation_date
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            # TODO definition exacte trimestres ?
             decote_trimestres = max_(
                 0,
-                np.trunc(
+                np.ceil(
                     (aad * 12 - age_en_mois_a_la_liquidation) / 3
                     )
                 )
@@ -897,17 +894,16 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 liquidation_date
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            # TODO definition exacte trimestres ?
             trimestres_apres_aod = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois))
                     / 3
                     )
                 )
             distance_a_2004_en_trimestres = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (liquidation_date - np.datetime64("2004-01-01")).astype("timedelta64[M]").astype(int)
                     / 3
                     )
@@ -941,17 +937,16 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 liquidation_date
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            # TODO definition exacte trimestres ?
             trimestres_apres_aod = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (age_en_mois_a_la_liquidation - 12 * aod)
                     / 3
                     )
                 )
             distance_a_2004_en_trimestres = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (liquidation_date - np.datetime64("2004-01-01")).astype("timedelta64[M]").astype(int)
                     / 3
                     )
@@ -974,7 +969,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 trimestres_surcote,
                 max_(
                     0,
-                    np.trunc(
+                    np.floor(
                             (age_en_mois_a_la_liquidation - 65 * 12) / 3
                         )
                     )
@@ -1005,17 +1000,16 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 liquidation_date
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            # TODO definition exacte trimestres ?
             trimestres_apres_aod = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (age_en_mois_a_la_liquidation - 12 * aod)
                     / 3
                     )
                 )
             distance_a_2004_en_trimestres = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (liquidation_date - np.datetime64("2004-01-01")).astype("timedelta64[M]").astype(int)
                     / 3
                     )
@@ -1048,10 +1042,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 liquidation_date
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
-            # TODO definition exacte trimestres ?
             trimestres_apres_aad = max_(
                 0,
-                np.trunc(
+                np.floor(
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )

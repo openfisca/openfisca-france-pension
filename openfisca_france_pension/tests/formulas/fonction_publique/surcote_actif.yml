@@ -1,0 +1,14 @@
+- name: Pas de surcote pour les actifs
+  absolute_error_margin: .001
+  period: 2007
+  input:
+    date_de_naissance: 1945-11-19
+    fonction_publique_liquidation_date: 2007-03-21
+    fonction_publique_duree_assurance: 171
+    fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_actif_a_la_liquidation: True
+  output:
+    fonction_publique_surcote: 0
+    fonction_publique_decote: 0
+
+
