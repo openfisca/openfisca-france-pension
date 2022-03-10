@@ -42,11 +42,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period):
             last_year = period.start.period('year').offset(-1)
-            print("last year:", last_year)
             nombre_annees_actif_annee_courante = individu('regime_name_nombre_annees_actif', period)
-            print("nombre_annees_actif_annee_courante:", nombre_annees_actif_annee_courante)
             date_actif_annee_precedente = individu('regime_name_date_quinze_ans_actif', last_year)
-            print("date_actif_annee_precedente:", date_actif_annee_precedente)
             date = select(
                 [
                     date_actif_annee_precedente < np.datetime64("2099-01-01"),
@@ -60,7 +57,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ],
                 default = np.datetime64("2099-01-01")
                 )
-            print("date;", date)
             return date
 
     class actif_a_la_liquidation(Variable):

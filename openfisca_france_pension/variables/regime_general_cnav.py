@@ -238,7 +238,6 @@ class regime_general_cnav_decote_trimestres(Variable):
         aad = individu('regime_general_cnav_age_annulation_decote', period)
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        print(f'decote_trimestres : {(aad * 12 - age_en_mois_a_la_liquidation) / 3}')
         decote_trimestres = max_(0, np.ceil((aad * 12 - age_en_mois_a_la_liquidation) / 3))
         return decote_trimestres
 
