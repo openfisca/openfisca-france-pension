@@ -22,3 +22,12 @@
 ## Législation: parameters à compléter
 
 ### Salaire validant un trimestre avant 1930 ?
+
+
+
+## Erreurs à corriger
+
+### Surcote régime général
+
+EIR
+(regime == 'regime_general_cnav') & (target_regime_general_cnav_surcote_trimestres == 0) & (regime_general_cnav_surcote_trimestres > 0) & (nombre_enfants == 0)
