@@ -100,4 +100,6 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
             "fonction_publique_salaire_de_reference",
             "regime_general_cnav_duree_assurance_travail_avpf_annuelle",
             "regime_general_cnav_duree_assurance_travail_emploi_annuelle",
+            "regime_general_cnav_decote_trimestres",
+            "regime_general_cnav_surcote_trimestres",
             ]
