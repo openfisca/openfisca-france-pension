@@ -7,7 +7,6 @@ import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 
-from openfisca_france_pension import YEAR_ORIGIN
 # Import the Entities specifically defined for this tax and benefit system
 from openfisca_france_pension.entities import Person
 
@@ -138,7 +137,7 @@ class AbstractRegimeDeBase(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             # Raccouci pour arrêter les calculs dans le passé quand toutes les liquidations ont lieu dans le futur
-            if all((annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN)):
+            if all(annee_de_liquidation > period.start.year):
                 return individu.empty_array()
             last_year = period.start.period('year').offset(-1)
             majoration_pension_servie_annee_precedente = individu('regime_name_majoration_pension_servie', last_year)
@@ -184,7 +183,7 @@ class AbstractRegimeDeBase(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             # Raccouci pour arrêter les calculs dans le passé quand toutes les liquidations ont lieu dans le futur
-            if all((annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN)):
+            if all(annee_de_liquidation > period.start.year):
                 return individu.empty_array()
             last_year = period.start.period('year').offset(-1)
             pension_brute_servie_annee_precedente = individu('regime_name_pension_brute_servie', last_year)
@@ -207,7 +206,7 @@ class AbstractRegimeDeBase(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             # Raccouci pour arrêter les calculs dans le passé quand toutes les liquidations ont lieu dans le futur
-            if all((annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN)):
+            if all(annee_de_liquidation > period.start.year):
                 return individu.empty_array()
             last_year = period.start.period('year').offset(-1)
             pension_servie_annee_precedente = individu('regime_name_pension_servie', last_year)
@@ -431,7 +430,7 @@ class AbstractRegimeComplementaire(AbstractRegime):
 def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
     return select(
         [
-            (annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN),
+            annee_de_liquidation > period.start.year,
             annee_de_liquidation == period.start.year,
             annee_de_liquidation < period.start.year,
             ],

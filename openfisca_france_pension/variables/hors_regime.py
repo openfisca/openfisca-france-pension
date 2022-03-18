@@ -142,6 +142,7 @@ class statut_du_cotisant(Variable):
 
 class sexe(Variable):
     value_type = bool
+    default_value = False
     entity = Person
     definition_period = ETERNITY
     label = 'Sexe'  # True for women

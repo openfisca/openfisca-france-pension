@@ -126,14 +126,18 @@ class RegimeArrco(AbstractRegimeComplementaire):
         # TODO retirer paramètres en dur
 
         def formula_2012(individu, period, parameters):
-            points = individu('regime_name_points', period) - individu('regime_name_points', 2011)
             nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+            if all(nombre_enfants_nes_et_eleves == 0):
+                return individu.empty_array()
+            points = individu('regime_name_points', period) - individu('regime_name_points', 2011)
             points_enfants_nes_et_eleves_anterieurs = individu('regime_name_points_enfants_nes_et_eleves', 2011)
             return .1 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
 
         def formula_1999(individu, period, parameters):
-            points = individu('regime_name_points', period) - individu('regime_name_points', 1998)
             nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+            if all(nombre_enfants_nes_et_eleves == 0):
+                return individu.empty_array()
+            points = individu('regime_name_points', period) - individu('regime_name_points', 1998)
             points_enfants_nes_et_eleves_anterieurs = individu('regime_name_points_enfants_nes_et_eleves', 1998)
             return .05 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
 

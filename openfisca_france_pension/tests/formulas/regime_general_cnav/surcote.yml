@@ -46,6 +46,7 @@
     date_de_naissance: 1939-11-19
     regime_general_cnav_liquidation_date: 2005-11-21
     regime_general_cnav_duree_assurance_cotisee: 160
+    regime_general_cnav_duree_assurance_travail_emploi_annuelle: 3
     regime_general_cnav_salaire_de_reference: 1000
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
@@ -62,6 +63,7 @@
     regime_general_cnav_liquidation_date: 2008-11-21
     regime_general_cnav_duree_assurance_cotisee: 170
     regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_duree_assurance_travail_emploi_annuelle: 3
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
     regime_general_cnav_decote: 0
@@ -76,6 +78,7 @@
     date_de_naissance: 1949-11-19
     regime_general_cnav_liquidation_date: 2010-11-21
     regime_general_cnav_duree_assurance_cotisee: 175
+    regime_general_cnav_duree_assurance_travail_emploi_annuelle: 3
     regime_general_cnav_salaire_de_reference: 1000
   output:
     regime_general_cnav_coefficient_de_proratisation: 1
