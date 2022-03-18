@@ -3,11 +3,10 @@ from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
-from openfisca_france_pension import YEAR_ORIGIN
 from openfisca_france_pension.entities import Person
 
 def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
-    return select([(annee_de_liquidation > period.start.year) | (annee_de_liquidation < YEAR_ORIGIN), annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
+    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
 'Régimes complémentaires du secteur privé.'
 import numpy as np
 from openfisca_core.model_api import *
@@ -472,14 +471,18 @@ class arrco_points_enfants_nes_et_eleves(Variable):
     label = 'Points enfants nés et élevés'
 
     def formula_2012(individu, period, parameters):
-        points = individu('arrco_points', period) - individu('arrco_points', 2011)
         nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+        if all(nombre_enfants_nes_et_eleves == 0):
+            return individu.empty_array()
+        points = individu('arrco_points', period) - individu('arrco_points', 2011)
         points_enfants_nes_et_eleves_anterieurs = individu('arrco_points_enfants_nes_et_eleves', 2011)
         return 0.1 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
 
     def formula_1999(individu, period, parameters):
-        points = individu('arrco_points', period) - individu('arrco_points', 1998)
         nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
+        if all(nombre_enfants_nes_et_eleves == 0):
+            return individu.empty_array()
+        points = individu('arrco_points', period) - individu('arrco_points', 1998)
         points_enfants_nes_et_eleves_anterieurs = individu('arrco_points_enfants_nes_et_eleves', 1998)
         return 0.05 * points * (nombre_enfants_nes_et_eleves >= 3) + points_enfants_nes_et_eleves_anterieurs
 

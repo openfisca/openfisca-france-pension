@@ -20,9 +20,6 @@ logging.getLogger('numba.core.interpreter').disabled = True
 script_ast.main(verbose = False)
 
 
-YEAR_ORIGIN = 1900
-
-
 def build_regimes_prelevements_sociaux(parameters):
     regime_general_cnav = parameters.prelevements_sociaux.cotisations_securite_sociale_regime_general.cnav
     parameters.secteur_prive.regime_general_cnav.add_child(
