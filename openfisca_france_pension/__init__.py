@@ -8,7 +8,7 @@ from openfisca_core.taxbenefitsystems import TaxBenefitSystem
 
 from openfisca_france_pension import entities
 from openfisca_france_pension.scripts_ast import script_ast
-from openfisca_france_pension.revalorisation import build_coefficient_by_annee_salaire
+from openfisca_france_pension.revalorisation.salaire import build_coefficient_by_annee_salaire
 
 COUNTRY_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -95,8 +95,8 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         self.cache_blacklist = [
             "fonction_publique_aod",
             "fonction_publique_salaire_de_reference",
-            "regime_general_cnav_duree_assurance_travail_avpf_annuelle",
-            "regime_general_cnav_duree_assurance_travail_emploi_annuelle",
+            "regime_general_cnav_duree_assurance_periode_assimilee_avpf",
+            "regime_general_cnav_duree_assurance_cotisee_annuelle",
             "regime_general_cnav_decote_trimestres",
             "regime_general_cnav_surcote_trimestres",
             ]

@@ -5,8 +5,8 @@ from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
 
-def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
-    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
+def revalorise(variable_31_decembre_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
+    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_31_decembre_annee_precedente * revalorisation])
 'Régimes complémentaires du secteur privé.'
 import numpy as np
 from openfisca_core.model_api import *
@@ -110,11 +110,11 @@ class agirc_majoration_pension(Variable):
     def formula(individu, period, parameters):
         return individu.empty_array()
 
-class agirc_majoration_pension_servie(Variable):
+class agirc_majoration_pension_au_31_decembre(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Majoration de pension servie'
+    label = 'Majoration de pension au 31 décembre'
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -140,6 +140,19 @@ class agirc_pension(Variable):
         pension = (pension_brute + majoration_pension) * (1 - decote) * coefficient_de_minoration
         return pension
 
+class agirc_pension_au_31_decembre(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension brute au 31 décembre'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(period.start.year < annee_de_liquidation):
+            return individu.empty_array()
+        pension = individu('agirc_pension', period)
+        return revalorise(pension, pension, annee_de_liquidation, 1, period)
+
 class agirc_pension_brute(Variable):
     value_type = float
     entity = Person
@@ -153,11 +166,11 @@ class agirc_pension_brute(Variable):
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
 
-class agirc_pension_brute_servie(Variable):
+class agirc_pension_brute_au_31_decembre(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Pension servie'
+    label = 'Pension brute au 31 décembre'
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -188,11 +201,15 @@ class agirc_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        points_annee_precedente = individu('agirc_points', last_year)
         salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
-        taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
+        from openfisca_core.errors import ParameterNotFound
+        try:
+            taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
+        except ParameterNotFound:
+            return individu.empty_array()
         cotisation = individu('agirc_cotisation', period)
         points_annee_courante = cotisation / salaire_de_reference / taux_appel
+        points_annee_precedente = individu('agirc_points', last_year)
         if all(points_annee_precedente == 0):
             return points_annee_courante
         points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annee_courante])
@@ -348,11 +365,11 @@ class arrco_majoration_pension(Variable):
     def formula(individu, period, parameters):
         return individu.empty_array()
 
-class arrco_majoration_pension_servie(Variable):
+class arrco_majoration_pension_au_31_decembre(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Majoration de pension servie'
+    label = 'Majoration de pension au 31 décembre'
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -378,6 +395,19 @@ class arrco_pension(Variable):
         pension = (pension_brute + majoration_pension) * (1 - decote) * coefficient_de_minoration
         return pension
 
+class arrco_pension_au_31_decembre(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension brute au 31 décembre'
+
+    def formula(individu, period, parameters):
+        annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        if all(period.start.year < annee_de_liquidation):
+            return individu.empty_array()
+        pension = individu('arrco_pension', period)
+        return revalorise(pension, pension, annee_de_liquidation, 1, period)
+
 class arrco_pension_brute(Variable):
     value_type = float
     entity = Person
@@ -391,11 +421,11 @@ class arrco_pension_brute(Variable):
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
 
-class arrco_pension_brute_servie(Variable):
+class arrco_pension_brute_au_31_decembre(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Pension servie'
+    label = 'Pension brute au 31 décembre'
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -426,11 +456,15 @@ class arrco_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        points_annee_precedente = individu('arrco_points', last_year)
         salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
-        taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
+        from openfisca_core.errors import ParameterNotFound
+        try:
+            taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
+        except ParameterNotFound:
+            return individu.empty_array()
         cotisation = individu('arrco_cotisation', period)
         points_annee_courante = cotisation / salaire_de_reference / taux_appel
+        points_annee_precedente = individu('arrco_points', last_year)
         if all(points_annee_precedente == 0):
             return points_annee_courante
         points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annee_courante])

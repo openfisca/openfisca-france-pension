@@ -1,26 +1,11 @@
 from pathlib import Path
 import pandas as pd
 import pkg_resources
-import warnings
 
 
-def import_yaml():
-    import yaml
-    try:
-        from yaml import CLoader as Loader
-    except ImportError:
-        message = [
-            "libyaml is not installed in your environment.",
-            "This can make your test suite slower to run. Once you have installed libyaml, ",
-            "run 'pip uninstall pyyaml && pip install pyyaml --no-cache-dir'",
-            "so that it is used in your Python environment."
-            ]
-        warnings.warn(" ".join(message))
-        from yaml import SafeLoader as Loader
-    return yaml, Loader
+from openfisca_france_pension.revalorisation import build_revalorisation_dataframe, yaml
 
 
-yaml, Loader = import_yaml()
 directory_path = (
     Path(pkg_resources.get_distribution("openfisca-france-pension").location)
     / "openfisca_france_pension"
@@ -28,22 +13,6 @@ directory_path = (
     / "secteur_prive"
     / "regime_general_cnav"
     )
-
-
-def build_reval_s_dataframe():
-    reval_s_path = directory_path / "reval_s.yaml"
-    reval_s = yaml.load(reval_s_path.open(), Loader = Loader)
-    data = reval_s['coefficient']["values"]
-
-    df = pd.DataFrame.from_dict(data, orient = 'index').rename_axis(index = "period").reset_index()
-    df["period"] = pd.to_datetime(df.period)
-    df.set_index("period", inplace = True)
-    df.sort_index(inplace = True)
-
-    df_test = df.reset_index()
-    df_test["year"] = df_test.period.dt.year
-    assert (df_test.groupby("year")["value"].count().value_counts(dropna = False) >= 1).all()
-    return df
 
 
 def get_annee_salaire_item(df, annee_salaire):
@@ -63,7 +32,7 @@ def get_annee_salaire_item(df, annee_salaire):
 
 
 def build_coefficient_by_annee_salaire(export = True):
-    df = build_reval_s_dataframe()
+    df = build_revalorisation_dataframe(revalorisation_parameter_path = directory_path / "reval_s.yaml")
 
     coefficient_by_annee_salaire = dict(
         (annee_salaire, get_annee_salaire_item(df, annee_salaire))

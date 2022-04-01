@@ -5,8 +5,8 @@ from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
 
-def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
-    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_servie_annee_precedente * revalorisation])
+def revalorise(variable_31_decembre_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
+    return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_31_decembre_annee_precedente * revalorisation])
 'Régime de base de la fonction publique.'
 import numpy as np
 from openfisca_core.model_api import *
@@ -199,7 +199,7 @@ class fonction_publique_duree_assurance_cotisee(Variable):
     definition_period = YEAR
     label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
 
-class fonction_publique_duree_assurance_travail_annuelle(Variable):
+class fonction_publique_duree_assurance_cotisee_annuelle(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
@@ -243,21 +243,21 @@ class fonction_publique_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
-class fonction_publique_majoration_pension_servie(Variable):
+class fonction_publique_majoration_pension_au_31_decembre(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Majoration de pension servie'
+    label = 'Majoration de pension au 31 décembre'
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
-        majoration_pension_servie_annee_precedente = individu('fonction_publique_majoration_pension_servie', last_year)
-        revalorisation = parameters(period).secteur_public.reval_p.coefficient
+        majoration_pension_au_31_decembre_annee_precedente = individu('fonction_publique_majoration_pension_au_31_decembre', last_year)
+        revalorisation = parameters(period).secteur_public.revalorisation_pension_au_31_decembre
         majoration_pension = individu('fonction_publique_majoration_pension', period)
-        return revalorise(majoration_pension_servie_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
+        return revalorise(majoration_pension_au_31_decembre_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
 
 class fonction_publique_nombre_annees_actif(Variable):
     value_type = float
@@ -291,6 +291,17 @@ class fonction_publique_pension(Variable):
         majoration_pension = individu('fonction_publique_majoration_pension', period)
         return pension_brute + majoration_pension
 
+class fonction_publique_pension_au_31_decembre(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Pension'
+
+    def formula(individu, period):
+        pension_brute_au_31_decembre = individu('fonction_publique_pension_brute_au_31_decembre', period)
+        majoration_pension_au_31_decembre = individu('fonction_publique_majoration_pension_au_31_decembre', period)
+        return pension_brute_au_31_decembre + majoration_pension_au_31_decembre
+
 class fonction_publique_pension_avant_minimum_et_plafonnement(Variable):
     value_type = float
     entity = Person
@@ -312,21 +323,21 @@ class fonction_publique_pension_brute(Variable):
     def formula(individu, period):
         return individu('fonction_publique_pension_avant_minimum_et_plafonnement', period)
 
-class fonction_publique_pension_brute_servie(Variable):
+class fonction_publique_pension_brute_au_31_decembre(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Pension servie'
+    label = 'Pension brute au 31 décembre'
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
-        pension_brute_servie_annee_precedente = individu('fonction_publique_pension_brute_servie', last_year)
-        revalorisation = parameters(period).secteur_public.reval_p.coefficient
+        pension_brute_au_31_decembre_annee_precedente = individu('fonction_publique_pension_brute_au_31_decembre', last_year)
+        revalorisation = parameters(period).secteur_public.revalorisation_pension_au_31_decembre
         pension_brute = individu('fonction_publique_pension_brute', period)
-        return revalorise(pension_brute_servie_annee_precedente, pension_brute, annee_de_liquidation, revalorisation, period)
+        return revalorise(pension_brute_au_31_decembre_annee_precedente, pension_brute, annee_de_liquidation, revalorisation, period)
 
 class fonction_publique_pension_servie(Variable):
     value_type = float
@@ -339,10 +350,10 @@ class fonction_publique_pension_servie(Variable):
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
-        pension_servie_annee_precedente = individu('fonction_publique_pension_servie', last_year)
-        revalorisation = parameters(period).secteur_public.reval_p.coefficient
-        pension = individu('fonction_publique_pension', period)
-        return revalorise(pension_servie_annee_precedente, pension, annee_de_liquidation, revalorisation, period)
+        pension_au_31_decembre_annee_precedente = individu('fonction_publique_pension_au_31_decembre', last_year)
+        revalorisation = parameters(period).secteur_public.revalarisation_pension_servie
+        pension = individu('fonction_publique_pension_au_31_decembre', period)
+        return revalorise(pension_au_31_decembre_annee_precedente, pension, annee_de_liquidation, revalorisation, period)
 
 class fonction_publique_salaire_de_reference(Variable):
     value_type = float
