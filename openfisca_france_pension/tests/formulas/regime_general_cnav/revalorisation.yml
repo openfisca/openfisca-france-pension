@@ -1,27 +1,37 @@
 - name: Revalorisation
   absolute_error_margin: .005
-  period: 2015
+  period: 2016
   max_spiral_loops: 25
   input:
     date_de_naissance: 1948-11-19
     regime_general_cnav_salaire_de_reference:
-      2014: 20000
       2015: 20000
-    regime_general_cnav_liquidation_date: 2015-11-30
+      2016: 20000
+    regime_general_cnav_liquidation_date: 2016-11-30
     regime_general_cnav_duree_assurance: 160
+    regime_general_cnav_duree_assurance_cotisee: 160
     regime_general_cnav_coefficient_de_proratisation: 1
-    regime_general_cnav_majoration_pension: 1000
+    regime_general_cnav_surcote: 0
+    regime_general_cnav_decote: 0
+    regime_general_cnav_majoration_pension:
+      2016: 1000
   output:
-    regime_general_cnav_pension_brute: 20000 * .5
-    regime_general_cnav_majoration_pension_servie:
-      2014: 0.0
-      2015: 1000
-      2016: 1000 * 1.001
-      2017: 1000 * 1.001 * 1.001
-      2018: 1000 * 1.001 * 1.001 * 1.008
-    regime_general_cnav_pension_servie:
-      2014: 0.0
-      2015: (20000 * .5 + 1000)
-      2016: (20000 * .5 + 1000) * 1.001
-      2017: (20000 * .5 + 1000) * 1.001 * 1.001
-      2018: (20000 * .5 + 1000) * 1.001 * 1.001 * 1.008
+    regime_general_cnav_pension_brute:
+      2015: 0
+      2016: 20000 * .5
+    regime_general_cnav_pension_brute_au_31_decembre:
+      2015: 0
+      2016: 20000 * .5
+      2017: 20000 * .5 * 1.008
+    regime_general_cnav_majoration_pension_au_31_decembre:
+      2015: 0.0
+      2016: 1000
+      2017: 1000 * 1.008
+      2018: 1000 * 1.008 * 1.0
+      2019: 1000 * 1.008 * 1.0 * 1.003
+    regime_general_cnav_pension_au_31_decembre:
+      2015: 0.0
+      2016: (20000 * .5 + 1000)
+      2017: (20000 * .5 + 1000) * 1.008
+      2018: (20000 * .5 + 1000) * 1.008 * 1.0
+      2019: (20000 * .5 + 1000) * 1.008 * 1.0 * 1.003

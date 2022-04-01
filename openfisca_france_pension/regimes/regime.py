@@ -102,7 +102,7 @@ class AbstractRegimeDeBase(AbstractRegime):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance (en trimestres)"
+        label = "Durée d'assurance (en trimestres validés)"
 
     class duree_assurance_cotisee(Variable):
         value_type = int
@@ -116,7 +116,7 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Durée d'assurance validée au titre des périodes assimilées (en trimestres cotisés seulement l'année considérée)"
 
-    class duree_assurance_travail_annuelle(Variable):
+    class duree_assurance_cotisee_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
@@ -128,11 +128,11 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Majoration de pension"
 
-    class majoration_pension_servie(Variable):
+    class majoration_pension_au_31_decembre(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Majoration de pension servie"
+        label = "Majoration de pension au 31 décembre"
 
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -140,11 +140,11 @@ class AbstractRegimeDeBase(AbstractRegime):
             if all(annee_de_liquidation > period.start.year):
                 return individu.empty_array()
             last_year = period.start.period('year').offset(-1)
-            majoration_pension_servie_annee_precedente = individu('regime_name_majoration_pension_servie', last_year)
-            revalorisation = parameters(period).regime_name.reval_p.coefficient
+            majoration_pension_au_31_decembre_annee_precedente = individu('regime_name_majoration_pension_au_31_decembre', last_year)
+            revalorisation = parameters(period).regime_name.revalorisation_pension_au_31_decembre
             majoration_pension = individu('regime_name_majoration_pension', period)
             return revalorise(
-                majoration_pension_servie_annee_precedente,
+                majoration_pension_au_31_decembre_annee_precedente,
                 majoration_pension,
                 annee_de_liquidation,
                 revalorisation,
@@ -174,11 +174,22 @@ class AbstractRegimeDeBase(AbstractRegime):
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
             return coefficient_de_proratisation * salaire_de_reference * taux_de_liquidation
 
-    class pension_brute_servie(Variable):
+    class pension_au_31_decembre(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Pension servie"
+        label = "Pension"
+
+        def formula(individu, period):
+            pension_brute_au_31_decembre = individu('regime_name_pension_brute_au_31_decembre', period)
+            majoration_pension_au_31_decembre = individu('regime_name_majoration_pension_au_31_decembre', period)
+            return pension_brute_au_31_decembre + majoration_pension_au_31_decembre
+
+    class pension_brute_au_31_decembre(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension brute au 31 décembre"
 
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -186,11 +197,11 @@ class AbstractRegimeDeBase(AbstractRegime):
             if all(annee_de_liquidation > period.start.year):
                 return individu.empty_array()
             last_year = period.start.period('year').offset(-1)
-            pension_brute_servie_annee_precedente = individu('regime_name_pension_brute_servie', last_year)
-            revalorisation = parameters(period).regime_name.reval_p.coefficient
+            pension_brute_au_31_decembre_annee_precedente = individu('regime_name_pension_brute_au_31_decembre', last_year)
+            revalorisation = parameters(period).regime_name.revalorisation_pension_au_31_decembre
             pension_brute = individu('regime_name_pension_brute', period)
             return revalorise(
-                pension_brute_servie_annee_precedente,
+                pension_brute_au_31_decembre_annee_precedente,
                 pension_brute,
                 annee_de_liquidation,
                 revalorisation,
@@ -209,11 +220,11 @@ class AbstractRegimeDeBase(AbstractRegime):
             if all(annee_de_liquidation > period.start.year):
                 return individu.empty_array()
             last_year = period.start.period('year').offset(-1)
-            pension_servie_annee_precedente = individu('regime_name_pension_servie', last_year)
-            revalorisation = parameters(period).regime_name.reval_p.coefficient
-            pension = individu('regime_name_pension', period)
+            pension_au_31_decembre_annee_precedente = individu('regime_name_pension_au_31_decembre', last_year)
+            revalorisation = parameters(period).regime_name.revalarisation_pension_servie
+            pension = individu('regime_name_pension_au_31_decembre', period)
             return revalorise(
-                pension_servie_annee_precedente,
+                pension_au_31_decembre_annee_precedente,
                 pension,
                 annee_de_liquidation,
                 revalorisation,
@@ -281,11 +292,11 @@ class AbstractRegimeComplementaire(AbstractRegime):
         def formula(individu, period, parameters):
             return individu.empty_array()
 
-    class majoration_pension_servie(Variable):
+    class majoration_pension_au_31_decembre(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Majoration de pension servie"
+        label = "Majoration de pension au 31 décembre"
 
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -329,11 +340,11 @@ class AbstractRegimeComplementaire(AbstractRegime):
             pension_brute = (points + points_minimum_garantis) * valeur_du_point
             return pension_brute
 
-    class pension_brute_servie(Variable):
+    class pension_brute_au_31_decembre(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Pension servie"
+        label = "Pension brute au 31 décembre"
 
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -342,6 +353,20 @@ class AbstractRegimeComplementaire(AbstractRegime):
                 return individu.empty_array()
             pension_brute = individu('regime_name_pension_brute', period)
             return revalorise(pension_brute, pension_brute, annee_de_liquidation, 1, period)
+
+    class pension_au_31_decembre(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension brute au 31 décembre"
+
+        def formula(individu, period, parameters):
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            # Raccouci pour arrêter les calculs dans le passé quand toutes les liquidations ont lieu dans le futur
+            if all(period.start.year < annee_de_liquidation):
+                return individu.empty_array()
+            pension = individu('regime_name_pension', period)
+            return revalorise(pension, pension, annee_de_liquidation, 1, period)
 
     class pension_servie(Variable):
         value_type = float
@@ -368,13 +393,15 @@ class AbstractRegimeComplementaire(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             last_year = period.start.period('year').offset(-1)
-            points_annee_precedente = individu('regime_name_points', last_year)
-
             salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            from openfisca_core.errors import ParameterNotFound
+            try:
+                taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            except ParameterNotFound:
+                return individu.empty_array()
             cotisation = individu("regime_name_cotisation", period)
             points_annee_courante = cotisation / salaire_de_reference / taux_appel
-
+            points_annee_precedente = individu('regime_name_points', last_year)
             if all(points_annee_precedente == 0):
                 return points_annee_courante
 
@@ -427,7 +454,7 @@ class AbstractRegimeComplementaire(AbstractRegime):
         label = "Points minimum garantis"
 
 
-def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
+def revalorise(variable_31_decembre_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
     return select(
         [
             annee_de_liquidation > period.start.year,
@@ -437,6 +464,6 @@ def revalorise(variable_servie_annee_precedente, variable_originale, annee_de_li
         [
             0,
             variable_originale,
-            variable_servie_annee_precedente * revalorisation
+            variable_31_decembre_annee_precedente * revalorisation
             ]
         )

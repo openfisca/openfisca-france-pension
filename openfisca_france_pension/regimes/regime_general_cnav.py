@@ -12,7 +12,7 @@ from openfisca_core.variables import Variable
 
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
-from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, mean_over_k_nonzero_largest
+from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie, TypesStatutDuCotisant
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
@@ -380,25 +380,26 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula(individu, period):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             liquidation = (annee_de_liquidation == period.start.year)
-            duree_assurance_cotisee = individu("regime_name_duree_assurance_cotisee", period)
+            duree_assurance_validee = individu("regime_name_duree_assurance_validee", period)
             majoration_duree_assurance = individu("regime_name_majoration_duree_assurance", period)
-            return duree_assurance_cotisee + majoration_duree_assurance * liquidation
+            return duree_assurance_validee + majoration_duree_assurance * liquidation
 
-    class duree_assurance_travail_avpf_annuelle(Variable):
+    class duree_assurance_periode_assimilee_avpf_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance cotisée avpf (en trimestres cotisés jusqu'à l'année considérée)"
+        label = "Durée d'assurance validée avpf (en trimestres validés jusqu'à l'année considérée)"
 
         def formula_1972(individu, period, parameters):
             # l'avpf est en euros
             avpf = individu("avpf", period)
+            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
             # le paramètres est en monnaie courante
             smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3
             avpf = avpf * conversion_en_monnaie_courante(period)
-            return min_((avpf / smic_trimestriel).astype(int), 4)
+            return min_((avpf / smic_trimestriel).astype(int), 4 - duree_assurance_cotisee_annuelle)
 
-    class duree_assurance_travail_emploi_annuelle(Variable):
+    class duree_assurance_cotisee_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
@@ -468,11 +469,11 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             statut_du_cotisant = individu("statut_du_cotisant", period)
-            duree_assurance_travail_emploi_annuelle = individu("regime_name_duree_assurance_travail_emploi_annuelle", period)
-            duree_assurance_travail_avpf_annuelle = individu("regime_name_duree_assurance_travail_avpf_annuelle", period)
+            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
+            duree_assurance_periode_assimilee_avpf = individu("regime_name_duree_assurance_periode_assimilee_avpf", period)
             return where(
                 (statut_du_cotisant == TypesStatutDuCotisant.emploi) | (statut_du_cotisant == TypesStatutDuCotisant.avpf),
-                min_(duree_assurance_travail_emploi_annuelle + duree_assurance_travail_avpf_annuelle, 4),
+                min_(duree_assurance_cotisee_annuelle + duree_assurance_periode_assimilee_avpf, 4),
                 0
                 )
 
@@ -480,14 +481,30 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance cotisée cummulée (trimestres cotisés au régime général depuis l'entrée dans le régme)"
+        label = "Durée d'assurance en emploi cummulée (trimestres cotisés en emploi au régime général depuis l'entrée dans le régme)"
 
         def formula(individu, period, parameters):
             # TODO: hack to avoid infinite recursion depth loop
-            duree_assurance_travail_annuelle = individu("regime_name_duree_assurance_travail_annuelle", period)
+            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
+            duree_assurance_cotisee_annee_precedente = individu("regime_name_duree_assurance_cotisee", period.last_year)
+            if all((duree_assurance_cotisee_annuelle == 0) & (duree_assurance_cotisee_annee_precedente == 0)):
+                return individu.empty_array()
+
+            return duree_assurance_cotisee_annee_precedente + duree_assurance_cotisee_annuelle
+
+    class duree_assurance_periode_assimilee(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance pour période assimilée cumullée "
+
+        def formula(individu, period, parameters):
+            # TODO: hack to avoid infinite recursion depth loop
+            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
             duree_assurance_periodes_assimilees_annuelles = sum(
                 individu(f"regime_name_duree_assurance_periode_assimilee_{periode_assimilee}_annuelle", period)
                 for periode_assimilee in [
+                    "avpf",
                     "chomage",
                     "maladie",
                     "accident_du_travail",
@@ -496,31 +513,34 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     "autre",
                     ]
                 )
-            duree_assurance_annuelle = np.clip(
-                duree_assurance_travail_annuelle + duree_assurance_periodes_assimilees_annuelles,
-                0,
-                4,
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            trimestres_validables = where(
+                liquidation_date.astype('datetime64[Y]').astype(int) + 1970 == period.start.year,
+                calendar_quarters_elapsed_this_year_asof(liquidation_date) - duree_assurance_cotisee_annuelle,
+                4 - duree_assurance_cotisee_annuelle
                 )
-            duree_assurance_cotisee_annee_precedente = individu("regime_name_duree_assurance_cotisee", period.last_year)
-            if all((duree_assurance_annuelle == 0) & (duree_assurance_cotisee_annee_precedente == 0)):
+            duree_assurance_periode_assimilee_annuelle = np.clip(
+                duree_assurance_periodes_assimilees_annuelles,
+                0,
+                trimestres_validables,
+                )
+            duree_assurance_periode_assimilee_annee_precedente = individu("regime_name_duree_assurance_periode_assimilee", period.last_year)
+            if all((duree_assurance_periode_assimilee_annuelle == 0) & (duree_assurance_periode_assimilee_annee_precedente == 0)):
                 return individu.empty_array()
 
-            return individu("regime_name_duree_assurance_cotisee", period.last_year) + duree_assurance_annuelle
+            return individu("regime_name_duree_assurance_periode_assimilee", period.last_year) + duree_assurance_periode_assimilee_annuelle
 
-    class duree_assurance_emploi(Variable):
+    class duree_assurance_validee(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance en emploi cummulée (trimestres cotisés en emploi au régime général depuis l'entrée dans le régme)"
+        label = "Durée d'assurance validée cummulée (trimestres cotisés au régime général depuis l'entrée dans le régme)"
 
         def formula(individu, period, parameters):
-            # TODO: hack to avoid infinite recursion depth loop
-            duree_assurance_emploi_annuelle = individu("regime_name_duree_assurance_travail_emploi_annuelle", period)
-            duree_assurance_emploi_annee_precedente = individu("regime_name_duree_assurance_emploi", period.last_year)
-            if all((duree_assurance_emploi_annuelle == 0) & (duree_assurance_emploi_annee_precedente == 0)):
-                return individu.empty_array()
-
-            return duree_assurance_emploi_annee_precedente + duree_assurance_emploi_annuelle
+            return (
+                individu("regime_name_duree_assurance_cotisee", period)
+                + individu("regime_name_duree_assurance_periode_assimilee", period)
+                )
 
     class majoration_duree_assurance(Variable):
         value_type = int
@@ -590,9 +610,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 ) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
 
             autres_pensions = (
-                individu('arrco_pension_servie', period)
-                + individu('agirc_pension_servie', period)
-                + individu('fonction_publique_pension_servie', period)
+                individu('arrco_pension_au_31_decembre', period)
+                + individu('agirc_pension_au_31_decembre', period)
+                + individu('fonction_publique_pension_au_31_decembre', period)
                 )
 
             pension_tous_regime_avant_minimum = pension_avant_minimum + autres_pensions
@@ -920,6 +940,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             liquidation_date = individu('regime_name_liquidation_date', period)
             age_en_mois_a_la_liquidation = (liquidation_date - date_de_naissance).astype("timedelta64[M]").astype(int)
             trimestres_surcote = individu('regime_name_surcote_trimestres', period)
+            # TODO utiliser des dates
             trimestres_surcote_au_dela_de_65_ans = min_(
                 trimestres_surcote,
                 max_(
@@ -970,11 +991,16 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 aod_mois = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].mois
 
             liquidation_date = individu('regime_name_liquidation_date', period)
-            age_en_mois_a_la_liquidation = (liquidation_date - date_de_naissance).astype("timedelta64[M]").astype(int)
+
+            date_aod = next_calendar_quarter_start_date(
+                date_de_naissance.astype('datetime64[M]') + np.array(12 * aod_annee + aod_mois, dtype = "int")
+                + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]'))
+                )
+
             trimestres_apres_aod = max_(
                 0,
                 np.floor(
-                    (age_en_mois_a_la_liquidation - (12 * aod_annee + aod_mois))
+                    (liquidation_date - date_aod).astype("timedelta64[M]").astype(int)
                     / 3
                     )
                 )
@@ -985,7 +1011,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     / 3
                     )
                 )
-            duree_assurance_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
+            duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
             duree_assurance_cible_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
                 )
@@ -1001,8 +1027,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 )
             # On rajoute cette condition pour s'assurer que les trimestres sont travaillés
             surcote_trimestres = surcote_trimestres * (
-                individu('regime_name_duree_assurance_travail_emploi_annuelle', period)
-                + individu('regime_name_duree_assurance_travail_emploi_annuelle', period.start.period('year').offset(-1))
+                individu('regime_name_duree_assurance_cotisee_annuelle', period)
+                + individu('regime_name_duree_assurance_cotisee_annuelle', period.start.period('year').offset(-1))
                 > 0
                 )
             return surcote_trimestres
@@ -1011,11 +1037,15 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             aod = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
-            age_en_mois_a_la_liquidation = (liquidation_date - date_de_naissance).astype("timedelta64[M]").astype(int)
+            date_aod = next_calendar_quarter_start_date(
+                date_de_naissance.astype('datetime64[M]') + np.array(12 * aod, dtype = "int")
+                + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]'))
+                )
+
             trimestres_apres_aod = max_(
                 0,
                 np.floor(
-                    (age_en_mois_a_la_liquidation - 12 * aod)
+                    (liquidation_date - date_aod).astype("timedelta64[M]").astype(int)
                     / 3
                     )
                 )
@@ -1026,7 +1056,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     / 3
                     )
                 )
-            duree_assurance_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
+            duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
             duree_assurance_cible_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
                 )
@@ -1041,8 +1071,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 )
             surcote_trimestres = surcote_trimestres * (
-                individu('regime_name_duree_assurance_travail_emploi_annuelle', period)
-                + individu('regime_name_duree_assurance_travail_emploi_annuelle', period.start.period('year').offset(-1))
+                individu('regime_name_duree_assurance_cotisee_annuelle', period)
+                + individu('regime_name_duree_assurance_cotisee_annuelle', period.start.period('year').offset(-1))
                 > 0
                 )
             return surcote_trimestres
