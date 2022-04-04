@@ -1,0 +1,69 @@
+- name: pas de condition minimum garanti
+  absolute_error_margin: .001
+  period: 2005
+  input:
+    date_de_naissance: 1940-04-11
+    fonction_publique_duree_assurance: 140
+    fonction_publique_decote: 12
+    fonction_publique_liquidation_date: 2005-01-01
+  output:
+    fonction_publique_minimum_garanti: 13124.672
+
+- name: pas de minimum garanti
+  absolute_error_margin: .001
+  period: 2015
+  input:
+    date_de_naissance: 1940-04-11
+    fonction_publique_duree_assurance: 140
+    fonction_publique_decote: 12
+    fonction_publique_liquidation_date: 2015-01-01
+  output:
+    fonction_publique_minimum_garanti: 0
+
+
+- name: moins de quinze ans d'activité et minimum garanti
+  absolute_error_margin: .001
+  period: 2015
+  input:
+    date_de_naissance: 1955-04-11
+    fonction_publique_duree_assurance: 55
+    fonction_publique_decote: 0
+    fonction_publique_liquidation_date: 2015-01-01
+  output:
+    fonction_publique_minimum_garanti: 4178.977696
+
+
+- name: entre quinze et trente ans d'activité et minimum garanti
+  absolute_error_margin: .001
+  period: 2011
+  input:
+    date_de_naissance: 1940-04-11
+    fonction_publique_duree_assurance: 80
+    fonction_publique_decote: 0
+    fonction_publique_liquidation_date: 2011-01-01
+  output:
+    fonction_publique_minimum_garanti: 8880.380824
+
+
+- name: entre trente et quarante ans d'activité et minimum garanti
+  absolute_error_margin: .001
+  period: 2007
+  input:
+    date_de_naissance: 1940-04-11
+    fonction_publique_duree_assurance: 140
+    fonction_publique_liquidation_date: 2007-04-11
+    fonction_publique_decote: 0
+  output:
+    fonction_publique_minimum_garanti: 12882.531552
+
+
+- name: plus de quarante ans d'activité et minimum garanti
+  absolute_error_margin: .001
+  period: 2005
+  input:
+    date_de_naissance: 1940-04-11
+    fonction_publique_duree_assurance: 160
+    fonction_publique_liquidation_date: 2005-04-11
+    fonction_publique_decote: 12
+  output:
+    fonction_publique_minimum_garanti: 11500.765

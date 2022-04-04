@@ -116,3 +116,17 @@
     fonction_publique_surcote: 0
     fonction_publique_decote: 14 * 0.0125
     fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 - 14 * 0.0125)
+
+- name: Max 20 trim de décote dans le public après la réforme de 2010 en 2017
+  absolute_error_margin: .001
+  period: 2018
+  input:
+    date_de_naissance: 1955-05-31
+    fonction_publique_liquidation_date: 2016-05-01
+    fonction_publique_salaire_de_reference: 1000
+    fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_categorie_activite: sedentaire
+  output:
+    fonction_publique_surcote: 0
+    fonction_publique_decote: 20 * 0.0125
+    fonction_publique_pension_avant_minimum_et_plafonnement: 1000 * .75 * (1 - 20 * 0.0125)
