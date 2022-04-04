@@ -476,7 +476,7 @@ class regime_general_cnav_pension_brute(Variable):
         pension_tous_regime_avant_minimum = pension_avant_minimum + autres_pensions
         pension_apres_minimum = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
-        pension_brute = where((pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), minimum_contributif_plafond_annuel - autres_pensions, pension_apres_minimum)
+        pension_brute = where((pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), max_(minimum_contributif_plafond_annuel - autres_pensions, pension_avant_minimum), pension_apres_minimum)
         return pension_brute
 
     def formula_1984(individu, period, parameters):

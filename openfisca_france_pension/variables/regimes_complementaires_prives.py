@@ -94,9 +94,13 @@ class agirc_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
-    def formula_2012(individu, period, parameters):
+    def formula_2019(individu, period, parameters):
         points_enfants = individu('agirc_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
+
+    def formula_2012(individu, period, parameters):
         points_enfants = individu('agirc_points_enfants', period)
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
         plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
@@ -158,6 +162,13 @@ class agirc_pension_brute(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Pension brute'
+
+    def formula_2019(individu, period, parameters):
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        points = individu('agirc_points', period)
+        points_minimum_garantis = individu('agirc_points_minimum_garantis', period)
+        pension_brute = (points + points_minimum_garantis) * valeur_du_point
+        return pension_brute
 
     def formula(individu, period, parameters):
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
@@ -349,9 +360,13 @@ class arrco_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
-    def formula_2012(individu, period, parameters):
+    def formula_2019(individu, period, parameters):
         points_enfants = individu('arrco_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
+
+    def formula_2012(individu, period, parameters):
         points_enfants = individu('arrco_points_enfants', period)
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
@@ -413,6 +428,13 @@ class arrco_pension_brute(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Pension brute'
+
+    def formula_2019(individu, period, parameters):
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        points = individu('arrco_points', period)
+        points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
+        pension_brute = (points + points_minimum_garantis) * valeur_du_point
+        return pension_brute
 
     def formula(individu, period, parameters):
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
