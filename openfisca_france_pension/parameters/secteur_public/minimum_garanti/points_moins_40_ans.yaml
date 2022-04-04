@@ -1,0 +1,86 @@
+description: Points par année supplémentaire en dessous de quanrante ans de service et au dessus de trente ans pris en compte dans le calcul du minimum garanti
+point_annee_supplementaire_moins_40_ans:
+  description: Points par année supplémentaire en dessous de quanrante ans de service et au dessus de trente ans pris en compte dans le calcul du minimum garanti
+  before_2004_01_01:
+    description: Pension liquidée avant le 01/01/2004
+    values:
+      1976-01-01:
+        value: 0
+  after_2004_01_01:
+    description: Pension liquidée après le 01/01/2004
+    values:
+      2004-01-01:
+        value: .0001
+  after_2005_01_01:
+    description: Pension liquidée après le 01/01/2005
+    values:
+      2005-01-01:
+        value: .0002
+  after_2006_01_01:
+    description: Pension liquidée après le 01/01/2006
+    values:
+      2006-01-01:
+        value: .000325
+  after_2007_01_01:
+    description: Pension liquidée après le 01/01/2007
+    values:
+      2007-01-01:
+        value: .000525
+  after_2008_01_01:
+    description: Pension liquidée après le 01/01/2008
+    values:
+      2008-01-01:
+        value: .00055
+  after_2009_01_01:
+    description: Pension liquidée après le 01/01/2009
+    values:
+      2009-01-01:
+        value: .000575
+  after_2010_01_01:
+    description: Pension liquidée après le 01/01/2010
+    values:
+      2010-01-01:
+        value: 0.000775
+  after_2011_01_01:
+    description: Pension liquidée après le 01/01/2011
+    values:
+      2011-01-01:
+        value: 0.000875
+  after_2012_01_01:
+    description: Pension liquidée après le 01/01/2012
+    values:
+      2012-01-01:
+        value: 0.00095
+  after_2013_01_01:
+    description: Pension liquidée après le 01/01/20013
+    values:
+      2013-01-01:
+        value: 0.00125
+  metadata:
+    order:
+    - before_2004_01_01
+    - after_2004_01_01
+    - after_2005_01_01
+    - after_2006_01_01
+    - after_2007_01_01
+    - after_2008_01_01
+    - after_2009_01_01
+    - after_2010_01_01
+    - after_2011_01_01
+    - after_2012_01_01
+    - after_2013_01_01
+metadata:
+  order:
+  - point_annee_supplementaire_moins_40_ans
+  reference:
+  official_journal_date:
+  notes:
+  description_en: Index point of public sector (1970-2017)
+documentation: |
+  Notes :
+  Le point d'indice (ou la valeur de l'indice majoré 100) permet de déterminer la rémunération fixe des fonctionnaires
+  La valeur du traitement mensuel brut correspondant à l'indice majoré détenu par un
+  agent est égale à :
+  (Valeur de l'indice majoré 100 X indice majoré de l'agent) / (100 x 12)
+  Référence générale : Décret 85-1148 du 24 octobre 1985 - Article 3
+  NB : Pour trouver les décrets aux années précédentes XXXX, il suffit de rechercher sur internet "Décret XXX portant majoration de la rémunération des personnels civils et militaires de l'Etat"
