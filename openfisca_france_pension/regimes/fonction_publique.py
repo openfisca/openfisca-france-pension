@@ -273,13 +273,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 limite_age_sedentaire
                 )
 
-    class decote(Variable):
-        value_type = float
+    class annee_age_ouverture_droits(Variable):
+        value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Décote"
+        label = "Annee_age_ouverture_droits"
 
-        # TODO Manque réforme 2013 où seuls les bonifications comptent
         def formula_2006(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
@@ -297,8 +296,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 aod_active_mois = aod_active[date_de_naissance].mois
 
             # Âge d'annulation de la décôte
-            aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
-
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
             aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
@@ -310,6 +307,20 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     + aod_mois
                     ) / 12
                 ).astype(int)
+
+            return annee_age_ouverture_droits
+
+    class decote_trimestres(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "decote trimestres"
+
+        def formula_2006(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
+            annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
+            aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
             reduction_add_en_mois = where(
                 # Double condition car cette réduction de l'AAD s'éteint en 2020 et vaut -1 en 2019
                 (2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006),
@@ -318,7 +329,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)],
                 0
                 )
-
             aad_en_mois = individu("regime_name_limite_d_age", period) * 12 + reduction_add_en_mois
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
@@ -344,6 +354,17 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ),
                 20,
                 )
+            return decote_trimestres
+
+    class decote(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "annee_age_ouverture_droits"
+
+        def formula_2006(individu, period, parameters):
+            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
+            decote_trimestres = individu('regime_name_decote_trimestres', period)
             taux_decote = (
                 (annee_age_ouverture_droits >= 2006)  # TODO check condtion on 2015 ?
                 * parameters(period).regime_name.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[
@@ -461,11 +482,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             return dernier_indice_atteint * valeur_point_indice
 
-    class surcote(Variable):
+    class surcote_trimestres(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Surcote"
+        label = "Trimestres surcote"
 
         def formula_2004(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
@@ -482,6 +503,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
+
             arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor  # add link
             trimestres_apres_aod = max_(
                 0,
@@ -504,10 +526,19 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ))
                 )
             # TODO correction réforme 2013 voir guide page 1937
+            return trimestres_surcote
 
+    class surcote(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Surcote"
+
+        def formula_2004(individu, period, parameters):
+            surcote_trimestres = individu('regime_name_surcote_trimestres', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
-            return where(actif_a_la_liquidation, 0, taux_surcote * trimestres_surcote)
+            return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
 
     class taux_de_liquidation_proratise(Variable):
         value_type = float
