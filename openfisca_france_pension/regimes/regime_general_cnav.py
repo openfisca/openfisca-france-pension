@@ -631,10 +631,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     (pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel)
                     * (pension_apres_minimum <= minimum_contributif)
                     ),
-                minimum_contributif_plafond_annuel - autres_pensions,
+                max_(minimum_contributif_plafond_annuel - autres_pensions, pension_avant_minimum),
                 pension_apres_minimum
                 )
-
             return pension_brute
 
         def formula_1984(individu, period, parameters):

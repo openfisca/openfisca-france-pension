@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
@@ -86,7 +85,7 @@ class agirc_liquidation_date(Variable):
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
-    default_value = datetime.max.date()
+    default_value = date(2250, 12, 31)
 
 class agirc_majoration_pension(Variable):
     value_type = float
@@ -94,9 +93,13 @@ class agirc_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
-    def formula_2012(individu, period, parameters):
+    def formula_2019(individu, period, parameters):
         points_enfants = individu('agirc_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
+
+    def formula_2012(individu, period, parameters):
         points_enfants = individu('agirc_points_enfants', period)
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
         plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
@@ -159,6 +162,13 @@ class agirc_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
+    def formula_2019(individu, period, parameters):
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        points = individu('agirc_points', period)
+        points_minimum_garantis = individu('agirc_points_minimum_garantis', period)
+        pension_brute = (points + points_minimum_garantis) * valeur_du_point
+        return pension_brute
+
     def formula(individu, period, parameters):
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
         points = individu('agirc_points', period)
@@ -201,9 +211,9 @@ class agirc_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
         from openfisca_core.errors import ParameterNotFound
         try:
+            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
             taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         except ParameterNotFound:
             return individu.empty_array()
@@ -341,7 +351,7 @@ class arrco_liquidation_date(Variable):
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
-    default_value = datetime.max.date()
+    default_value = date(2250, 12, 31)
 
 class arrco_majoration_pension(Variable):
     value_type = float
@@ -349,9 +359,13 @@ class arrco_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
-    def formula_2012(individu, period, parameters):
+    def formula_2019(individu, period, parameters):
         points_enfants = individu('arrco_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
+
+    def formula_2012(individu, period, parameters):
         points_enfants = individu('arrco_points_enfants', period)
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
@@ -414,6 +428,13 @@ class arrco_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
+    def formula_2019(individu, period, parameters):
+        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        points = individu('arrco_points', period)
+        points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
+        pension_brute = (points + points_minimum_garantis) * valeur_du_point
+        return pension_brute
+
     def formula(individu, period, parameters):
         valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         points = individu('arrco_points', period)
@@ -456,9 +477,9 @@ class arrco_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
         from openfisca_core.errors import ParameterNotFound
         try:
+            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
             taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
         except ParameterNotFound:
             return individu.empty_array()

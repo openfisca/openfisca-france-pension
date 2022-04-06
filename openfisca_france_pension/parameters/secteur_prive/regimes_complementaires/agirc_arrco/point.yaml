@@ -4,6 +4,8 @@ valeur_point_en_euros:
   values:
     2019-11-01:
       value: 1.2714
+    2019-01-01:
+      value: 1.2588
   metadata:
     ipp_csv_id: val_point_eur
     unit: currency-EUR
@@ -11,7 +13,7 @@ metadata:
   order:
   - valeur_point_en_euros
   reference:
-    2019-11-01: 
+    2019-11-01:
     - title: Circulaire 2019-14-DT de l'AGIRC-ARRCO
       href: https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/circulaires/agirc_arrco/2019/2019-14-DT_Parametres_regime_Agirc-Arrco_2019-2020.pdf
     - title: Circulaire 2020-22-DRJ de l'AGIRC-ARRCO

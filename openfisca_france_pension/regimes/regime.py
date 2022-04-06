@@ -1,7 +1,6 @@
 """Abstract regimes definition."""
 
 
-from datetime import datetime
 import numpy as np
 
 from openfisca_core.model_api import *
@@ -30,7 +29,7 @@ class AbstractRegime(object):
         entity = Person
         definition_period = ETERNITY
         label = 'Date de liquidation'
-        default_value = datetime.max.date()
+        default_value = date(2250, 12, 31)
 
     class cotisation_employeur(Variable):
         value_type = float
@@ -271,9 +270,18 @@ class AbstractRegimeComplementaire(AbstractRegime):
         definition_period = YEAR
         label = "Majoration de pension"
 
-        def formula_2012(individu, period, parameters):
+        def formula_2019(individu, period, parameters):
             points_enfants = individu('regime_name_points_enfants', period)
-            valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
+            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+            # Plafond fixé à 1000 € en 2012 et évoluant comme le point
+            plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+            return where(
+                individu('date_de_naissance', period) >= np.datetime64("1951-08-02"),
+                min_(points_enfants * valeur_du_point, plafond),
+                points_enfants * valeur_du_point
+                )
+
+        def formula_2012(individu, period, parameters):
             points_enfants = individu('regime_name_points_enfants', period)
             valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
             # Plafond fixé à 1000 € en 2012 et évoluant comme le point
@@ -332,6 +340,13 @@ class AbstractRegimeComplementaire(AbstractRegime):
         entity = Person
         definition_period = YEAR
         label = "Pension brute"
+
+        def formula_2019(individu, period, parameters):
+            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+            points = individu("regime_name_points", period)
+            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
+            pension_brute = (points + points_minimum_garantis) * valeur_du_point
+            return pension_brute
 
         def formula(individu, period, parameters):
             valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
@@ -393,9 +408,10 @@ class AbstractRegimeComplementaire(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             last_year = period.start.period('year').offset(-1)
-            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
+            # TOOD: fix this hack by changing the time definition of the variable
             from openfisca_core.errors import ParameterNotFound
             try:
+                salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
                 taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
             except ParameterNotFound:
                 return individu.empty_array()

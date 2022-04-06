@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
@@ -382,7 +381,7 @@ class regime_general_cnav_liquidation_date(Variable):
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
-    default_value = datetime.max.date()
+    default_value = date(2250, 12, 31)
 
 class regime_general_cnav_majoration_duree_assurance(Variable):
     value_type = int
@@ -476,7 +475,7 @@ class regime_general_cnav_pension_brute(Variable):
         pension_tous_regime_avant_minimum = pension_avant_minimum + autres_pensions
         pension_apres_minimum = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
-        pension_brute = where((pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), minimum_contributif_plafond_annuel - autres_pensions, pension_apres_minimum)
+        pension_brute = where((pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), max_(minimum_contributif_plafond_annuel - autres_pensions, pension_avant_minimum), pension_apres_minimum)
         return pension_brute
 
     def formula_1984(individu, period, parameters):
