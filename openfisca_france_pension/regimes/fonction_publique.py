@@ -360,7 +360,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 0
                 )
 
-
     class decote(Variable):
         value_type = float
         entity = Person
