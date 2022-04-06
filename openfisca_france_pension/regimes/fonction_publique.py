@@ -493,6 +493,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Trimestres surcote"
 
         def formula_2004(individu, period, parameters):
+            liquidation_date = individu('regime_name_liquidation_date', period)
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
@@ -529,8 +530,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     duree_assurance_excedentaire
                     ))
                 )
+            condition_limite_surcote = liquidation_date < np.datetime64("2010-11-11")
+            condition_limite_trimestres = trimestres_surcote > 20
+            condition_finale = condition_limite_trimestres * condition_limite_surcote
             # TODO correction réforme 2013 voir guide page 1937
-            return trimestres_surcote
+            return where(condition_finale, 20, trimestres_surcote)
 
     class surcote(Variable):
         value_type = float

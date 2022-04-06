@@ -439,6 +439,7 @@ class fonction_publique_surcote_trimestres(Variable):
     label = 'Trimestres surcote'
 
     def formula_2004(individu, period, parameters):
+        liquidation_date = individu('fonction_publique_liquidation_date', period)
         date_de_naissance = individu('date_de_naissance', period)
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
@@ -453,7 +454,10 @@ class fonction_publique_surcote_trimestres(Variable):
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
         trimestres_surcote = max_(0, arrondi_trimestres_aod(min_(trimestres_apres_aod, duree_assurance_excedentaire)))
-        return trimestres_surcote
+        condition_limite_surcote = liquidation_date < np.datetime64('2010-11-11')
+        condition_limite_trimestres = trimestres_surcote > 20
+        condition_finale = condition_limite_trimestres * condition_limite_surcote
+        return where(condition_finale, 20, trimestres_surcote)
 
 class fonction_publique_taux_de_liquidation(Variable):
     value_type = float
