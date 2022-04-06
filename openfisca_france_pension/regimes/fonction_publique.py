@@ -354,7 +354,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ),
                 20,
                 )
-            return decote_trimestres
+            return where(
+                annee_age_ouverture_droits >= 2006,
+                decote_trimestres,
+                0
+                )
+
 
     class decote(Variable):
         value_type = float
