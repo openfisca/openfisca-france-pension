@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
@@ -86,7 +85,7 @@ class agirc_liquidation_date(Variable):
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
-    default_value = datetime.max.date()
+    default_value = date(2250, 12, 31)
 
 class agirc_majoration_pension(Variable):
     value_type = float
@@ -212,9 +211,9 @@ class agirc_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
         from openfisca_core.errors import ParameterNotFound
         try:
+            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
             taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         except ParameterNotFound:
             return individu.empty_array()
@@ -352,7 +351,7 @@ class arrco_liquidation_date(Variable):
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
-    default_value = datetime.max.date()
+    default_value = date(2250, 12, 31)
 
 class arrco_majoration_pension(Variable):
     value_type = float
@@ -478,9 +477,9 @@ class arrco_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
         from openfisca_core.errors import ParameterNotFound
         try:
+            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
             taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
         except ParameterNotFound:
             return individu.empty_array()

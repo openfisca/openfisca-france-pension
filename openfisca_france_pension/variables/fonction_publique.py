@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-from datetime import datetime
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
@@ -237,7 +236,7 @@ class fonction_publique_liquidation_date(Variable):
     entity = Person
     definition_period = ETERNITY
     label = 'Date de liquidation'
-    default_value = datetime.max.date()
+    default_value = date(2250, 12, 31)
 
 class fonction_publique_majoration_pension(Variable):
     value_type = float
