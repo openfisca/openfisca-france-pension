@@ -155,7 +155,7 @@ class fonction_publique_date_quinze_ans_actif(Variable):
         last_year = period.start.period('year').offset(-1)
         nombre_annees_actif_annee_courante = individu('fonction_publique_nombre_annees_actif', period)
         date_actif_annee_precedente = individu('fonction_publique_date_quinze_ans_actif', last_year)
-        date = select([date_actif_annee_precedente < np.datetime64('2099-01-01'), nombre_annees_actif_annee_courante <= 15, date_actif_annee_precedente == np.datetime64('2099-01-01')], [date_actif_annee_precedente, np.datetime64('2099-01-01'), np.datetime64(str(period.start))], default=np.datetime64('2099-01-01'))
+        date = select([date_actif_annee_precedente < np.datetime64('2250-12-31'), nombre_annees_actif_annee_courante <= 15, date_actif_annee_precedente == np.datetime64('2250-12-31')], [date_actif_annee_precedente, np.datetime64('2250-12-31'), np.datetime64(str(period.start))], default=np.datetime64('2250-12-31'))
         return date
 
 class fonction_publique_decote(Variable):
@@ -198,7 +198,7 @@ class fonction_publique_dernier_indice_atteint(Variable):
     definition_period = YEAR
     label = 'Dernier indice connu dans la fonction publique'
 
-    def formula(individu, period, parameters):
+    def formula_1970(individu, period, parameters):
         salaire_de_base = individu('salaire_de_base', period)
         taux_de_prime = individu('taux_de_prime', period)
         valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
@@ -287,9 +287,10 @@ class fonction_publique_minimum_garanti(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'minimum garanti'
+    label = 'Minimum garanti de la fonction publique'
+    reference = 'Loi 75-1242 du 27 décembre 1975'
 
-    def formula(individu, period, parameters):
+    def formula_1976(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
