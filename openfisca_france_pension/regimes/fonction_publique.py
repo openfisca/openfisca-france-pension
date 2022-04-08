@@ -128,16 +128,16 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_actif_annee_precedente = individu('regime_name_date_quinze_ans_actif', last_year)
             date = select(
                 [
-                    date_actif_annee_precedente < np.datetime64("2099-01-01"),
+                    date_actif_annee_precedente < np.datetime64("2250-12-31"),
                     nombre_annees_actif_annee_courante <= 15,
-                    date_actif_annee_precedente == np.datetime64("2099-01-01")
+                    date_actif_annee_precedente == np.datetime64("2250-12-31")
                     ],
                 [
                     date_actif_annee_precedente,
-                    np.datetime64("2099-01-01"),
+                    np.datetime64("2250-12-31"),
                     np.datetime64(str(period.start))
                     ],
-                default = np.datetime64("2099-01-01")
+                default = np.datetime64("2250-12-31")
                 )
             return date
 
@@ -383,7 +383,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Dernier indice connu dans la fonction publique"
 
-        def formula(individu, period, parameters):
+        def formula_1970(individu, period, parameters):
             # Devrait être dernier indice atteint pendant 6 mois
             salaire_de_base = individu("salaire_de_base", period)
             taux_de_prime = individu("taux_de_prime", period)
@@ -420,9 +420,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "minimum garanti"
+        label = "Minimum garanti de la fonction publique"
+        reference = "Loi 75-1242 du 27 décembre 1975"
 
-        def formula(individu, period, parameters):
+        def formula_1976(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
