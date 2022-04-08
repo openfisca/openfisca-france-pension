@@ -428,6 +428,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             duree_de_service_effective = individu("regime_name_duree_assurance", period)
             decote = individu("regime_name_decote", period)
+
             service_public = parameters(period).regime_name
             minimum_garanti = service_public.minimum_garanti
             points_moins_40_ans = minimum_garanti.points_moins_40_ans.point_annee_supplementaire_moins_40_ans[liquidation_date]
@@ -439,16 +440,24 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             duree_assurance_requise = service_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
 
             coefficient_moins_15_ans = duree_de_service_effective / duree_assurance_requise
-            coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 60, 0) * points_plus_15_ans
-            coefficient_plus_30_ans = part_fixe + 60 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
+            coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 4 * 15, 0) * points_plus_15_ans
+            coefficient_plus_30_ans = part_fixe + 4 * 15 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
             coefficient_plus_40_ans = 1
 
-            condition_decote = decote == 0
+            # Tiré de https://www.service-public.fr/particuliers/vosdroits/F13300#:~:text=Cas%20g%C3%A9n%C3%A9ral-,Le%20montant%20mensuel%20du%20minimum%20garanti%20qui%20vous%20est%20applicable,une%20retraite%20%C3%A0%20taux%20plein.
+            # Vous justifiez du nombre de trimestres d'assurance requis pour bénéficier d'une retraite à taux plein
+            # Vous avez atteint la limite d'âge
+            # Vous avez atteint l'âge d'annulation de la décote
+            # Vous êtes admis à la retraite pour invalidité
+            # Vous êtes admis à la retraite anticipée en tant que parent d'un enfant invalide
+            # Vous êtes admis à la retraite anticipée en tant que fonctionnaire handicapé à pourcent50
+            # Vous êtes admis à la retraite anticipée pour infirmité ou maladie incurable
+            condition_absence_decote = decote == 0
             condition_duree = duree_de_service_effective > duree_assurance_requise
             post_condition = where(
                 annee_de_liquidation < 2011,
                 True,
-                condition_duree + condition_decote,
+                condition_duree + condition_absence_decote,
                 )
 
             return post_condition * indice_majore * pt_indice * select(
@@ -472,8 +481,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = 'Pension brute'
 
-        def formula(individu, period):
-            return individu("regime_name_pension_avant_minimum_et_plafonnement", period)
+        def formula(individu, period, parameters):
+            pension_avant_minimum_et_plafonnement = individu("regime_name_pension_avant_minimum_et_plafonnement", period)
+            minimum_garanti = individu("regime_name_minimum_garanti", period)
+            return max_(pension_avant_minimum_et_plafonnement, minimum_garanti)
 
     class salaire_de_reference(Variable):
         value_type = float

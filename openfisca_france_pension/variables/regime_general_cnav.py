@@ -289,6 +289,12 @@ class regime_general_cnav_duree_assurance_cotisee_annuelle(Variable):
         trimestres_validables = where(liquidation_date.astype('datetime64[Y]').astype(int) + 1970 == period.start.year, calendar_quarters_elapsed_this_year_asof(liquidation_date), 4)
         return min_((salaire_de_base * conversion_en_monnaie_courante(period) / salaire_validant_un_trimestre).astype(int), trimestres_validables)
 
+class regime_general_cnav_duree_assurance_etranger_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance acquise à l'étranger"
+
 class regime_general_cnav_duree_assurance_periode_assimilee(Variable):
     value_type = int
     entity = Person
@@ -300,7 +306,7 @@ class regime_general_cnav_duree_assurance_periode_assimilee(Variable):
         duree_assurance_periodes_assimilees_annuelles = sum((individu(f'regime_general_cnav_duree_assurance_periode_assimilee_{periode_assimilee}_annuelle', period) for periode_assimilee in ['avpf', 'chomage', 'maladie', 'accident_du_travail', 'invalidite', 'service_national', 'autre']))
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         trimestres_validables = where(liquidation_date.astype('datetime64[Y]').astype(int) + 1970 == period.start.year, calendar_quarters_elapsed_this_year_asof(liquidation_date) - duree_assurance_cotisee_annuelle, 4 - duree_assurance_cotisee_annuelle)
-        duree_assurance_periode_assimilee_annuelle = np.clip(duree_assurance_periodes_assimilees_annuelles, 0, trimestres_validables)
+        duree_assurance_periode_assimilee_annuelle = np.clip(duree_assurance_periodes_assimilees_annuelles + individu('regime_general_cnav_duree_assurance_etranger_annuelle', period), 0, trimestres_validables)
         duree_assurance_periode_assimilee_annee_precedente = individu('regime_general_cnav_duree_assurance_periode_assimilee', period.last_year)
         if all((duree_assurance_periode_assimilee_annuelle == 0) & (duree_assurance_periode_assimilee_annee_precedente == 0)):
             return individu.empty_array()
@@ -681,8 +687,8 @@ class regime_general_cnav_surcote_trimestres(Variable):
             aod_annee = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].annee
             aod_mois = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].mois
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        date_aod = next_calendar_quarter_start_date(date_de_naissance.astype('datetime64[M]') + np.array(12 * aod_annee + aod_mois, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]')))
-        trimestres_apres_aod = max_(0, np.floor((liquidation_date - date_aod).astype('timedelta64[M]').astype(int) / 3))
+        ouverture_des_droits_date = next_calendar_quarter_start_date(date_de_naissance.astype('datetime64[M]') + np.array(12 * aod_annee + aod_mois, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]')))
+        trimestres_apres_aod = max_(0, np.floor((liquidation_date - ouverture_des_droits_date).astype('timedelta64[M]').astype(int) / 3))
         distance_a_2004_en_trimestres = max_(0, np.floor((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
         duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
         duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
@@ -694,8 +700,8 @@ class regime_general_cnav_surcote_trimestres(Variable):
         aod = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        date_aod = next_calendar_quarter_start_date(date_de_naissance.astype('datetime64[M]') + np.array(12 * aod, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]')))
-        trimestres_apres_aod = max_(0, np.floor((liquidation_date - date_aod).astype('timedelta64[M]').astype(int) / 3))
+        ouverture_des_droits_date = next_calendar_quarter_start_date(date_de_naissance.astype('datetime64[M]') + np.array(12 * aod, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]')))
+        trimestres_apres_aod = max_(0, np.floor((liquidation_date - ouverture_des_droits_date).astype('timedelta64[M]').astype(int) / 3))
         distance_a_2004_en_trimestres = max_(0, np.floor((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
         duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
         duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]

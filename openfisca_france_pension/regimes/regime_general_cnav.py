@@ -461,6 +461,12 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
 
+    class duree_assurance_etranger_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance acquise à l'étranger"
+
     class duree_assurance_travail_annuelle(Variable):
         value_type = int
         entity = Person
@@ -520,7 +526,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 4 - duree_assurance_cotisee_annuelle
                 )
             duree_assurance_periode_assimilee_annuelle = np.clip(
-                duree_assurance_periodes_assimilees_annuelles,
+                duree_assurance_periodes_assimilees_annuelles + individu("regime_name_duree_assurance_etranger_annuelle", period),
                 0,
                 trimestres_validables,
                 )

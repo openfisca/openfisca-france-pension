@@ -305,12 +305,12 @@ class fonction_publique_minimum_garanti(Variable):
         pt_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
         duree_assurance_requise = service_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         coefficient_moins_15_ans = duree_de_service_effective / duree_assurance_requise
-        coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 60, 0) * points_plus_15_ans
-        coefficient_plus_30_ans = part_fixe + 60 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
+        coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 4 * 15, 0) * points_plus_15_ans
+        coefficient_plus_30_ans = part_fixe + 4 * 15 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
         coefficient_plus_40_ans = 1
-        condition_decote = decote == 0
+        condition_absence_decote = decote == 0
         condition_duree = duree_de_service_effective > duree_assurance_requise
-        post_condition = where(annee_de_liquidation < 2011, True, condition_duree + condition_decote)
+        post_condition = where(annee_de_liquidation < 2011, True, condition_duree + condition_absence_decote)
         return post_condition * indice_majore * pt_indice * select([duree_de_service_effective < 60, duree_de_service_effective < annee_moins_40_ans, duree_de_service_effective < 160, duree_de_service_effective >= 160], [coefficient_moins_15_ans, coefficient_plus_15_ans, coefficient_plus_30_ans, coefficient_plus_40_ans])
 
 class fonction_publique_nombre_annees_actif(Variable):
@@ -374,8 +374,10 @@ class fonction_publique_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
-    def formula(individu, period):
-        return individu('fonction_publique_pension_avant_minimum_et_plafonnement', period)
+    def formula(individu, period, parameters):
+        pension_avant_minimum_et_plafonnement = individu('fonction_publique_pension_avant_minimum_et_plafonnement', period)
+        minimum_garanti = individu('fonction_publique_minimum_garanti', period)
+        return max_(pension_avant_minimum_et_plafonnement, minimum_garanti)
 
 class fonction_publique_pension_brute_au_31_decembre(Variable):
     value_type = float
