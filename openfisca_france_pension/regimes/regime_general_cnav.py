@@ -991,7 +991,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
             liquidation_date = individu('regime_name_liquidation_date', period)
 
-            date_aod = next_calendar_quarter_start_date(
+            ouverture_des_droits_date = next_calendar_quarter_start_date(
                 date_de_naissance.astype('datetime64[M]') + np.array(12 * aod_annee + aod_mois, dtype = "int")
                 + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]'))
                 )
@@ -999,7 +999,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             trimestres_apres_aod = max_(
                 0,
                 np.floor(
-                    (liquidation_date - date_aod).astype("timedelta64[M]").astype(int)
+                    (liquidation_date - ouverture_des_droits_date).astype("timedelta64[M]").astype(int)
                     / 3
                     )
                 )
@@ -1036,7 +1036,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             aod = parameters(period).regime_name.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
-            date_aod = next_calendar_quarter_start_date(
+            ouverture_des_droits_date = next_calendar_quarter_start_date(
                 date_de_naissance.astype('datetime64[M]') + np.array(12 * aod, dtype = "int")
                 + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]'))
                 )
@@ -1044,7 +1044,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             trimestres_apres_aod = max_(
                 0,
                 np.floor(
-                    (liquidation_date - date_aod).astype("timedelta64[M]").astype(int)
+                    (liquidation_date - ouverture_des_droits_date).astype("timedelta64[M]").astype(int)
                     / 3
                     )
                 )
