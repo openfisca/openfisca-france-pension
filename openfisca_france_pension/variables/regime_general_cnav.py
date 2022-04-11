@@ -521,12 +521,12 @@ class regime_general_cnav_pension_maximale(Variable):
     def formula(individu, period, parameters):
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
-        pension_plafond_hors_sucote = taux_plein * plafond_securite_sociale
+        pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
         pension_brute = individu('regime_general_cnav_pension_brute', period)
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
         surcote = individu('regime_general_cnav_surcote', period)
         pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
-        return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
+        return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
 class regime_general_cnav_pension_minimale(Variable):
     value_type = float

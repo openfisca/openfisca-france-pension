@@ -430,7 +430,7 @@ class fonction_publique_surcote(Variable):
     label = 'Surcote'
 
     def formula_2004(individu, period, parameters):
-        surcote_trimestres = individu('fonction_publique_surcote_trimestres', period)
+        surcote_trimestres = individu('fonction_publique_surcote_trimestres_avant_minimum', period)
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
         taux_surcote = parameters(period).secteur_public.surcote.taux_surcote_par_trimestre
         return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
@@ -440,6 +440,18 @@ class fonction_publique_surcote_trimestres(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Trimestres surcote'
+
+    def formula_2004(individu, period):
+        minimum_garanti = individu('fonction_publique_minimum_garanti', period)
+        pension_brute = individu('fonction_publique_pension_brute', period)
+        surcote_trimestres_avant_minimum = individu('fonction_publique_surcote_trimestres_avant_minimum', period)
+        return where(pension_brute > minimum_garanti, surcote_trimestres_avant_minimum, 0)
+
+class fonction_publique_surcote_trimestres_avant_minimum(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Trimestres surcote avant application du minimum garanti'
 
     def formula_2004(individu, period, parameters):
         liquidation_date = individu('fonction_publique_liquidation_date', period)

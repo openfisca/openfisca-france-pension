@@ -674,7 +674,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Pension minimale (minimum contributif du régime général)"
 
-        # TODO Peut-on réutiliser la formule de 2004
+        # TODO Réfrme de 2009 surcote
         def formula_2004_01_01(individu, period, parameters):
             regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
             minimum_contributif = regime_general_cnav.montant_mico
@@ -784,39 +784,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             avts = parameters(period).prestations_sociales.solidarite_insertion.minimum_vieillesse_droits_non_contributifs_de_retraite.avts_av_1961
             return avts * conversion_parametre_en_euros(period)
 
-        # ''' MICO du régime général : allocation différentielle
-        # RQ :
-        # 1) ASPA et minimum vieillesse sont gérés par OF
-        # 2) Le minimum contributif est calculé sans prendre ne compte les majoration pour enfants à charge
-        # et la surcote (rajouté ensuite)
-
-        # Il est attribué quels que soient les revenus dont dispose le retraité en plus de ses pensions :
-        # loyers, revenus du capital, activité professionnelle...
-        # + mécanisme de répartition si cotisations à plusieurs régimes
-        # TODO: coder toutes les évolutions et rebondissements 2004/2008'''
-        # P = reduce(getattr, self.param_name.split('.'), self.P)
-        # # pension_RG, pension, trim_RG, trim_cot, trim
-        # trim_regime = nb_trimesters + trim_maj
-        # coeff = minimum(1, divide(trim_regime, P.prorat.n_trim))
-        # if P.mico.dispositif == 0:
-        #     # Avant le 1er janvier 1983, comparé à l'AVTS
-        #     min_pension = self.P.common.avts
-        #     return maximum(min_pension - pension_brute, 0) * coeff
-        # elif P.mico.dispositif == 1:
-        #     # TODO: Voir comment gérer la limite de cumul relativement
-        #     # complexe (Doc n°5 du COR)
-        #     mico = P.mico.entier
-        #     return maximum(mico - pension_brute, 0) * coeff
-        # elif P.mico.dispositif == 2:
-        #     # A partir du 1er janvier 2004 les périodes cotisées interviennent
-        #     # (+ dispositif transitoire de 2004)
-        #     nb_trim = P.prorat.n_trim
-        #     trim_regime = nb_trimesters  # + sum(trim_maj)
-        #     mico_entier = P.mico.entier * minimum(divide(trim_regime, nb_trim), 1)
-        #     maj = (P.mico.entier_maj - P.mico.entier) * divide(trimesters_tot.sum(axis=1), nb_trim)
-        #     mico = mico_entier + maj * (trimesters_tot.sum(axis=1) >= P.mico.trim_min)
-        #     return (mico - pension_brute) * (mico > pension_brute) * (pension_brute > 0)
-
     class pension_maximale(Variable):
         value_type = float
         entity = Person
@@ -824,16 +791,15 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         label = "Pension maximale"
 
         def formula(individu, period, parameters):
-
             # TODO: gérer les plus de 65 ans au 1er janvier 1983'''
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
-            pension_plafond_hors_sucote = taux_plein * plafond_securite_sociale
+            pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
             pension_brute = individu('regime_name_pension_brute', period)
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
             surcote = individu('regime_name_surcote', period)
             pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
-            return min_(pension_brute - pension_surcote, pension_plafond_hors_sucote) + pension_surcote
+            return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
     class salaire_de_reference(Variable):
         value_type = float

@@ -498,7 +498,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             return dernier_indice_atteint * valeur_point_indice
 
-    class surcote_trimestres_avant_minimumn(Variable):
+    class surcote_trimestres_avant_minimum(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
@@ -558,10 +558,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         def formula_2004(individu, period):
             minimum_garanti = individu('regime_name_minimum_garanti', period)
             pension_brute = individu('regime_name_pension_brute', period)
-            surcote_trimestres_avant_minimumn = individu('regime_name_surcote_trimestres_avant_minimumn', period)
+            surcote_trimestres_avant_minimum = individu('regime_name_surcote_trimestres_avant_minimum', period)
             return where(
                 pension_brute > minimum_garanti,
-                surcote_trimestres_avant_minimumn,
+                surcote_trimestres_avant_minimum,
                 0
                 )
 
