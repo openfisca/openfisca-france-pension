@@ -29,6 +29,32 @@ class fonction_publique_actif_a_la_liquidation(Variable):
         actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
         return actif
 
+class fonction_publique_annee_age_ouverture_droits(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = 'Annee_age_ouverture_droits'
+
+    def formula_2006(individu, period, parameters):
+        date_de_naissance = individu('date_de_naissance', period)
+        aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
+        aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
+        if period.start.year <= 2011:
+            aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
+            aod_sedentaire_mois = 0
+            aod_active_annee = aod_active.before_1956_07_01.annee
+            aod_active_mois = 0
+        else:
+            aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
+            aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
+            aod_active_annee = aod_active[date_de_naissance].annee
+            aod_active_mois = aod_active[date_de_naissance].mois
+        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
+        aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
+        annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
+        return annee_age_ouverture_droits
+
 class fonction_publique_aod(Variable):
     value_type = int
     entity = Person
@@ -129,34 +155,32 @@ class fonction_publique_date_quinze_ans_actif(Variable):
         last_year = period.start.period('year').offset(-1)
         nombre_annees_actif_annee_courante = individu('fonction_publique_nombre_annees_actif', period)
         date_actif_annee_precedente = individu('fonction_publique_date_quinze_ans_actif', last_year)
-        date = select([date_actif_annee_precedente < np.datetime64('2099-01-01'), nombre_annees_actif_annee_courante <= 15, date_actif_annee_precedente == np.datetime64('2099-01-01')], [date_actif_annee_precedente, np.datetime64('2099-01-01'), np.datetime64(str(period.start))], default=np.datetime64('2099-01-01'))
+        date = select([date_actif_annee_precedente < np.datetime64('2250-12-31'), nombre_annees_actif_annee_courante <= 15, date_actif_annee_precedente == np.datetime64('2250-12-31')], [date_actif_annee_precedente, np.datetime64('2250-12-31'), np.datetime64(str(period.start))], default=np.datetime64('2250-12-31'))
         return date
 
 class fonction_publique_decote(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Décote'
+    label = 'annee_age_ouverture_droits'
+
+    def formula_2006(individu, period, parameters):
+        annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
+        decote_trimestres = individu('fonction_publique_decote_trimestres', period)
+        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).secteur_public.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[np.clip(annee_age_ouverture_droits, 2006, 2015)]
+        return taux_decote * decote_trimestres
+
+class fonction_publique_decote_trimestres(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'decote trimestres'
 
     def formula_2006(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
-        aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
-        if period.start.year <= 2011:
-            aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
-            aod_sedentaire_mois = 0
-            aod_active_annee = aod_active.before_1956_07_01.annee
-            aod_active_mois = 0
-        else:
-            aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
-            aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
-            aod_active_annee = aod_active[date_de_naissance].annee
-            aod_active_mois = aod_active[date_de_naissance].mois
-        aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
-        aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
-        aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
-        annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
+        annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
+        aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
         reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
         aad_en_mois = individu('fonction_publique_limite_d_age', period) * 12 + reduction_add_en_mois
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
@@ -164,10 +188,9 @@ class fonction_publique_decote(Variable):
         duree_assurance_requise_sedentaires = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         duree_assurance_requise_actifs = parameters(period).secteur_public.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
         duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
-        trimestres = individu('duree_assurance_tous_regimes', period)
+        trimestres = individu('duree_assurance_cotisee_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
-        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).secteur_public.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[np.clip(annee_age_ouverture_droits, 2006, 2015)]
-        return taux_decote * decote_trimestres
+        return where(annee_age_ouverture_droits >= 2006, decote_trimestres, 0)
 
 class fonction_publique_dernier_indice_atteint(Variable):
     value_type = float
@@ -175,7 +198,7 @@ class fonction_publique_dernier_indice_atteint(Variable):
     definition_period = YEAR
     label = 'Dernier indice connu dans la fonction publique'
 
-    def formula(individu, period, parameters):
+    def formula_1970(individu, period, parameters):
         salaire_de_base = individu('salaire_de_base', period)
         taux_de_prime = individu('taux_de_prime', period)
         valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
@@ -264,9 +287,10 @@ class fonction_publique_minimum_garanti(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'minimum garanti'
+    label = 'Minimum garanti de la fonction publique'
+    reference = 'Loi 75-1242 du 27 décembre 1975'
 
-    def formula(individu, period, parameters):
+    def formula_1976(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
@@ -282,12 +306,12 @@ class fonction_publique_minimum_garanti(Variable):
         pt_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
         duree_assurance_requise = service_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         coefficient_moins_15_ans = duree_de_service_effective / duree_assurance_requise
-        coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 60, 0) * points_plus_15_ans
-        coefficient_plus_30_ans = part_fixe + 60 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
+        coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 4 * 15, 0) * points_plus_15_ans
+        coefficient_plus_30_ans = part_fixe + 4 * 15 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
         coefficient_plus_40_ans = 1
-        condition_decote = decote == 0
+        condition_absence_decote = decote == 0
         condition_duree = duree_de_service_effective > duree_assurance_requise
-        post_condition = where(annee_de_liquidation < 2011, True, condition_duree + condition_decote)
+        post_condition = where(annee_de_liquidation < 2011, True, condition_duree + condition_absence_decote)
         return post_condition * indice_majore * pt_indice * select([duree_de_service_effective < 60, duree_de_service_effective < annee_moins_40_ans, duree_de_service_effective < 160, duree_de_service_effective >= 160], [coefficient_moins_15_ans, coefficient_plus_15_ans, coefficient_plus_30_ans, coefficient_plus_40_ans])
 
 class fonction_publique_nombre_annees_actif(Variable):
@@ -351,8 +375,10 @@ class fonction_publique_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
-    def formula(individu, period):
-        return individu('fonction_publique_pension_avant_minimum_et_plafonnement', period)
+    def formula(individu, period, parameters):
+        pension_avant_minimum_et_plafonnement = individu('fonction_publique_pension_avant_minimum_et_plafonnement', period)
+        minimum_garanti = individu('fonction_publique_minimum_garanti', period)
+        return max_(pension_avant_minimum_et_plafonnement, minimum_garanti)
 
 class fonction_publique_pension_brute_au_31_decembre(Variable):
     value_type = float
@@ -404,6 +430,31 @@ class fonction_publique_surcote(Variable):
     label = 'Surcote'
 
     def formula_2004(individu, period, parameters):
+        surcote_trimestres = individu('fonction_publique_surcote_trimestres_avant_minimum', period)
+        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        taux_surcote = parameters(period).secteur_public.surcote.taux_surcote_par_trimestre
+        return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
+
+class fonction_publique_surcote_trimestres(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Trimestres surcote'
+
+    def formula_2004(individu, period):
+        minimum_garanti = individu('fonction_publique_minimum_garanti', period)
+        pension_brute = individu('fonction_publique_pension_brute', period)
+        surcote_trimestres_avant_minimum = individu('fonction_publique_surcote_trimestres_avant_minimum', period)
+        return where(pension_brute > minimum_garanti, surcote_trimestres_avant_minimum, 0)
+
+class fonction_publique_surcote_trimestres_avant_minimum(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Trimestres surcote avant application du minimum garanti'
+
+    def formula_2004(individu, period, parameters):
+        liquidation_date = individu('fonction_publique_liquidation_date', period)
         date_de_naissance = individu('date_de_naissance', period)
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
@@ -416,11 +467,9 @@ class fonction_publique_surcote(Variable):
         arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor
         trimestres_apres_aod = max_(0, (age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3)
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
+        duree_assurance_excedentaire = individu('duree_assurance_cotisee_tous_regimes', period) - duree_assurance_requise
         trimestres_surcote = max_(0, arrondi_trimestres_aod(min_(trimestres_apres_aod, duree_assurance_excedentaire)))
-        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
-        taux_surcote = parameters(period).secteur_public.surcote.taux_surcote_par_trimestre
-        return where(actif_a_la_liquidation, 0, taux_surcote * trimestres_surcote)
+        return where(liquidation_date < np.datetime64('2010-11-11'), min_(trimestres_surcote, 20), trimestres_surcote)
 
 class fonction_publique_taux_de_liquidation(Variable):
     value_type = float

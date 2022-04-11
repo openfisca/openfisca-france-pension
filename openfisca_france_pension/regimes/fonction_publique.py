@@ -128,16 +128,16 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_actif_annee_precedente = individu('regime_name_date_quinze_ans_actif', last_year)
             date = select(
                 [
-                    date_actif_annee_precedente < np.datetime64("2099-01-01"),
+                    date_actif_annee_precedente < np.datetime64("2250-12-31"),
                     nombre_annees_actif_annee_courante <= 15,
-                    date_actif_annee_precedente == np.datetime64("2099-01-01")
+                    date_actif_annee_precedente == np.datetime64("2250-12-31")
                     ],
                 [
                     date_actif_annee_precedente,
-                    np.datetime64("2099-01-01"),
+                    np.datetime64("2250-12-31"),
                     np.datetime64(str(period.start))
                     ],
-                default = np.datetime64("2099-01-01")
+                default = np.datetime64("2250-12-31")
                 )
             return date
 
@@ -273,13 +273,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 limite_age_sedentaire
                 )
 
-    class decote(Variable):
-        value_type = float
+    class annee_age_ouverture_droits(Variable):
+        value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Décote"
+        label = "Annee_age_ouverture_droits"
 
-        # TODO Manque réforme 2013 où seuls les bonifications comptent
         def formula_2006(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
@@ -297,8 +296,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 aod_active_mois = aod_active[date_de_naissance].mois
 
             # Âge d'annulation de la décôte
-            aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
-
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
             aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
@@ -310,6 +307,20 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     + aod_mois
                     ) / 12
                 ).astype(int)
+
+            return annee_age_ouverture_droits
+
+    class decote_trimestres(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "decote trimestres"
+
+        def formula_2006(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
+            annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
+            aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
             reduction_add_en_mois = where(
                 # Double condition car cette réduction de l'AAD s'éteint en 2020 et vaut -1 en 2019
                 (2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006),
@@ -318,7 +329,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)],
                 0
                 )
-
             aad_en_mois = individu("regime_name_limite_d_age", period) * 12 + reduction_add_en_mois
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
@@ -333,7 +343,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             duree_assurance_requise_sedentaires = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
             duree_assurance_requise_actifs = parameters(period).regime_name.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
             duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
-            trimestres = individu('duree_assurance_tous_regimes', period)
+            trimestres = individu('duree_assurance_cotisee_tous_regimes', period)
             decote_trimestres = min_(
                 max_(
                     0,
@@ -344,6 +354,21 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ),
                 20,
                 )
+            return where(
+                annee_age_ouverture_droits >= 2006,
+                decote_trimestres,
+                0
+                )
+
+    class decote(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "annee_age_ouverture_droits"
+
+        def formula_2006(individu, period, parameters):
+            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
+            decote_trimestres = individu('regime_name_decote_trimestres', period)
             taux_decote = (
                 (annee_age_ouverture_droits >= 2006)  # TODO check condtion on 2015 ?
                 * parameters(period).regime_name.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[
@@ -358,7 +383,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Dernier indice connu dans la fonction publique"
 
-        def formula(individu, period, parameters):
+        def formula_1970(individu, period, parameters):
             # Devrait être dernier indice atteint pendant 6 mois
             salaire_de_base = individu("salaire_de_base", period)
             taux_de_prime = individu("taux_de_prime", period)
@@ -395,14 +420,16 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "minimum garanti"
+        label = "Minimum garanti de la fonction publique"
+        reference = "Loi 75-1242 du 27 décembre 1975"
 
-        def formula(individu, period, parameters):
+        def formula_1976(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             duree_de_service_effective = individu("regime_name_duree_assurance", period)
             decote = individu("regime_name_decote", period)
+
             service_public = parameters(period).regime_name
             minimum_garanti = service_public.minimum_garanti
             points_moins_40_ans = minimum_garanti.points_moins_40_ans.point_annee_supplementaire_moins_40_ans[liquidation_date]
@@ -414,16 +441,24 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             duree_assurance_requise = service_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
 
             coefficient_moins_15_ans = duree_de_service_effective / duree_assurance_requise
-            coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 60, 0) * points_plus_15_ans
-            coefficient_plus_30_ans = part_fixe + 60 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
+            coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 4 * 15, 0) * points_plus_15_ans
+            coefficient_plus_30_ans = part_fixe + 4 * 15 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
             coefficient_plus_40_ans = 1
 
-            condition_decote = decote == 0
+            # Tiré de https://www.service-public.fr/particuliers/vosdroits/F13300#:~:text=Cas%20g%C3%A9n%C3%A9ral-,Le%20montant%20mensuel%20du%20minimum%20garanti%20qui%20vous%20est%20applicable,une%20retraite%20%C3%A0%20taux%20plein.
+            # Vous justifiez du nombre de trimestres d'assurance requis pour bénéficier d'une retraite à taux plein
+            # Vous avez atteint la limite d'âge
+            # Vous avez atteint l'âge d'annulation de la décote
+            # Vous êtes admis à la retraite pour invalidité
+            # Vous êtes admis à la retraite anticipée en tant que parent d'un enfant invalide
+            # Vous êtes admis à la retraite anticipée en tant que fonctionnaire handicapé à pourcent50
+            # Vous êtes admis à la retraite anticipée pour infirmité ou maladie incurable
+            condition_absence_decote = decote == 0
             condition_duree = duree_de_service_effective > duree_assurance_requise
             post_condition = where(
                 annee_de_liquidation < 2011,
                 True,
-                condition_duree + condition_decote,
+                condition_duree + condition_absence_decote,
                 )
 
             return post_condition * indice_majore * pt_indice * select(
@@ -447,8 +482,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = 'Pension brute'
 
-        def formula(individu, period):
-            return individu("regime_name_pension_avant_minimum_et_plafonnement", period)
+        def formula(individu, period, parameters):
+            pension_avant_minimum_et_plafonnement = individu("regime_name_pension_avant_minimum_et_plafonnement", period)
+            minimum_garanti = individu("regime_name_minimum_garanti", period)
+            return max_(pension_avant_minimum_et_plafonnement, minimum_garanti)
 
     class salaire_de_reference(Variable):
         value_type = float
@@ -461,13 +498,14 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             return dernier_indice_atteint * valeur_point_indice
 
-    class surcote(Variable):
+    class surcote_trimestres_avant_minimum(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Surcote"
+        label = "Trimestres surcote avant application du minimum garanti"
 
         def formula_2004(individu, period, parameters):
+            liquidation_date = individu('regime_name_liquidation_date', period)
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
@@ -482,6 +520,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
+
             arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor  # add link
             trimestres_apres_aod = max_(
                 0,
@@ -493,7 +532,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             duree_assurance_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
             duree_assurance_excedentaire = (
-                individu('duree_assurance_tous_regimes', period)
+                individu('duree_assurance_cotisee_tous_regimes', period)
                 - duree_assurance_requise
                 )
             trimestres_surcote = max_(
@@ -504,10 +543,39 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ))
                 )
             # TODO correction réforme 2013 voir guide page 1937
+            return where(
+                liquidation_date < np.datetime64("2010-11-11"),
+                min_(trimestres_surcote, 20),
+                trimestres_surcote,
+                )
 
+    class surcote_trimestres(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Trimestres surcote"
+
+        def formula_2004(individu, period):
+            minimum_garanti = individu('regime_name_minimum_garanti', period)
+            pension_brute = individu('regime_name_pension_brute', period)
+            surcote_trimestres_avant_minimum = individu('regime_name_surcote_trimestres_avant_minimum', period)
+            return where(
+                pension_brute > minimum_garanti,
+                surcote_trimestres_avant_minimum,
+                0
+                )
+
+    class surcote(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Surcote"
+
+        def formula_2004(individu, period, parameters):
+            surcote_trimestres = individu('regime_name_surcote_trimestres_avant_minimum', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
-            return where(actif_a_la_liquidation, 0, taux_surcote * trimestres_surcote)
+            return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
 
     class taux_de_liquidation_proratise(Variable):
         value_type = float

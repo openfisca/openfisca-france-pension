@@ -6,12 +6,12 @@ stages:
 test:
   stage: test
   only:
-   changes:
-    - .gitlab-ci.yml
-    - setup.{cfg,py}
-    - Makefile
-    - openfisca_france_pension/*.py
-    - openfisca_france_pension/parameters
+    changes:
+      - .gitlab-ci.yml
+      - setup.{cfg,py}
+      - Makefile
+      - openfisca_france_pension/*.py
+      - openfisca_france_pension/parameters
   script:
     - pip install -e .[dev]
     - make test

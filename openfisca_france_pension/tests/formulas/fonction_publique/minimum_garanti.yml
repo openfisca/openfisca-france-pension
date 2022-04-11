@@ -8,6 +8,7 @@
     fonction_publique_liquidation_date: 2005-01-01
   output:
     fonction_publique_minimum_garanti: 13124.672
+    fonction_publique_pension_brute: 13124.672
 
 - name: pas de minimum garanti
   absolute_error_margin: .001
@@ -17,8 +18,10 @@
     fonction_publique_duree_assurance: 140
     fonction_publique_decote: 12
     fonction_publique_liquidation_date: 2015-01-01
+    fonction_publique_pension_avant_minimum_et_plafonnement: 10000
   output:
     fonction_publique_minimum_garanti: 0
+    fonction_publique_pension_brute: 10000
 
 
 - name: moins de quinze ans d'activité et minimum garanti
@@ -31,6 +34,7 @@
     fonction_publique_liquidation_date: 2015-01-01
   output:
     fonction_publique_minimum_garanti: 4178.977696
+    fonction_publique_pension_brute: 4178.977696
 
 
 - name: entre quinze et trente ans d'activité et minimum garanti
@@ -43,6 +47,7 @@
     fonction_publique_liquidation_date: 2011-01-01
   output:
     fonction_publique_minimum_garanti: 8880.380824
+    fonction_publique_pension_brute: 8880.380824
 
 
 - name: entre trente et quarante ans d'activité et minimum garanti
@@ -55,6 +60,7 @@
     fonction_publique_decote: 0
   output:
     fonction_publique_minimum_garanti: 12882.531552
+    fonction_publique_pension_brute: 12882.531552
 
 
 - name: plus de quarante ans d'activité et minimum garanti
@@ -67,3 +73,4 @@
     fonction_publique_decote: 12
   output:
     fonction_publique_minimum_garanti: 11500.765
+    fonction_publique_pension_brute: 11500.765
