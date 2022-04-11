@@ -188,7 +188,7 @@ class fonction_publique_decote_trimestres(Variable):
         duree_assurance_requise_sedentaires = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         duree_assurance_requise_actifs = parameters(period).secteur_public.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
         duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
-        trimestres = individu('duree_assurance_tous_regimes', period)
+        trimestres = individu('duree_assurance_cotisee_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
         return where(annee_age_ouverture_droits >= 2006, decote_trimestres, 0)
 
@@ -452,7 +452,7 @@ class fonction_publique_surcote_trimestres(Variable):
         arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor
         trimestres_apres_aod = max_(0, (age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3)
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
+        duree_assurance_excedentaire = individu('duree_assurance_cotisee_tous_regimes', period) - duree_assurance_requise
         trimestres_surcote = max_(0, arrondi_trimestres_aod(min_(trimestres_apres_aod, duree_assurance_excedentaire)))
         condition_limite_surcote = liquidation_date < np.datetime64('2010-11-11')
         condition_limite_trimestres = trimestres_surcote > 20

@@ -343,7 +343,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             duree_assurance_requise_sedentaires = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
             duree_assurance_requise_actifs = parameters(period).regime_name.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
             duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
-            trimestres = individu('duree_assurance_tous_regimes', period)
+            trimestres = individu('duree_assurance_cotisee_tous_regimes', period)
             decote_trimestres = min_(
                 max_(
                     0,
@@ -520,7 +520,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             duree_assurance_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
             duree_assurance_excedentaire = (
-                individu('duree_assurance_tous_regimes', period)
+                individu('duree_assurance_cotisee_tous_regimes', period)
                 - duree_assurance_requise
                 )
             trimestres_surcote = max_(
