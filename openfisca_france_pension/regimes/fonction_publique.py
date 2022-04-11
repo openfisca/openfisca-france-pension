@@ -498,11 +498,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             return dernier_indice_atteint * valeur_point_indice
 
-    class surcote_trimestres(Variable):
+    class surcote_trimestres_avant_minimumn(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Trimestres surcote"
+        label = "Trimestres surcote avant application du minimum garanti"
 
         def formula_2004(individu, period, parameters):
             liquidation_date = individu('regime_name_liquidation_date', period)
@@ -542,11 +542,28 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     duree_assurance_excedentaire
                     ))
                 )
-            condition_limite_surcote = liquidation_date < np.datetime64("2010-11-11")
-            condition_limite_trimestres = trimestres_surcote > 20
-            condition_finale = condition_limite_trimestres * condition_limite_surcote
             # TODO correction réforme 2013 voir guide page 1937
-            return where(condition_finale, 20, trimestres_surcote)
+            return where(
+                liquidation_date < np.datetime64("2010-11-11"),
+                min_(trimestres_surcote, 20),
+                trimestres_surcote,
+                )
+
+    class surcote_trimestres(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Trimestres surcote"
+
+        def formula_2004(individu, period):
+            minimum_garanti = individu('regime_name_minimum_garanti', period)
+            pension_brute = individu('regime_name_pension_brute', period)
+            surcote_trimestres_avant_minimumn = individu('regime_name_surcote_trimestres_avant_minimumn', period)
+            return where(
+                pension_brute > minimum_garanti,
+                surcote_trimestres_avant_minimumn,
+                0
+                )
 
     class surcote(Variable):
         value_type = float
@@ -555,7 +572,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Surcote"
 
         def formula_2004(individu, period, parameters):
-            surcote_trimestres = individu('regime_name_surcote_trimestres', period)
+            surcote_trimestres = individu('regime_name_surcote_trimestres_avant_minimum', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
             return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
