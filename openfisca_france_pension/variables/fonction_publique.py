@@ -268,7 +268,7 @@ class fonction_publique_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
-    def formula(individu, period, parameters):
+    def formula_2004(individu, period):
         nombre_enfants = individu('nombre_enfants', period)
         pension_brute = individu('fonction_publique_pension_brute', period)
         return pension_brute * (0.1 * (nombre_enfants >= 3) + 0.05 * max_(nombre_enfants - 3, 0))
