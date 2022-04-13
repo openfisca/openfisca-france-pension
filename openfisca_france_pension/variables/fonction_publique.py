@@ -9,6 +9,7 @@ def revalorise(variable_31_decembre_annee_precedente, variable_originale, annee_
 'Régime de base de la fonction publique.'
 import numpy as np
 from openfisca_core.model_api import *
+from openfisca_core.parameters import ParameterNotFound
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 
@@ -267,6 +268,11 @@ class fonction_publique_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
+    def formula(individu, period, parameters):
+        nombre_enfants = individu('nombre_enfants', period)
+        pension_brute = individu('fonction_publique_pension_brute', period)
+        return pension_brute * (0.1 * (nombre_enfants >= 3) + 0.05 * max_(nombre_enfants - 3, 0))
+
 class fonction_publique_majoration_pension_au_31_decembre(Variable):
     value_type = float
     entity = Person
@@ -344,7 +350,8 @@ class fonction_publique_pension(Variable):
     def formula(individu, period):
         pension_brute = individu('fonction_publique_pension_brute', period)
         majoration_pension = individu('fonction_publique_majoration_pension', period)
-        return pension_brute + majoration_pension
+        pension_maximale = individu('fonction_publique_salaire_de_reference', period)
+        return min_(pension_brute + majoration_pension, pension_maximale)
 
 class fonction_publique_pension_au_31_decembre(Variable):
     value_type = float
@@ -420,7 +427,10 @@ class fonction_publique_salaire_de_reference(Variable):
 
     def formula(individu, period, parameters):
         dernier_indice_atteint = individu('fonction_publique_dernier_indice_atteint', period)
-        valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
+        try:
+            valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
+        except ParameterNotFound:
+            valeur_point_indice = 0
         return dernier_indice_atteint * valeur_point_indice
 
 class fonction_publique_surcote(Variable):

@@ -157,7 +157,7 @@ def create_input_data(sample_size = None, save_to_disk = False):
         # .fillna({"decede": True})
         .fillna(method = 'ffill')
         .reset_index()
-           )
+        )
     input_data_frame_by_entity_by_period = dict(
         (
             periods.period(int(period)),

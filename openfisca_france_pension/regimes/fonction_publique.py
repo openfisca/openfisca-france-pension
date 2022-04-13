@@ -3,6 +3,7 @@
 import numpy as np
 
 from openfisca_core.model_api import *
+from openfisca_core.parameters import ParameterNotFound
 
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
@@ -395,6 +396,19 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             return dernier_indice
 
+    class majoration_pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Majoration de pension"
+
+        def formula(individu, period, parameters):
+            # TODO Fix date, legislation parameters
+            nombre_enfants = individu('nombre_enfants', period)
+            pension_brute = individu('regime_name_pension_brute', period)
+            return pension_brute * (.1 * (nombre_enfants >= 3) + .05 * max_(nombre_enfants - 3, 0))
+
+
     class nombre_annees_actif(Variable):
         value_type = float
         entity = Person
@@ -476,6 +490,18 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ]
                 )
 
+    class pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
+
+        def formula(individu, period):
+            pension_brute = individu('regime_name_pension_brute', period)
+            majoration_pension = individu('regime_name_majoration_pension', period)
+            pension_maximale = individu('regime_name_salaire_de_reference', period)
+            return min_(pension_brute + majoration_pension, pension_maximale)
+
     class pension_brute(Variable):
         value_type = float
         entity = Person
@@ -495,7 +521,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             dernier_indice_atteint = individu("regime_name_dernier_indice_atteint", period)
-            valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
+            try:
+                valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
+            except ParameterNotFound:  # TODO fix this hack
+                valeur_point_indice = 0
+
             return dernier_indice_atteint * valeur_point_indice
 
     class surcote_trimestres_avant_minimum(Variable):
