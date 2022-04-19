@@ -402,11 +402,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Majoration de pension"
 
-        def formula_2004(individu, period):
+        def formula_1965(individu, period):
             # TODO Fix date, legislation parameters, les taux son restes les memes depuis 2004 tout comme les conditions
             nombre_enfants = individu('nombre_enfants', period)
             pension_brute = individu('regime_name_pension_brute', period)
             return pension_brute * (.1 * (nombre_enfants >= 3) + .05 * max_(nombre_enfants - 3, 0))
+            # Legislation Foncionnaires : art L.18 https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/ (1965)
+            # Legislation CNRACL : art 24 https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/ (2004)
 
     class nombre_annees_actif(Variable):
         value_type = float
