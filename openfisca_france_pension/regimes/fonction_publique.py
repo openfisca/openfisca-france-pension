@@ -390,7 +390,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             taux_de_prime = individu("taux_de_prime", period)
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             dernier_indice = where(
-                salaire_de_base > 0,  # and statut = fonction_publique,
+                salaire_de_base > 0,  # TODO and statut = fonction_publique,
                 salaire_de_base / (1 + taux_de_prime) / valeur_point_indice,
                 individu("regime_name_dernier_indice_atteint", period.last_year)
                 )
@@ -401,14 +401,16 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Majoration de pension"
+        reference = [
+            "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/"  # Legislation Foncionnaires : art L.18  (1965)
+            "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/"  # Legislation CNRACL : art 24  (2004)
+            ]
 
-        def formula_1965(individu, period):
+        def formula(individu, period):
             # TODO Fix date, legislation parameters, les taux son restes les memes depuis 2004 tout comme les conditions
             nombre_enfants = individu('nombre_enfants', period)
             pension_brute = individu('regime_name_pension_brute', period)
             return pension_brute * (.1 * (nombre_enfants >= 3) + .05 * max_(nombre_enfants - 3, 0))
-            # Legislation Foncionnaires : art L.18 https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/ (1965)
-            # Legislation CNRACL : art 24 https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/ (2004)
 
     class nombre_annees_actif(Variable):
         value_type = float
@@ -524,7 +526,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             dernier_indice_atteint = individu("regime_name_dernier_indice_atteint", period)
             try:
                 valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
-            except ParameterNotFound:  # TODO fix this hack
+            except ParameterNotFound:  # TODO fix this hack
                 valeur_point_indice = 0
 
             return dernier_indice_atteint * valeur_point_indice

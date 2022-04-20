@@ -151,7 +151,8 @@ def create_input_data(sample_size = None, save_to_disk = False):
         .copy()
         .rename(columns = dict(salaire = "salaire_de_base"))
         )
-    emp = (emp
+    emp = (
+        emp
         .set_index(["person_id", 'period'])
         .reindex(complete_multiindex)
         # .fillna({"decede": True})

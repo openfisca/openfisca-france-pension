@@ -1,16 +1,16 @@
-- name: Majoration pour enfant 
+- name: Majoration pour enfant
   absolute_error_margin: .01
   period: 2010
   input:
     nombre_enfants: 7
     fonction_publique_pension_brute: 1000
   output:
-    fonction_publique_majoration_pension: 1000 *( 0.1+0.05*4)
+    fonction_publique_majoration_pension: 1000 *(0.1 + 0.05 * 4)
 
 
-- name: Pas de majoration pour enfant 
+- name: Pas de majoration pour enfant
   absolute_error_margin: .01
-  period: 2003
+  period: 1964
   input:
     nombre_enfants: 7
     fonction_publique_pension_brute: 1000
