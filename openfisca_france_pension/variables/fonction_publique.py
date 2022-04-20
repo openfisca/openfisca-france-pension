@@ -269,7 +269,7 @@ class fonction_publique_majoration_pension(Variable):
     label = 'Majoration de pension'
     reference = ['https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/']
 
-    def formula(individu, period):
+    def formula_1965(individu, period):
         nombre_enfants = individu('nombre_enfants', period)
         pension_brute = individu('fonction_publique_pension_brute', period)
         return pension_brute * (0.1 * (nombre_enfants >= 3) + 0.05 * max_(nombre_enfants - 3, 0))

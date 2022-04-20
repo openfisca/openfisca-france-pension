@@ -406,8 +406,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/"  # Legislation CNRACL : art 24  (2004)
             ]
 
-        def formula(individu, period):
-            # TODO Fix date, legislation parameters, les taux son restes les memes depuis 2004 tout comme les conditions
+        def formula_1965(individu, period):
             nombre_enfants = individu('nombre_enfants', period)
             pension_brute = individu('regime_name_pension_brute', period)
             return pension_brute * (.1 * (nombre_enfants >= 3) + .05 * max_(nombre_enfants - 3, 0))
