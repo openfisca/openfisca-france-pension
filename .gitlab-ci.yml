@@ -12,6 +12,7 @@ test:
       - Makefile
       - openfisca_france_pension/*.py
       - openfisca_france_pension/parameters
+      - openfisca_france_pension/tests
   script:
     - pip install -e .[dev]
     - make test

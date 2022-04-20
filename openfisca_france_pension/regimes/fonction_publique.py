@@ -3,6 +3,7 @@
 import numpy as np
 
 from openfisca_core.model_api import *
+from openfisca_core.parameters import ParameterNotFound
 
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
@@ -389,11 +390,26 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             taux_de_prime = individu("taux_de_prime", period)
             valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             dernier_indice = where(
-                salaire_de_base > 0,  # and statut = fonction_publique,
+                salaire_de_base > 0,  # TODO and statut = fonction_publique,
                 salaire_de_base / (1 + taux_de_prime) / valeur_point_indice,
                 individu("regime_name_dernier_indice_atteint", period.last_year)
                 )
             return dernier_indice
+
+    class majoration_pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Majoration de pension"
+        reference = [
+            "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/"  # Legislation Foncionnaires : art L.18  (1965)
+            "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/"  # Legislation CNRACL : art 24  (2004)
+            ]
+
+        def formula_1965(individu, period):
+            nombre_enfants = individu('nombre_enfants', period)
+            pension_brute = individu('regime_name_pension_brute', period)
+            return pension_brute * (.1 * (nombre_enfants >= 3) + .05 * max_(nombre_enfants - 3, 0))
 
     class nombre_annees_actif(Variable):
         value_type = float
@@ -476,6 +492,18 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ]
                 )
 
+    class pension(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Pension"
+
+        def formula(individu, period):
+            pension_brute = individu('regime_name_pension_brute', period)
+            majoration_pension = individu('regime_name_majoration_pension', period)
+            pension_maximale = individu('regime_name_salaire_de_reference', period)
+            return min_(pension_brute + majoration_pension, pension_maximale)
+
     class pension_brute(Variable):
         value_type = float
         entity = Person
@@ -495,7 +523,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             dernier_indice_atteint = individu("regime_name_dernier_indice_atteint", period)
-            valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
+            try:
+                valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
+            except ParameterNotFound:  # TODO fix this hack
+                valeur_point_indice = 0
+
             return dernier_indice_atteint * valeur_point_indice
 
     class surcote_trimestres_avant_minimum(Variable):
