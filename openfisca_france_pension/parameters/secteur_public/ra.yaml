@@ -70,6 +70,8 @@ valeur_service_point_rafp:
     2007-01-01:
       value: 0.04153
     2006-01-01:
+      value: 0.0408
+    2005-01-01:
       value: 0.04
   metadata:
     unit: currency-EUR

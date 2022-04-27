@@ -2,6 +2,8 @@ description: "Régime complémentaire des indépendants : valeur de service du p
 valeur_point_rci_date:
   description: Valeur du point RCI à date
   values:
+    2022-01-01:
+      value: 1.221
     2021-01-01:
       value: 1.208
     2020-01-01:
@@ -21,6 +23,8 @@ regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013:
   valeur_points_acquis_avant_1979:
     description: Valeur des points acquis avant 1979
     values:
+      2022-01-01:
+        value: 1.121
       2021-01-01:
         value: 1.117
       2020-01-01:
@@ -36,6 +40,8 @@ regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013:
   valeur_points_acquis_entre_1979_1996:
     description: Valeur des points acquis entre 1979 et 1996
     values:
+      2022-01-01:
+        value: 1.146
       2021-01-01:
         value: 1.140
       2020-01-01:
@@ -51,6 +57,12 @@ regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013:
   valeur_points_acquis_entre_1997_2012:
     description: Valeur des points acquis entre 1997 et 2012
     values:
+      2022-01-01:
+        value: 1.221
+      2021-01-01:
+        value: 1.208
+      2020-01-01: 
+        value: 1.203
       2019-01-01: 
         value: 1.191
       2017-10-01:
@@ -80,6 +92,8 @@ regime_complementaire_commercants_points_acquis_avant_creation_rci_en_2013:
   valeur_points_acquis_entre_2004_2012:
     description: Valeur des points acquis entre 2004 et 2012
     values:
+      2022-01-01:
+        value: 1.221
       2021-01-01:
         value: 1.208
       2020-01-01:
