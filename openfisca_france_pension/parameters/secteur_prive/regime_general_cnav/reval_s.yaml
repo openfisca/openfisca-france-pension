@@ -30,7 +30,7 @@ coefficient:
       value: 1.009
     2009-04-01:
       value: 1.01
-    2008-07-31:
+    2008-09-01:
       value: 1.008
     2008-01-01:
       value: 1.011
@@ -198,7 +198,7 @@ associe:
     2021-01-01:
       value: 0.004
     2020-01-01:
-      value: 0.001
+      value: 0.01
     2019-01-01:
       value: 0.015
     2017-10-01:
@@ -217,7 +217,7 @@ associe:
       value: 0.009
     2009-04-01:
       value: 0.01
-    2008-07-31:
+    2008-09-01:
       value: 0.008
     2008-01-01:
       value: 0.011
@@ -403,7 +403,7 @@ metadata:
     2011-04-01: Instruction interministérielle DSS/3A/2011/108 du 29/03/2011
     2010-04-01: Lettre ministérielle 2010/95 du 24/03/2010
     2009-04-01: Lettre ministérielle du 25/03/2009
-    2008-07-31: Lettre ministérielle du 31/07/2008
+    2008-09-01: Lettre ministérielle du 31/07/2008
     2008-01-01: Arrêté du 21/12/2007
     2007-01-01:
       title: Arrêté du 19/12/2006
@@ -619,7 +619,7 @@ metadata:
     2009-04-01:
       title: Circulaire CNAV 2009/31 du 16/04/2009
       href: https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2009031_16042009
-    2008-07-31: Circulaire CNAV 2008/45 du 12/08/2008
+    2008-09-01: Circulaire CNAV 2008/45 du 12/08/2008
     1996-01-01: Du fait de la revalorisation exceptionnelle précédente, les salaires de 1995 sont revalorisés à 1,025 (1,005 * 1,020 ).
     1995-07-01: "Revalorisation exceptionnelle : les salaires perçus en 1995 sont revalorisés à 1,005 pour les retraites liquidées entre le 01/07/1995 et le 31/12/1995."
     1994-01-01: Voir note (1).
