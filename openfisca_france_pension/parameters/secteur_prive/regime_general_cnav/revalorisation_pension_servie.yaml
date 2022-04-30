@@ -2,7 +2,7 @@ description: "Coefficient de revalorisation par ann\xE9e de perception des pensi
   \ servies par rapport \xE0 la pension au 31 d\xE9cembre"
 values:
   '1950-01-01':
-    value: 1.0
+    value: 1.15
   '1951-01-01':
     value: 1.16
   '1952-01-01':
@@ -68,7 +68,7 @@ values:
   '1982-01-01':
     value: 1.106479
   '1983-01-01':
-    value: 1.04
+    value: 1.0608
   '1984-01-01':
     value: 1.029198
   '1985-01-01':
@@ -80,7 +80,7 @@ values:
   '1988-01-01':
     value: 1.0326689999999998
   '1989-01-01':
-    value: 1.012
+    value: 1.019078
   '1990-01-01':
     value: 1.02813975
   '1991-01-01':
@@ -106,7 +106,7 @@ values:
   '2001-01-01':
     value: 1.022
   '2002-01-01':
-    value: 1.0
+    value: 1.022
   '2003-01-01':
     value: 1.015
   '2004-01-01':
@@ -116,7 +116,7 @@ values:
   '2006-01-01':
     value: 1.018
   '2007-01-01':
-    value: 1.0
+    value: 1.018
   '2008-01-01':
     value: 1.013696
   '2009-01-01':
@@ -126,7 +126,7 @@ values:
   '2011-01-01':
     value: 1.021
   '2012-01-01':
-    value: 1.0
+    value: 1.021
   '2013-01-01':
     value: 1.013
   '2014-01-01':
@@ -145,3 +145,5 @@ values:
     value: 1.003
   '2021-01-01':
     value: 1.004
+  '2022-01-01':
+    value: 1.011

@@ -2,6 +2,8 @@ description: Revalorisation des pensions
 coefficient:
   description: Coefficient
   values:
+    2022-01-01:
+      value: 1.011
     2021-01-01:
       value: 1.004
     2020-01-01:
@@ -14,6 +16,8 @@ coefficient:
       value: 1.001
     2013-04-01:
       value: 1.013
+    2012-04-01:
+      value: 1.021
     2011-04-01:
       value: 1.021
     2010-04-01:
@@ -24,6 +28,8 @@ coefficient:
       value: 1.008
     2008-01-01:
       value: 1.011
+    2007-01-01:
+      value: 1.018
     2006-01-01:
       value: 1.018
     2005-01-01:
@@ -32,6 +38,8 @@ coefficient:
       value: 1.017
     2003-01-01:
       value: 1.015
+    2002-01-01:
+      value: 1.022
     2001-01-01:
       value: 1.022
     2000-01-01:
@@ -66,6 +74,8 @@ coefficient:
       value: 1.0215
     1989-07-01:
       value: 1.012
+    1989-01-01:
+      value: 1.013
     1988-07-01:
       value: 1.013
     1988-01-01:
@@ -86,6 +96,8 @@ coefficient:
       value: 1.022
     1984-01-01:
       value: 1.018
+    1983-07-01:
+      value: 1.04
     1983-01-01:
       value: 1.04
     1982-07-01:
@@ -172,6 +184,8 @@ coefficient:
       value: 1.1
     1951-01-01:
       value: 1.16
+    1950-01-01:
+      value: 1.15
     1949-04-01:
       value: 1.15
     1949-01-01:
