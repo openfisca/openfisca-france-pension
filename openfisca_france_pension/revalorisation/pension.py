@@ -22,8 +22,10 @@ def get_yearly_revalorisation_pension_servie_coefficient_at_period(year, revalor
     df = build_revalorisation_dataframe(revalorisation_parameter_path)
     df = df.loc[(start_date < df.index) & (df.index <= end_date)]
     if df.empty:
+        # Si pas de revalorisation dans l'année le coeffcient est égal à 1
         return {"value": 1.0}
 
+    # Somme pondérée de la durée des coefficien de revalorisation courant dans l'année
     reval = df.sort_index().value.cumprod()
     reval = reval.reset_index()
     reval['share'] = reval.period.shift(-1).dt.month - reval.period.dt.month

@@ -674,7 +674,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Pension minimale (minimum contributif du régime général)"
 
-        # TODO Réfrme de 2009 surcote
+        # TODO Réforme de 2009 surcote
         def formula_2004_01_01(individu, period, parameters):
             regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
             minimum_contributif = regime_general_cnav.montant_mico
