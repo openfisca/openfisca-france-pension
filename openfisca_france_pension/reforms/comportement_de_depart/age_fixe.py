@@ -6,8 +6,8 @@ from openfisca_core.model_api import ETERNITY, Reform, Variable, date
 from openfisca_france_pension.entities import Person
 
 
-def create_depart_a_age_fixe(age_fixe):
-    """Crée une réforme de départ à age fixe.
+def create_depart_a_age_fixe(age_fixe = 65):
+    """Crée une réforme de départ à age fixe. Defaults to 65.
 
     Args:
         age_fixe (int): age de départ
@@ -27,11 +27,11 @@ def create_depart_a_age_fixe(age_fixe):
 
             def formula(individu, period):
                 date_de_naissance = individu("date_de_naissance", period)
-                date_de_liquiation = (
+                date_de_liquidation = (
                     date_de_naissance.astype('datetime64[Y]') + age_fixe
                     + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[Y]'))
                     )
-                return date_de_liquiation
+                return date_de_liquidation
 
         def apply(self):
             self.update_variable(self.regime_general_cnav_liquidation_date)
