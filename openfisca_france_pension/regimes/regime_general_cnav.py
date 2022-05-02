@@ -840,7 +840,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                         individu('salaire_de_base', period = year)[filter],
                         parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
                         )
-                    * revalorisation[year]
+                    * revalorisation.get(year, revalorisation[min(revalorisation.keys())])  # FIXME revalorisation before 1949
                     for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
                     ])
                 compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
