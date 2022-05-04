@@ -53,6 +53,17 @@ class regime_general_cnav_age_annulation_decote(Variable):
     definition_period = YEAR
     label = 'Âge auquel un individu peut partir au taux plein (éventuellement de façon anticipée)'
 
+    def formula_2004(individu, period, parameters):
+        aad_anciens_deportes = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_anciens_deportes
+        aad_handicape = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_handicape
+        aad_inaptitude = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_inaptitude
+        aad_anciens_anciens_combattants = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_anciens_combattants
+        aad_anciens_travailleurs_manuels = parameters(period).secteur_prive.regime_general_cnav.aad.travailleurs_manuels.age_annulation_decote
+        aad_droit_commun = individu('regime_general_cnav_age_annulation_decote_droit_commun', period)
+        raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
+        aad = switch(raison_depart_taux_plein_anticipe, {TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun, TypesRaisonDepartTauxPleinAnticipe.handicape: aad_handicape, TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes, TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude, TypesRaisonDepartTauxPleinAnticipe.ancien_combattant: aad_anciens_anciens_combattants, TypesRaisonDepartTauxPleinAnticipe.travailleur_manuel: aad_anciens_travailleurs_manuels})
+        return aad
+
     def formula_1976_07_01(individu, period, parameters):
         aad_anciens_deportes = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_anciens_deportes
         aad_inaptitude = parameters(period).secteur_prive.regime_general_cnav.aad.age_annulation_decote_inaptitude
@@ -60,7 +71,7 @@ class regime_general_cnav_age_annulation_decote(Variable):
         aad_anciens_travailleurs_manuels = parameters(period).secteur_prive.regime_general_cnav.aad.travailleurs_manuels.age_annulation_decote
         aad_droit_commun = individu('regime_general_cnav_age_annulation_decote_droit_commun', period)
         raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
-        aad = switch(raison_depart_taux_plein_anticipe, {TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun, TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes, TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude, TypesRaisonDepartTauxPleinAnticipe.ancien_combattant: aad_anciens_anciens_combattants, TypesRaisonDepartTauxPleinAnticipe.travailleur_manuel: aad_anciens_travailleurs_manuels})
+        aad = switch(raison_depart_taux_plein_anticipe, {TypesRaisonDepartTauxPleinAnticipe.non_concerne: aad_droit_commun, TypesRaisonDepartTauxPleinAnticipe.ancien_deporte: aad_anciens_deportes, TypesRaisonDepartTauxPleinAnticipe.handicape: aad_inaptitude, TypesRaisonDepartTauxPleinAnticipe.inapte: aad_inaptitude, TypesRaisonDepartTauxPleinAnticipe.ancien_combattant: aad_anciens_anciens_combattants, TypesRaisonDepartTauxPleinAnticipe.travailleur_manuel: aad_anciens_travailleurs_manuels})
         return aad
 
     def formula_1974_01_01(individu, period, parameters):
@@ -408,6 +419,7 @@ class regime_general_cnav_majoration_pension(Variable):
 
     def formula(individu, period, parameters):
         nombre_enfants = individu('nombre_enfants', period)
+        pension_avant_minimum_et_plafonnement = individu('regime_general_cnav_pension_avant_minimum_et_plafonnement', period)
         pension_brute = individu('regime_general_cnav_pension_brute', period)
         return 0.1 * pension_brute * (nombre_enfants >= 3)
 
@@ -426,6 +438,29 @@ class regime_general_cnav_majoration_pension_au_31_decembre(Variable):
         revalorisation = parameters(period).secteur_prive.regime_general_cnav.revalorisation_pension_au_31_decembre
         majoration_pension = individu('regime_general_cnav_majoration_pension', period)
         return revalorise(majoration_pension_au_31_decembre_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
+
+class regime_general_cnav_ouverture_des_droits_date(Variable):
+    value_type = date
+    entity = Person
+    definition_period = YEAR
+    label = "Date de l'ouverture des droits"
+
+    def formula_2009_04_01(individu, period, parameters):
+        date_de_naissance = individu('date_de_naissance', period)
+        if date(period.start.year, period.start.month, period.start.day) < date(2011, 7, 1):
+            aod_annee = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
+            aod_mois = 0
+        else:
+            aod_annee = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].annee
+            aod_mois = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].mois
+        ouverture_des_droits_date = date_de_naissance.astype('datetime64[M]') + np.array(12 * aod_annee + aod_mois, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]'))
+        return ouverture_des_droits_date
+
+    def formula_2004_01_01(individu, period, parameters):
+        aod = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
+        date_de_naissance = individu('date_de_naissance', period)
+        ouverture_des_droits_date = date_de_naissance.astype('datetime64[M]') + np.array(12 * aod, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]'))
+        return ouverture_des_droits_date
 
 class regime_general_cnav_pension(Variable):
     value_type = float
@@ -678,32 +713,14 @@ class regime_general_cnav_surcote_trimestres(Variable):
     definition_period = YEAR
     label = 'Trimestres de surcote'
 
-    def formula_2009_04_01(individu, period, parameters):
-        date_de_naissance = individu('date_de_naissance', period)
-        if date(period.start.year, period.start.month, period.start.day) < date(2011, 7, 1):
-            aod_annee = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
-            aod_mois = 0
-        else:
-            aod_annee = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].annee
-            aod_mois = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance[date_de_naissance].mois
-        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        ouverture_des_droits_date = next_calendar_quarter_start_date(date_de_naissance.astype('datetime64[M]') + np.array(12 * aod_annee + aod_mois, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]')))
-        trimestres_apres_aod = max_(0, np.floor((liquidation_date - ouverture_des_droits_date).astype('timedelta64[M]').astype(int) / 3))
-        distance_a_2004_en_trimestres = max_(0, np.floor((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
-        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
-        duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
-        surcote_trimestres = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), duree_assurance_tous_regimes - duree_assurance_cible_taux_plein))
-        surcote_trimestres = surcote_trimestres * (individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period) + individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period.start.period('year').offset(-1)) > 0)
-        return surcote_trimestres
-
     def formula_2004_01_01(individu, period, parameters):
-        aod = parameters(period).secteur_prive.regime_general_cnav.aod.age_ouverture_droits_age_legal_en_fonction_date_naissance.before_1951_07_01.annee
-        date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
-        ouverture_des_droits_date = next_calendar_quarter_start_date(date_de_naissance.astype('datetime64[M]') + np.array(12 * aod, dtype='int') + (date_de_naissance.astype('datetime64[D]') - date_de_naissance.astype('datetime64[M]')))
-        trimestres_apres_aod = max_(0, np.floor((liquidation_date - ouverture_des_droits_date).astype('timedelta64[M]').astype(int) / 3))
+        ouverture_des_droits_date = individu('regime_general_cnav_ouverture_des_droits_date', period)
+        ouverture_des_droits_date_surcote = next_calendar_quarter_start_date(ouverture_des_droits_date)
+        trimestres_apres_aod = max_(0, np.floor((liquidation_date - ouverture_des_droits_date_surcote).astype('timedelta64[M]').astype(int) / 3))
         distance_a_2004_en_trimestres = max_(0, np.floor((liquidation_date - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3))
         duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
+        date_de_naissance = individu('date_de_naissance', period)
         duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
         surcote_trimestres = max_(0, min_(min_(distance_a_2004_en_trimestres, trimestres_apres_aod), duree_assurance_tous_regimes - duree_assurance_cible_taux_plein))
         surcote_trimestres = surcote_trimestres * (individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period) + individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period.start.period('year').offset(-1)) > 0)
