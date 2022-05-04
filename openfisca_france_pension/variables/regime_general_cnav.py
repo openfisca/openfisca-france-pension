@@ -419,7 +419,6 @@ class regime_general_cnav_majoration_pension(Variable):
 
     def formula(individu, period, parameters):
         nombre_enfants = individu('nombre_enfants', period)
-        pension_avant_minimum_et_plafonnement = individu('regime_general_cnav_pension_avant_minimum_et_plafonnement', period)
         pension_brute = individu('regime_general_cnav_pension_brute', period)
         return 0.1 * pension_brute * (nombre_enfants >= 3)
 

@@ -593,7 +593,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula(individu, period, parameters):
             # TODO Fix date, legislation parameters
             nombre_enfants = individu('nombre_enfants', period)
-            pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
             pension_brute = individu('regime_name_pension_brute', period)
             return .1 * pension_brute * (nombre_enfants >= 3)
 
