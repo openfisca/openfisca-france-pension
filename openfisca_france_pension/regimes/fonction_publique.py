@@ -563,7 +563,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     )
                 )
             duree_assurance_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-            trimestres_apres_instauration_surote = ((individu('regime_name_liquidation_date', period) - np.datetime64("2004-01-01")).astype("timedelta64[M]").astype(int)) / 3
+            trimestres_apres_instauration_surcote = ((individu('regime_name_liquidation_date', period) - np.datetime64("2004-01-01")).astype("timedelta64[M]").astype(int)) / 3
             duree_assurance_excedentaire = (
                 individu('duree_assurance_tous_regimes', period)
                 - duree_assurance_requise
@@ -571,7 +571,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             trimestres_surcote = max_(
                 0,
                 arrondi_trimestres_aod(min_(
-                    min_(trimestres_apres_instauration_surote, trimestres_apres_aod),
+                    min_(trimestres_apres_instauration_surcote, trimestres_apres_aod),
                     duree_assurance_excedentaire
                     ))
                 )

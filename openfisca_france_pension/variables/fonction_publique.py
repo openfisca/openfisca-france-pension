@@ -478,10 +478,9 @@ class fonction_publique_surcote_trimestres_avant_minimum(Variable):
         arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor
         trimestres_apres_aod = max_(0, (age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3)
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        trimestres_apres_instauration_surote = (individu('fonction_publique_liquidation_date', period) - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3
-        aaa = min_(trimestres_apres_instauration_surote, trimestres_apres_aod)
+        trimestres_apres_instauration_surcote = (individu('fonction_publique_liquidation_date', period) - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3
         duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
-        trimestres_surcote = max_(0, arrondi_trimestres_aod(min_(aaa, duree_assurance_excedentaire)))
+        trimestres_surcote = max_(0, arrondi_trimestres_aod(min_(min_(trimestres_apres_instauration_surcote, trimestres_apres_aod), duree_assurance_excedentaire)))
         return where(liquidation_date < np.datetime64('2010-11-11'), min_(trimestres_surcote, 20), trimestres_surcote)
 
 class fonction_publique_taux_de_liquidation(Variable):
