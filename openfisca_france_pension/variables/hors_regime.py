@@ -16,8 +16,9 @@ class TypesCategorieSalarie(Enum):
     non_pertinent = 'non_pertinent'
 
 class TypesRaisonDepartTauxPleinAnticipe(Enum):
-    __order__ = 'non_concerne ancien_deporte inapte ancien_combattant travailleur_manuel'
+    __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant travailleur_manuel'
     non_concerne = "Non concerné"
+    handicape = "Handicapé"
     ancien_deporte = "Ancien déporté ou interné politique"
     inapte = "Inapte"
     ancien_combattant = "Ancien combattant"

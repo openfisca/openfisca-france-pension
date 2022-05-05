@@ -60,11 +60,11 @@ def build_coefficients_by_annee_pension(export = True):
         )
 
     coefficient_by_annee_pension_complete = dict()
-    coefficient_by_annee_pension_complete['description'] = "Coefficient de revalorisation par année de perception des pensions servies par rapport à la pension au 31 décembre"
+    coefficient_by_annee_pension_complete['description'] = "Coefficient de revalorisation par année de perception des pensions servies par rapport à la pension annuelle servie l'année précédente"
     coefficient_by_annee_pension_complete.update(dict(values = coefficient_by_annee_pension))
 
     if export:
-        revalorisation_pension_servie_path = directory_path / "revalorisation_pension_servie.yaml"
+        revalorisation_pension_servie_path = directory_path / "revalorisation_pension_servie.yaml"  # Revalorisation en pension servie annuellement
         with open(revalorisation_pension_servie_path, "w", encoding = 'utf-8') as yaml_file:
             yaml.dump(coefficient_by_annee_pension_complete, yaml_file, encoding = 'utf-8', default_flow_style = False)  # ,, default_style = None)
 
