@@ -23,7 +23,10 @@ yaml, Loader = import_yaml()
 
 def build_revalorisation_dataframe(revalorisation_parameter_path):
     yaml_data = yaml.load(revalorisation_parameter_path.open(), Loader = Loader)
-    data = yaml_data['coefficient']["values"]
+    try:
+        data = yaml_data['coefficient']["values"]
+    except KeyError:
+        data = yaml_data["values"]
 
     df = pd.DataFrame.from_dict(data, orient = 'index').rename_axis(index = "period").reset_index()
     df["period"] = pd.to_datetime(df.period)

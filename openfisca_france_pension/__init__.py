@@ -48,14 +48,6 @@ def build_regimes_prelevements_sociaux(parameters):
         )
 
 
-def build_secteur_public_reval_p(parameters):
-    reval_p = parameters.secteur_prive.regime_general_cnav.reval_p
-    parameters.secteur_public.add_child(
-        "reval_p",
-        reval_p,
-        )
-
-
 build_coefficient_by_annee_salaire()
 
 
@@ -89,8 +81,6 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
         arrco.values_list = arrco.values_list + unirs.values_list
-
-        build_secteur_public_reval_p(self.parameters)
 
         self.cache_blacklist = [
             "fonction_publique_aod",

@@ -1,5 +1,5 @@
 description: "Coefficient de revalorisation par ann\xE9e de perception des pensions\
-  \ servies par rapport \xE0 la pension au 31 d\xE9cembre"
+  \ servies par rapport \xE0 la pension annuelle servie l'ann\xE9e pr\xE9c\xE9dente"
 values:
   '1950-01-01':
     value: 1.15
