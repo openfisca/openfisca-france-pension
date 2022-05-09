@@ -1,8 +1,6 @@
-description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de perception\
-  \ de la valeur des pensions au 31 d\xE9cembre"
+description: "Coefficient de revalorisation par ann\xE9e de perception des pensions\
+  \ servies par rapport \xE0 la pension annuelle servie l'ann\xE9e pr\xE9c\xE9dente"
 values:
-  '1959-01-01':
-    value: 1.0
   '1961-01-01':
     value: 1.26985598952651
   '1962-01-01':
@@ -98,7 +96,7 @@ values:
   '2007-01-01':
     value: 1.018
   '2008-01-01':
-    value: 1.019088
+    value: 1.013696
   '2009-01-01':
     value: 1.01
   '2010-01-01':

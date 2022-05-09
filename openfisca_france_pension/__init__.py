@@ -48,14 +48,6 @@ def build_regimes_prelevements_sociaux(parameters):
         )
 
 
-def build_secteur_public_reval_p(parameters):
-    reval_p = parameters.secteur_prive.regime_general_cnav.reval_p
-    parameters.secteur_public.add_child(
-        "reval_p",
-        reval_p,
-        )
-
-
 build_coefficient_by_annee_salaire()
 
 

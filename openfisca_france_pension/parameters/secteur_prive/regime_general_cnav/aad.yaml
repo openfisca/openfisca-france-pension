@@ -188,7 +188,6 @@ age_annulation_decote_en_fonction_date_naissance:
     La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
     Ce tableau renseigne, pour une date de législation donnée (la date d'effet, en ligne), le paramètre en fonction de la date de naissance (en ordonnée).
 
-
 age_annulation_decote_anciens_deportes:
   description: Age d'annulation de la décote des anciens déportés et internés politiques
   values:
