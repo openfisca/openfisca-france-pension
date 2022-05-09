@@ -22,7 +22,6 @@ fonction_publique_directory_path = (
     )
 
 
-
 def get_yearly_revalorisation_pension_servie_coefficient_at_period(year, revalorisation_parameter_path):
     start_date = pd.to_datetime(f"{year - 1}-12-31")
     end_date = pd.to_datetime(f"{year}-12-31")
@@ -57,40 +56,7 @@ def get_yearly_revalorisation_pension_au_31_decembre_coefficient_at_period(year,
     return {"value": float(coefficient.loc[coefficient.index[-1]])}
 
 
-def build_coefficients_by_annee_pension(export = True):
-    df = build_revalorisation_dataframe(revalorisation_parameter_path)
-    year_min, year_max = df.index.min().year, df.index.max().year
-
-    coefficient_by_annee_pension = dict(
-        (f"{annee_pension}-01-01", get_yearly_revalorisation_pension_servie_coefficient_at_period(annee_pension, revalorisation_parameter_path))
-        for annee_pension in range(year_max, year_min, -1)
-        )
-
-    coefficient_by_annee_pension_complete = dict()
-    coefficient_by_annee_pension_complete['description'] = "Coefficient de revalorisation par année de perception des pensions servies par rapport à la pension annuelle servie l'année précédente"
-    coefficient_by_annee_pension_complete.update(dict(values = coefficient_by_annee_pension))
-
-    if export:
-        revalorisation_pension_servie_path = regime_general_cnav_directory_path / "revalorisation_pension_servie.yaml"  # Revalorisation en pension servie annuellement
-        with open(revalorisation_pension_servie_path, "w", encoding = 'utf-8') as yaml_file:
-            yaml.dump(coefficient_by_annee_pension_complete, yaml_file, encoding = 'utf-8', default_flow_style = False)  # ,, default_style = None)
-
-    coefficient_by_annee_pension = dict(
-        (f"{annee_pension}-01-01", get_yearly_revalorisation_pension_au_31_decembre_coefficient_at_period(annee_pension, revalorisation_parameter_path))
-        for annee_pension in range(year_max, year_min, -1)
-        )
-    coefficient_by_annee_pension_complete = dict()
-    coefficient_by_annee_pension_complete['description'] = "Coefficient de revalorisation cummulée par année de perception de la valeur des pensions au 31 décembre"
-    coefficient_by_annee_pension_complete.update(dict(values = coefficient_by_annee_pension))
-
-    if export:
-        revalorisation_pension_servie_path = regime_general_cnav_directory_path / "revalorisation_pension_au_31_decembre.yaml"
-        with open(revalorisation_pension_servie_path, "w", encoding = 'utf-8') as yaml_file:
-            yaml.dump(coefficient_by_annee_pension_complete, yaml_file, encoding = 'utf-8', default_flow_style = False)  # ,, default_style = None)
-
-
-
-def build_fonction_publique_coefficients_by_annee_pension(revalorisation_parameter_path, export = True):
+def build_coefficients_by_annee_pension(revalorisation_parameter_path, export = True):
     df = build_revalorisation_dataframe(revalorisation_parameter_path)
     year_min, year_max = df.index.min().year, df.index.max().year
 
@@ -122,14 +88,13 @@ def build_fonction_publique_coefficients_by_annee_pension(revalorisation_paramet
             yaml.dump(coefficient_by_annee_pension_complete, yaml_file, encoding = 'utf-8', default_flow_style = False)  # ,, default_style = None)
 
 
-
 if __name__ == "__main__":
-    build_fonction_publique_coefficients_by_annee_pension(
+    build_coefficients_by_annee_pension(
         revalorisation_parameter_path = regime_general_cnav_directory_path / "revalorisation_pension.yaml",
         export = True,
         )
 
-    build_fonction_publique_coefficients_by_annee_pension(
+    build_coefficients_by_annee_pension(
         revalorisation_parameter_path = fonction_publique_directory_path / "revalorisation_pension.yaml",
         export = True,
         )

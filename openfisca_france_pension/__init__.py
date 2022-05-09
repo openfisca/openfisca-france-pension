@@ -82,8 +82,6 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
         arrco.values_list = arrco.values_list + unirs.values_list
 
-        build_secteur_public_reval_p(self.parameters)
-
         self.cache_blacklist = [
             "fonction_publique_aod",
             "fonction_publique_salaire_de_reference",
