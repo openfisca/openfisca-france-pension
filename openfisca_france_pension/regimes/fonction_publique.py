@@ -553,7 +553,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 - individu('date_de_naissance', period)
                 ).astype("timedelta64[M]").astype(int)
 
-            arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor  # add link
+            arrondi_trimestres_aod = np.ceil if period.start.year < 2009 else np.floor  # add link
             trimestres_apres_aod = max_(
                 0,
                 (
