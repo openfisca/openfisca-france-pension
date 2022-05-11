@@ -72,7 +72,7 @@ class fonction_publique_aod(Variable):
 class fonction_publique_bonification_cpcm(Variable):
     value_type = float
     entity = Person
-    label = 'bonification pour enfants'
+    label = 'Bonification pour enfants selon le code des pensions civiles et militaires'
     definition_period = YEAR
 
     def formula_2004(individu, period, parameters):
@@ -111,7 +111,7 @@ class fonction_publique_coefficient_de_proratisation(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        duree_de_service_effective = individu('fonction_publique_duree_assurance', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
         bonification_cpcm = individu('fonction_publique_bonification_cpcm', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
@@ -212,23 +212,11 @@ class fonction_publique_duree_assurance(Variable):
     definition_period = YEAR
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
-class fonction_publique_duree_assurance_assimilee_annuelle(Variable):
+class fonction_publique_duree_de_service(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance validée au titre des périodes assimilées (en trimestres cotisés seulement l'année considérée)"
-
-class fonction_publique_duree_assurance_cotisee(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
-
-class fonction_publique_duree_assurance_cotisee_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance annuelle pour les périodes cotisées ou faisant l'objet d'un report de salaire au compte (en trimestres cotisés seulement l'année considérée)"
+    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification'
 
 class fonction_publique_limite_d_age(Variable):
     value_type = float
@@ -301,7 +289,7 @@ class fonction_publique_minimum_garanti(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        duree_de_service_effective = individu('fonction_publique_duree_assurance', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
         decote = individu('fonction_publique_decote', period)
         service_public = parameters(period).secteur_public
         minimum_garanti = service_public.minimum_garanti

@@ -103,24 +103,6 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Durée d'assurance (en trimestres validés)"
 
-    class duree_assurance_cotisee(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance cotisée donc hors majoration de durée d'assurance (en trimestres cotisés jusqu'à l'année considérée)"
-
-    class duree_assurance_assimilee_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance validée au titre des périodes assimilées (en trimestres cotisés seulement l'année considérée)"
-
-    class duree_assurance_cotisee_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance annuelle pour les périodes cotisées ou faisant l'objet d'un report de salaire au compte (en trimestres cotisés seulement l'année considérée)"
-
     class majoration_pension(Variable):
         value_type = float
         entity = Person

@@ -48,7 +48,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     class bonification_cpcm(Variable):
         value_type = float
         entity = Person
-        label = "bonification pour enfants"
+        label = "Bonification pour enfants selon le code des pensions civiles et militaires"
         definition_period = YEAR
 
         def formula_2004(individu, period, parameters):
@@ -81,7 +81,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            duree_de_service_effective = individu("regime_name_duree_assurance", period)
+            duree_de_service_effective = individu("fonction_publique_duree_de_service", period)
             # TODO
             bonification_cpcm = individu('fonction_publique_bonification_cpcm', period)
             super_actif = False  # individu('regime_name_super_actif', period)
@@ -148,11 +148,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
-    class duree_assurance_cotisee(Variable):
+    class duree_de_service(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
+        label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification"
+
     # Utiliser la duréee de service
     # def FP_to_RG(self, data, trim_cot_by_year, sal_cot):
     #     ''' Détermine les personnes à rapporter au régime général'''
@@ -443,7 +444,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-            duree_de_service_effective = individu("regime_name_duree_assurance", period)
+            duree_de_service_effective = individu("fonction_publique_duree_de_service", period)
             decote = individu("regime_name_decote", period)
 
             service_public = parameters(period).regime_name

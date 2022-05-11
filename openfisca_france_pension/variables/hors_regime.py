@@ -88,10 +88,9 @@ class duree_assurance_cotisee_tous_regimes(Variable):
     label = "Durée d'assurance cotisée tous régimes (trimestres cotisés tous régimes confondus)"
 
     def formula(individu, period):
-        regimes = ['regime_general_cnav', 'fonction_publique']
-        return sum(
-            individu(f'{regime}_duree_assurance_cotisee', period)
-            for regime in regimes
+        return (
+            individu('regime_general_cnav_duree_assurance_cotisee', period)
+            + individu('fonction_publique_duree_de_service', period)
             )
 
 
