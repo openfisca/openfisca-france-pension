@@ -4,6 +4,7 @@
   input:
     date_de_naissance: 1940-04-11
     fonction_publique_duree_assurance: 140
+    fonction_publique_duree_de_service: 140
     fonction_publique_decote: 12
     fonction_publique_liquidation_date: 2005-01-01
   output:
@@ -16,6 +17,7 @@
   input:
     date_de_naissance: 1940-04-11
     fonction_publique_duree_assurance: 140
+    fonction_publique_duree_de_service: 140
     fonction_publique_decote: 12
     fonction_publique_liquidation_date: 2015-01-01
     fonction_publique_pension_avant_minimum_et_plafonnement: 10000
@@ -30,6 +32,7 @@
   input:
     date_de_naissance: 1955-04-11
     fonction_publique_duree_assurance: 55
+    fonction_publique_duree_de_service: 55
     fonction_publique_decote: 0
     fonction_publique_liquidation_date: 2015-01-01
   output:
@@ -43,6 +46,7 @@
   input:
     date_de_naissance: 1940-04-11
     fonction_publique_duree_assurance: 80
+    fonction_publique_duree_de_service: 80
     fonction_publique_decote: 0
     fonction_publique_liquidation_date: 2011-01-01
   output:
@@ -56,6 +60,7 @@
   input:
     date_de_naissance: 1940-04-11
     fonction_publique_duree_assurance: 140
+    fonction_publique_duree_de_service: 140
     fonction_publique_liquidation_date: 2007-04-11
     fonction_publique_decote: 0
   output:
@@ -69,6 +74,7 @@
   input:
     date_de_naissance: 1940-04-11
     fonction_publique_duree_assurance: 160
+    fonction_publique_duree_de_service: 160
     fonction_publique_liquidation_date: 2005-04-11
     fonction_publique_decote: 12
   output:

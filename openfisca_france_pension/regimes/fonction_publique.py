@@ -149,10 +149,25 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
     class duree_de_service(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification"
+        label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification cummulée"
+
+        def formula(individu, period, parameters):
+            duree_de_service_annuelle = individu("regime_name_duree_de_service_annuelle", period)
+            duree_de_service_annee_precedente = individu("regime_name_duree_de_service", period.last_year)
+            # TODO: hack to avoid infinite recursion depth loop
+            if all((duree_de_service_annuelle == 0) & (duree_de_service_annee_precedente == 0)):
+                return individu.empty_array()
+
+            return duree_de_service_annee_precedente + duree_de_service_annuelle
+
+    class duree_de_service_annuelle(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification dans l'année"
 
     # Utiliser la duréee de service
     # def FP_to_RG(self, data, trim_cot_by_year, sal_cot):

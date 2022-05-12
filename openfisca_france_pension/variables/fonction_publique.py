@@ -213,10 +213,23 @@ class fonction_publique_duree_assurance(Variable):
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
 class fonction_publique_duree_de_service(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification'
+    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification cummulée'
+
+    def formula(individu, period, parameters):
+        duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
+        duree_de_service_annee_precedente = individu('fonction_publique_duree_de_service', period.last_year)
+        if all((duree_de_service_annuelle == 0) & (duree_de_service_annee_precedente == 0)):
+            return individu.empty_array()
+        return duree_de_service_annee_precedente + duree_de_service_annuelle
+
+class fonction_publique_duree_de_service_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification dans l'année"
 
 class fonction_publique_limite_d_age(Variable):
     value_type = float
@@ -463,7 +476,7 @@ class fonction_publique_surcote_trimestres_avant_minimum(Variable):
             aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
             aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor
+        arrondi_trimestres_aod = np.ceil if period.start.year < 2009 else np.floor
         trimestres_apres_aod = max_(0, (age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3)
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         trimestres_apres_instauration_surcote = (individu('fonction_publique_liquidation_date', period) - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3
