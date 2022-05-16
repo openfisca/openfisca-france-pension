@@ -263,12 +263,6 @@ class regime_general_cnav_duree_assurance(Variable):
         majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
         return duree_assurance_validee + majoration_duree_assurance * liquidation
 
-class regime_general_cnav_duree_assurance_assimilee_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance validée au titre des périodes assimilées (en trimestres cotisés seulement l'année considérée)"
-
 class regime_general_cnav_duree_assurance_cotisee(Variable):
     value_type = int
     entity = Person

@@ -72,7 +72,7 @@ class fonction_publique_aod(Variable):
 class fonction_publique_bonification_cpcm(Variable):
     value_type = float
     entity = Person
-    label = 'bonification pour enfants'
+    label = 'Bonification pour enfants selon le code des pensions civiles et militaires'
     definition_period = YEAR
 
     def formula_2004(individu, period, parameters):
@@ -111,7 +111,7 @@ class fonction_publique_coefficient_de_proratisation(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        duree_de_service_effective = individu('fonction_publique_duree_assurance', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
         bonification_cpcm = individu('fonction_publique_bonification_cpcm', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
@@ -191,7 +191,7 @@ class fonction_publique_decote_trimestres(Variable):
         duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
-        return where(annee_age_ouverture_droits >= 2006, decote_trimestres, 0)
+        return where(annee_age_ouverture_droits >= 2006, min_(decote_trimestres, 20), 0)
 
 class fonction_publique_dernier_indice_atteint(Variable):
     value_type = float
@@ -212,23 +212,24 @@ class fonction_publique_duree_assurance(Variable):
     definition_period = YEAR
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
-class fonction_publique_duree_assurance_assimilee_annuelle(Variable):
-    value_type = int
+class fonction_publique_duree_de_service(Variable):
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance validée au titre des périodes assimilées (en trimestres cotisés seulement l'année considérée)"
+    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification cummulée'
 
-class fonction_publique_duree_assurance_cotisee(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance (trimestres cotisés dans la fonction publique)"
+    def formula(individu, period, parameters):
+        duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
+        duree_de_service_annee_precedente = individu('fonction_publique_duree_de_service', period.last_year)
+        if all((duree_de_service_annuelle == 0) & (duree_de_service_annee_precedente == 0)):
+            return individu.empty_array()
+        return duree_de_service_annee_precedente + duree_de_service_annuelle
 
-class fonction_publique_duree_assurance_cotisee_annuelle(Variable):
-    value_type = int
+class fonction_publique_duree_de_service_annuelle(Variable):
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance annuelle pour les périodes cotisées ou faisant l'objet d'un report de salaire au compte (en trimestres cotisés seulement l'année considérée)"
+    label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification dans l'année"
 
 class fonction_publique_limite_d_age(Variable):
     value_type = float
@@ -301,7 +302,7 @@ class fonction_publique_minimum_garanti(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        duree_de_service_effective = individu('fonction_publique_duree_assurance', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
         decote = individu('fonction_publique_decote', period)
         service_public = parameters(period).secteur_public
         minimum_garanti = service_public.minimum_garanti
@@ -475,7 +476,7 @@ class fonction_publique_surcote_trimestres_avant_minimum(Variable):
             aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
             aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
-        arrondi_trimestres_aod = np.ceil if period.start.year <= 2009 else np.floor
+        arrondi_trimestres_aod = np.ceil if period.start.year < 2009 else np.floor
         trimestres_apres_aod = max_(0, (age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3)
         duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         trimestres_apres_instauration_surcote = (individu('fonction_publique_liquidation_date', period) - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3

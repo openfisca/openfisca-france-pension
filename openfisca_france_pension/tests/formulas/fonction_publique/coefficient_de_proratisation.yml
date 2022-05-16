@@ -2,7 +2,7 @@
   absolute_error_margin: .001
   period: 1980
   input:
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 1
 
@@ -11,7 +11,7 @@
   absolute_error_margin: .001
   period: 1980
   input:
-    fonction_publique_duree_assurance: 0
+    fonction_publique_duree_de_service: 0
   output:
     fonction_publique_coefficient_de_proratisation: 0
 
@@ -21,7 +21,7 @@
   period: 2013
   input:
     date_de_naissance: 1950-01-01
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 162
 
@@ -31,7 +31,7 @@
   period: 2015
   input:
     date_de_naissance: 1951-01-01
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 163
 
@@ -41,7 +41,7 @@
   period: 2017
   input:
     date_de_naissance: 1952-01-01
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 164
 
@@ -51,7 +51,7 @@
   period: 2019
   input:
     date_de_naissance: 1953-01-01
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 165
 
@@ -61,7 +61,7 @@
   period: 2025
   input:
     date_de_naissance: 1960-01-01
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 167
 
@@ -71,7 +71,7 @@
   period: 2030
   input:
     date_de_naissance: 1970-01-01
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 171
 
@@ -81,6 +81,6 @@
   period: 2030
   input:
     date_de_naissance: 1973-01-01
-    fonction_publique_duree_assurance: 150
+    fonction_publique_duree_de_service: 150
   output:
     fonction_publique_coefficient_de_proratisation: 150 / 172
