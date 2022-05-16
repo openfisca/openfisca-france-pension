@@ -373,7 +373,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             return where(
                 annee_age_ouverture_droits >= 2006,
-                decote_trimestres,
+                min_(decote_trimestres, 20),
                 0
                 )
 

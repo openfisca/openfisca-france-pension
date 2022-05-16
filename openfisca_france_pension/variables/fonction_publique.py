@@ -191,7 +191,7 @@ class fonction_publique_decote_trimestres(Variable):
         duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
-        return where(annee_age_ouverture_droits >= 2006, decote_trimestres, 0)
+        return where(annee_age_ouverture_droits >= 2006, min_(decote_trimestres, 20), 0)
 
 class fonction_publique_dernier_indice_atteint(Variable):
     value_type = float
