@@ -212,6 +212,9 @@ class fonction_publique_duree_assurance(Variable):
     definition_period = YEAR
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
+    def formula(individu, period, parameters):
+        return individu('fonction_publique_duree_de_service', period) + individu('fonction_publique_bonification_cpcm', period)
+
 class fonction_publique_duree_de_service(Variable):
     value_type = float
     entity = Person
@@ -221,7 +224,7 @@ class fonction_publique_duree_de_service(Variable):
     def formula(individu, period, parameters):
         duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
         duree_de_service_annee_precedente = individu('fonction_publique_duree_de_service', period.last_year)
-        if all((duree_de_service_annuelle == 0) & (duree_de_service_annee_precedente == 0)):
+        if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
             return individu.empty_array()
         return duree_de_service_annee_precedente + duree_de_service_annuelle
 
@@ -397,7 +400,7 @@ class fonction_publique_pension_brute_au_31_decembre(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        if all(annee_de_liquidation > period.start.year):
+        if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         pension_brute_au_31_decembre_annee_precedente = individu('fonction_publique_pension_brute_au_31_decembre', last_year)
