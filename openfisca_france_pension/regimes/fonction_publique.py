@@ -32,6 +32,43 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
             return actif
 
+    class annee_age_ouverture_droits(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Annee_age_ouverture_droits"
+
+        def formula_2006(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            # Âge d'ouverture des droits
+            aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
+            aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
+            if period.start.year <= 2011:
+                aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
+                aod_sedentaire_mois = 0
+                aod_active_annee = aod_active.before_1956_07_01.annee
+                aod_active_mois = 0
+            else:
+                aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
+                aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
+                aod_active_annee = aod_active[date_de_naissance].annee
+                aod_active_mois = aod_active[date_de_naissance].mois
+
+            # Âge d'annulation de la décôte
+            actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
+            aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
+            aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
+            annee_age_ouverture_droits = np.trunc(
+                date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
+                + aod_annee
+                + (
+                    (date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int')
+                    + aod_mois
+                    ) / 12
+                ).astype(int)
+
+            return annee_age_ouverture_droits
+
     class aod(Variable):
         value_type = int
         entity = Person
@@ -91,19 +128,19 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     5
                     )
                 )
-            duree_assurance_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+            duree_de_service_requise = parameters(period).regime_name.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
             coefficient_de_proratisation = max_(
                 min_(
                     1,
                     (duree_de_service_effective + bonification_du_cinquieme)
-                    / duree_assurance_requise
+                    / duree_de_service_requise
                     ),
                 min_(
                     80 / 75,
                     (
-                        min_(duree_de_service_effective, duree_assurance_requise)
+                        min_(duree_de_service_effective, duree_de_service_requise)
                         + bonification_cpcm
-                        ) / duree_assurance_requise
+                        ) / duree_de_service_requise
                     )
                 )
             return coefficient_de_proratisation
@@ -149,10 +186,33 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
         def formula(individu, period, parameters):
+            duree_assurance_annuelle = individu("regime_name_duree_assurance_annuelle", period)
+            duree_assurance_annee_precedente = individu("regime_name_duree_assurance", period.last_year)
+            # TODO: hack to avoid infinite recursion depth loop
+            if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
+                return individu.empty_array()
+
             return (
-                individu("regime_name_duree_de_service", period)
+                duree_assurance_annee_precedente
+                + duree_assurance_annuelle
                 + individu("regime_name_bonification_cpcm", period)
                 )
+
+    class duree_assurance_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance (trimestres validés dans la fonction publique)"
+
+        def formula(individu, period, parameters):
+            quotite_de_travail = min_(individu("regime_name_quotite_de_travail", period), 1.0)
+            duree_de_service_annuelle = individu("regime_name_duree_de_service_annuelle", period)
+            duree_de_service_annuelle = where(
+                quotite_de_travail == 0,
+                0,
+                duree_de_service_annuelle
+                )
+            return duree_de_service_annuelle / (quotite_de_travail + (quotite_de_travail == 0))  # To avoid division by zéro
 
     class duree_de_service(Variable):
         value_type = float
@@ -167,7 +227,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
                 return individu.empty_array()
 
-            return duree_de_service_annee_precedente + duree_de_service_annuelle
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            return where(
+                annee_de_liquidation == period.start.year,
+                round_(duree_de_service_annee_precedente + duree_de_service_annuelle),  # On arrondi l'année de la liquidation
+                duree_de_service_annee_precedente + duree_de_service_annuelle
+                )
 
     class duree_de_service_annuelle(Variable):
         value_type = float
@@ -265,74 +330,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     #     N_CP = P.plein.n_trim
     #     return minimum(divide(nb_trimesters + trim_maj_mda_ini, N_CP), 1)
 
-    class limite_d_age(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Limite d'âge"
-
-        def formula(individu, period, parameters):
-            date_de_naissance = individu('date_de_naissance', period)
-            actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
-            limite_age_active = parameters(period).regime_name.la_a.age_limite_fonction_publique_active_selon_annee_naissance
-            limite_age_sedentaire = parameters(period).regime_name.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
-            if period.start.year <= 2011:
-                limite_age_active_annee = limite_age_active.before_1956_07_01.annee
-                limite_age_active_mois = 0
-                limite_age_sedentaire_annee = limite_age_sedentaire.before_1951_07_01.annee
-                limite_age_sedentaire_mois = 0
-
-            else:
-                limite_age_active_annee = limite_age_active[date_de_naissance].annee
-                limite_age_active_mois = limite_age_active[date_de_naissance].mois
-                limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
-                limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
-
-            limite_age_actif = limite_age_active_annee + limite_age_active_mois / 12
-            limite_age_sedentaire = limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
-            return where(
-                actif_a_la_liquidation,
-                limite_age_actif,
-                limite_age_sedentaire
-                )
-
-    class annee_age_ouverture_droits(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Annee_age_ouverture_droits"
-
-        def formula_2006(individu, period, parameters):
-            date_de_naissance = individu('date_de_naissance', period)
-            # Âge d'ouverture des droits
-            aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
-            aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
-            if period.start.year <= 2011:
-                aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
-                aod_sedentaire_mois = 0
-                aod_active_annee = aod_active.before_1956_07_01.annee
-                aod_active_mois = 0
-            else:
-                aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
-                aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
-                aod_active_annee = aod_active[date_de_naissance].annee
-                aod_active_mois = aod_active[date_de_naissance].mois
-
-            # Âge d'annulation de la décôte
-            actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
-            aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
-            aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
-            annee_age_ouverture_droits = np.trunc(
-                date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
-                + aod_annee
-                + (
-                    (date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int')
-                    + aod_mois
-                    ) / 12
-                ).astype(int)
-
-            return annee_age_ouverture_droits
-
     class decote_trimestres(Variable):
         value_type = float
         entity = Person
@@ -418,41 +415,51 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             return dernier_indice
 
+    class limite_d_age(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Limite d'âge"
+
+        def formula(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+            limite_age_active = parameters(period).regime_name.la_a.age_limite_fonction_publique_active_selon_annee_naissance
+            limite_age_sedentaire = parameters(period).regime_name.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
+            if period.start.year <= 2011:
+                limite_age_active_annee = limite_age_active.before_1956_07_01.annee
+                limite_age_active_mois = 0
+                limite_age_sedentaire_annee = limite_age_sedentaire.before_1951_07_01.annee
+                limite_age_sedentaire_mois = 0
+
+            else:
+                limite_age_active_annee = limite_age_active[date_de_naissance].annee
+                limite_age_active_mois = limite_age_active[date_de_naissance].mois
+                limite_age_sedentaire_annee = limite_age_sedentaire[date_de_naissance].annee
+                limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
+
+            limite_age_actif = limite_age_active_annee + limite_age_active_mois / 12
+            limite_age_sedentaire = limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
+            return where(
+                actif_a_la_liquidation,
+                limite_age_actif,
+                limite_age_sedentaire
+                )
+
     class majoration_pension(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
         label = "Majoration de pension"
         reference = [
-            "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/"  # Legislation Foncionnaires : art L.18  (1965)
-            "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/"  # Legislation CNRACL : art 24  (2004)
+            "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/",  # Legislation Foncionnaires : art L.18  (1965)
+            "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/",  # Legislation CNRACL : art 24  (2004)
             ]
 
         def formula_1965(individu, period):
             nombre_enfants = individu('nombre_enfants', period)
             pension_brute = individu('regime_name_pension_brute', period)
             return pension_brute * (.1 * (nombre_enfants >= 3) + .05 * max_(nombre_enfants - 3, 0))
-
-    class nombre_annees_actif(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Nombre d'années travaillant en tant qu'actif"
-
-        def formula(individu, period):
-            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-            if all(period.start.year > annee_de_liquidation):
-                return individu.empty_array()
-            last_year = period.start.period('year').offset(-1)
-            nombre_annees_actif_annee_precedente = individu('regime_name_nombre_annees_actif', last_year)
-            categorie_activite = individu('regime_name_categorie_activite', period)
-            return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
-
-    class nombre_enfants_nes_avant_2004(Variable):
-        value_type = int
-        entity = Person
-        label = "Nombre d'enfants nés avant 2004"
-        definition_period = ETERNITY
 
     class minimum_garanti(Variable):
         value_type = float
@@ -514,6 +521,27 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ]
                 )
 
+    class nombre_annees_actif(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Nombre d'années travaillant en tant qu'actif"
+
+        def formula(individu, period):
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            if all(period.start.year > annee_de_liquidation):
+                return individu.empty_array()
+            last_year = period.start.period('year').offset(-1)
+            nombre_annees_actif_annee_precedente = individu('regime_name_nombre_annees_actif', last_year)
+            categorie_activite = individu('regime_name_categorie_activite', period)
+            return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
+
+    class nombre_enfants_nes_avant_2004(Variable):
+        value_type = int
+        entity = Person
+        label = "Nombre d'enfants nés avant 2004"
+        definition_period = ETERNITY
+
     class pension(Variable):
         value_type = float
         entity = Person
@@ -536,6 +564,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             pension_avant_minimum_et_plafonnement = individu("regime_name_pension_avant_minimum_et_plafonnement", period)
             minimum_garanti = individu("regime_name_minimum_garanti", period)
             return max_(pension_avant_minimum_et_plafonnement, minimum_garanti)
+
+    class quotite_de_travail(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = 'Quotité de travail'
+        default_value = 1.0
 
     class salaire_de_reference(Variable):
         value_type = float

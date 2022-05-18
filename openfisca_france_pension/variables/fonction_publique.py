@@ -115,8 +115,8 @@ class fonction_publique_coefficient_de_proratisation(Variable):
         bonification_cpcm = individu('fonction_publique_bonification_cpcm', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
-        duree_assurance_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + bonification_du_cinquieme) / duree_assurance_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_assurance_requise) + bonification_cpcm) / duree_assurance_requise))
+        duree_de_service_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+        coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + bonification_du_cinquieme) / duree_de_service_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm) / duree_de_service_requise))
         return coefficient_de_proratisation
 
 class fonction_publique_cotisation(Variable):
@@ -213,7 +213,23 @@ class fonction_publique_duree_assurance(Variable):
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
     def formula(individu, period, parameters):
-        return individu('fonction_publique_duree_de_service', period) + individu('fonction_publique_bonification_cpcm', period)
+        duree_assurance_annuelle = individu('fonction_publique_duree_assurance_annuelle', period)
+        duree_assurance_annee_precedente = individu('fonction_publique_duree_assurance', period.last_year)
+        if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
+            return individu.empty_array()
+        return duree_assurance_annee_precedente + duree_assurance_annuelle + individu('fonction_publique_bonification_cpcm', period)
+
+class fonction_publique_duree_assurance_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance (trimestres validés dans la fonction publique)"
+
+    def formula(individu, period, parameters):
+        quotite_de_travail = min_(individu('fonction_publique_quotite_de_travail', period), 1.0)
+        duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
+        duree_de_service_annuelle = where(quotite_de_travail == 0, 0, duree_de_service_annuelle)
+        return duree_de_service_annuelle / (quotite_de_travail + (quotite_de_travail == 0))
 
 class fonction_publique_duree_de_service(Variable):
     value_type = float
@@ -226,7 +242,8 @@ class fonction_publique_duree_de_service(Variable):
         duree_de_service_annee_precedente = individu('fonction_publique_duree_de_service', period.last_year)
         if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
             return individu.empty_array()
-        return duree_de_service_annee_precedente + duree_de_service_annuelle
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle), duree_de_service_annee_precedente + duree_de_service_annuelle)
 
 class fonction_publique_duree_de_service_annuelle(Variable):
     value_type = float
@@ -271,7 +288,7 @@ class fonction_publique_majoration_pension(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Majoration de pension'
-    reference = ['https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/']
+    reference = ['https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025076852/', 'https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006400888/']
 
     def formula_1965(individu, period):
         nombre_enfants = individu('nombre_enfants', period)
@@ -423,6 +440,13 @@ class fonction_publique_pension_servie(Variable):
         revalorisation = parameters(period).secteur_public.revalarisation_pension_servie
         pension = individu('fonction_publique_pension_au_31_decembre', period)
         return revalorise(pension_au_31_decembre_annee_precedente, pension, annee_de_liquidation, revalorisation, period)
+
+class fonction_publique_quotite_de_travail(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Quotité de travail'
+    default_value = 1.0
 
 class fonction_publique_salaire_de_reference(Variable):
     value_type = float
