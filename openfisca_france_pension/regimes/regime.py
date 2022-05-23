@@ -175,7 +175,7 @@ class AbstractRegimeDeBase(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             # Raccouci pour arrêter les calculs dans le passé quand toutes les liquidations ont lieu dans le futur
-            if all(annee_de_liquidation > period.start.year):
+            if all(period.start.year < annee_de_liquidation):
                 return individu.empty_array()
             last_year = period.start.period('year').offset(-1)
             pension_brute_au_31_decembre_annee_precedente = individu('regime_name_pension_brute_au_31_decembre', last_year)
