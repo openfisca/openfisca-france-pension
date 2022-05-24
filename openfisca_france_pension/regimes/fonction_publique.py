@@ -534,6 +534,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             duree_de_service_effective = individu("fonction_publique_duree_de_service", period)
+            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
             decote = individu("regime_name_decote", period)
 
             service_public = parameters(period).regime_name
@@ -561,8 +562,9 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             # Vous êtes admis à la retraite anticipée pour infirmité ou maladie incurable
             condition_absence_decote = decote == 0
             condition_duree = duree_de_service_effective > duree_assurance_requise
+            condition_autre = all((annee_age_ouverture_droits < 2011) * (annee_de_liquidation > 2010))
             post_condition = where(
-                annee_de_liquidation < 2011,
+                annee_de_liquidation < 2011 + condition_autre,
                 True,
                 condition_duree + condition_absence_decote,
                 )

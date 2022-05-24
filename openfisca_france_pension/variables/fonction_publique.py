@@ -407,6 +407,7 @@ class fonction_publique_minimum_garanti(Variable):
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
+        annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         decote = individu('fonction_publique_decote', period)
         service_public = parameters(period).secteur_public
         minimum_garanti = service_public.minimum_garanti
@@ -423,7 +424,8 @@ class fonction_publique_minimum_garanti(Variable):
         coefficient_plus_40_ans = 1
         condition_absence_decote = decote == 0
         condition_duree = duree_de_service_effective > duree_assurance_requise
-        post_condition = where(annee_de_liquidation < 2011, True, condition_duree + condition_absence_decote)
+        condition_autre = all((annee_age_ouverture_droits < 2011) * (annee_de_liquidation > 2010))
+        post_condition = where(annee_de_liquidation < 2011 + condition_autre, True, condition_duree + condition_absence_decote)
         return post_condition * indice_majore * pt_indice * select([duree_de_service_effective < 60, duree_de_service_effective < annee_moins_40_ans, duree_de_service_effective < 160, duree_de_service_effective >= 160], [coefficient_moins_15_ans, coefficient_plus_15_ans, coefficient_plus_30_ans, coefficient_plus_40_ans])
 
 class fonction_publique_nombre_annees_actif(Variable):
