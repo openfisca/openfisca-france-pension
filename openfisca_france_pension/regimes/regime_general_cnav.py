@@ -273,7 +273,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_name_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             employeur = parameters(period).regime_name.prelevements_sociaux.employeur
             salarie_concerne = (
@@ -294,7 +294,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_name_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             salarie = parameters(period).regime_name.prelevements_sociaux.salarie
             salarie_concerne = (
@@ -406,7 +406,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             majoration_duree_assurance = individu("regime_name_majoration_duree_assurance", period)
             return duree_assurance_validee + majoration_duree_assurance * liquidation
 
-    class duree_assurance_periode_assimilee_avpf_annuelle(Variable):
+    class duree_assurance_avpf_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
@@ -428,7 +428,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         label = "Durée d'assurance cotisée en emploi (en trimestres cotisés jusqu'à l'année considérée)"
 
         def formula(individu, period, parameters):
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_name_salaire_de_base", period)
             salaire_validant_trimestre = individu("regime_name_salaire_validant_trimestre", period)
             try:
                 salaire_validant_un_trimestre = parameters(period).regime_name.salval.salaire_validant_trimestre[salaire_validant_trimestre]
@@ -447,48 +447,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 trimestres_validables
                 )
 
-    class duree_assurance_periode_assimilee_chomage_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
-
-    class duree_assurance_periode_assimilee_maladie_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
-
-    class duree_assurance_periode_assimilee_accident_du_travail_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
-
-    class duree_assurance_periode_assimilee_invalidite_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
-
-    class duree_assurance_periode_assimilee_service_national_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
-
-    class duree_assurance_periode_assimilee_autre_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
-
-    class duree_assurance_etranger_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance acquise à l'étranger"
-
     class duree_assurance_travail_annuelle(Variable):
         value_type = int
         entity = Person
@@ -498,10 +456,10 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula(individu, period, parameters):
             statut_du_cotisant = individu("statut_du_cotisant", period)
             duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
-            duree_assurance_periode_assimilee_avpf = individu("regime_name_duree_assurance_periode_assimilee_avpf", period)
+            duree_assurance_avpf = individu("regime_name_duree_assurance_avpf", period)
             return where(
                 (statut_du_cotisant == TypesStatutDuCotisant.emploi) | (statut_du_cotisant == TypesStatutDuCotisant.avpf),
-                min_(duree_assurance_cotisee_annuelle + duree_assurance_periode_assimilee_avpf, 4),
+                min_(duree_assurance_cotisee_annuelle + duree_assurance_avpf, 4),
                 0
                 )
 
@@ -510,6 +468,9 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance en emploi cummulée (trimestres cotisés en emploi au régime général depuis l'entrée dans le régme)"
+        # TODO ne peut être remontée plus haut au niveua de RegimeDeBase pour des problèmes d'initialisation différentié des régimes
+        # regime_genral_cnav et fonction_publique avec EIC
+        # Il faut peut-être des trimestes en emploi à un niveau plus bas
 
         def formula(individu, period, parameters):
             # TODO: hack to avoid infinite recursion depth loop
@@ -530,7 +491,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             # TODO: hack to avoid infinite recursion depth loop
             duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
             duree_assurance_periodes_assimilees_annuelles = sum(
-                individu(f"regime_name_duree_assurance_periode_assimilee_{periode_assimilee}_annuelle", period)
+                individu(f"regime_name_duree_assurance_{periode_assimilee}_annuelle", period)
                 for periode_assimilee in [
                     "avpf",
                     "chomage",
@@ -563,6 +524,10 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance validée cummulée (trimestres cotisés au régime général depuis l'entrée dans le régme)"
+        # TODO ne peut être remontée plus haut au niveua de RegimeDeBase pour des problèmes d'initialisation différentiéé
+        # de duree_assurance_cotisee des régimes
+        # regime_genral_cnav et fonction_publique avec EIC
+        # Il faut peut-être des trimestes en emploi à un niveau plus bas
 
         def formula(individu, period, parameters):
             return (
@@ -890,7 +855,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 # TODO: try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
                 arr = np.vstack([
                     min_(
-                        individu('salaire_de_base', period = year)[filter],
+                        individu("regime_name_salaire_de_base", period = year)[filter],
                         parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
                         )
                     * revalorisation.get(year, revalorisation[min(revalorisation.keys())])  # FIXME revalorisation before 1949
@@ -923,7 +888,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 axis = 0,
                 arr = np.vstack([
                     min_(
-                        individu('salaire_de_base', period = year),
+                        individu("regime_name_salaire_de_base", period = year),
                         parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
                         )
                     * revalorisation[annee_salaire]

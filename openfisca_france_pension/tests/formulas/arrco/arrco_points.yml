@@ -13,7 +13,7 @@
   absolute_error_margin: .001
   period: 2015
   input:
-    salaire_de_base: 22475
+    regime_general_cnav_salaire_de_base: 22475
   output:
     arrco_cotisation: 1393.45 * 1.25
     arrco_points: 91.32

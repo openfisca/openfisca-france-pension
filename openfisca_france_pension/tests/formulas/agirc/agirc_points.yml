@@ -4,7 +4,7 @@
   period: 2016
   input:
     categorie_salarie: prive_cadre
-    salaire_de_base: 61530
+    regime_general_cnav_salaire_de_base: 61530
   output:
     arrco_cotisation: 2394.19 * 1.25
     arrco_points: 152.93

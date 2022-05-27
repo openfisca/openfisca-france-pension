@@ -179,7 +179,7 @@ class regime_general_cnav_cotisation_employeur(Variable):
 
     def formula(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
-        salaire_de_base = individu('salaire_de_base', period)
+        salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
         employeur = parameters(period).secteur_prive.regime_general_cnav.prelevements_sociaux.employeur
         salarie_concerne = (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) + (categorie_salarie == TypesCategorieSalarie.prive_cadre) + (categorie_salarie == TypesCategorieSalarie.public_non_titulaire)
@@ -193,7 +193,7 @@ class regime_general_cnav_cotisation_salarie(Variable):
 
     def formula(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
-        salaire_de_base = individu('salaire_de_base', period)
+        salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
         salarie = parameters(period).secteur_prive.regime_general_cnav.prelevements_sociaux.salarie
         salarie_concerne = (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) + (categorie_salarie == TypesCategorieSalarie.prive_cadre) + (categorie_salarie == TypesCategorieSalarie.public_non_titulaire)
@@ -263,6 +263,37 @@ class regime_general_cnav_duree_assurance(Variable):
         majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
         return duree_assurance_validee + majoration_duree_assurance * liquidation
 
+class regime_general_cnav_duree_assurance_accident_du_travail_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
+
+class regime_general_cnav_duree_assurance_autre_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
+
+class regime_general_cnav_duree_assurance_avpf_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance validée avpf (en trimestres validés jusqu'à l'année considérée)"
+
+    def formula_1972(individu, period, parameters):
+        avpf = individu('avpf', period)
+        duree_assurance_cotisee_annuelle = individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period)
+        smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3
+        avpf = avpf * conversion_en_monnaie_courante(period)
+        return min_((avpf / smic_trimestriel).astype(int), 4 - duree_assurance_cotisee_annuelle)
+
+class regime_general_cnav_duree_assurance_chomage_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
+
 class regime_general_cnav_duree_assurance_cotisee(Variable):
     value_type = int
     entity = Person
@@ -283,7 +314,7 @@ class regime_general_cnav_duree_assurance_cotisee_annuelle(Variable):
     label = "Durée d'assurance cotisée en emploi (en trimestres cotisés jusqu'à l'année considérée)"
 
     def formula(individu, period, parameters):
-        salaire_de_base = individu('salaire_de_base', period)
+        salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         salaire_validant_trimestre = individu('regime_general_cnav_salaire_validant_trimestre', period)
         try:
             salaire_validant_un_trimestre = parameters(period).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre[salaire_validant_trimestre]
@@ -300,6 +331,18 @@ class regime_general_cnav_duree_assurance_etranger_annuelle(Variable):
     definition_period = YEAR
     label = "Durée d'assurance acquise à l'étranger"
 
+class regime_general_cnav_duree_assurance_invalidite_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
+
+class regime_general_cnav_duree_assurance_maladie_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
+
 class regime_general_cnav_duree_assurance_periode_assimilee(Variable):
     value_type = int
     entity = Person
@@ -308,7 +351,7 @@ class regime_general_cnav_duree_assurance_periode_assimilee(Variable):
 
     def formula(individu, period, parameters):
         duree_assurance_cotisee_annuelle = individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period)
-        duree_assurance_periodes_assimilees_annuelles = sum((individu(f'regime_general_cnav_duree_assurance_periode_assimilee_{periode_assimilee}_annuelle', period) for periode_assimilee in ['avpf', 'chomage', 'maladie', 'accident_du_travail', 'invalidite', 'service_national', 'autre']))
+        duree_assurance_periodes_assimilees_annuelles = sum((individu(f'regime_general_cnav_duree_assurance_{periode_assimilee}_annuelle', period) for periode_assimilee in ['avpf', 'chomage', 'maladie', 'accident_du_travail', 'invalidite', 'service_national', 'autre']))
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         trimestres_validables = where(liquidation_date.astype('datetime64[Y]').astype(int) + 1970 == period.start.year, calendar_quarters_elapsed_this_year_asof(liquidation_date) - duree_assurance_cotisee_annuelle, 4 - duree_assurance_cotisee_annuelle)
         duree_assurance_periode_assimilee_annuelle = np.clip(duree_assurance_periodes_assimilees_annuelles + individu('regime_general_cnav_duree_assurance_etranger_annuelle', period), 0, trimestres_validables)
@@ -317,51 +360,8 @@ class regime_general_cnav_duree_assurance_periode_assimilee(Variable):
             return individu.empty_array()
         return individu('regime_general_cnav_duree_assurance_periode_assimilee', period.last_year) + duree_assurance_periode_assimilee_annuelle
 
-class regime_general_cnav_duree_assurance_periode_assimilee_accident_du_travail_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
-
-class regime_general_cnav_duree_assurance_periode_assimilee_autre_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
-
-class regime_general_cnav_duree_assurance_periode_assimilee_avpf_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance validée avpf (en trimestres validés jusqu'à l'année considérée)"
-
-    def formula_1972(individu, period, parameters):
-        avpf = individu('avpf', period)
-        duree_assurance_cotisee_annuelle = individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period)
-        smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3
-        avpf = avpf * conversion_en_monnaie_courante(period)
-        return min_((avpf / smic_trimestriel).astype(int), 4 - duree_assurance_cotisee_annuelle)
-
-class regime_general_cnav_duree_assurance_periode_assimilee_chomage_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
-
-class regime_general_cnav_duree_assurance_periode_assimilee_invalidite_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
-
-class regime_general_cnav_duree_assurance_periode_assimilee_maladie_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
-
-class regime_general_cnav_duree_assurance_periode_assimilee_service_national_annuelle(Variable):
-    value_type = int
+class regime_general_cnav_duree_assurance_service_national_annuelle(Variable):
+    value_type = float
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
@@ -375,8 +375,8 @@ class regime_general_cnav_duree_assurance_travail_annuelle(Variable):
     def formula(individu, period, parameters):
         statut_du_cotisant = individu('statut_du_cotisant', period)
         duree_assurance_cotisee_annuelle = individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period)
-        duree_assurance_periode_assimilee_avpf = individu('regime_general_cnav_duree_assurance_periode_assimilee_avpf', period)
-        return where((statut_du_cotisant == TypesStatutDuCotisant.emploi) | (statut_du_cotisant == TypesStatutDuCotisant.avpf), min_(duree_assurance_cotisee_annuelle + duree_assurance_periode_assimilee_avpf, 4), 0)
+        duree_assurance_avpf = individu('regime_general_cnav_duree_assurance_avpf', period)
+        return where((statut_du_cotisant == TypesStatutDuCotisant.emploi) | (statut_du_cotisant == TypesStatutDuCotisant.avpf), min_(duree_assurance_cotisee_annuelle + duree_assurance_avpf, 4), 0)
 
 class regime_general_cnav_duree_assurance_validee(Variable):
     value_type = int
@@ -616,6 +616,13 @@ class regime_general_cnav_pension_servie(Variable):
         pension = individu('regime_general_cnav_pension_au_31_decembre', period)
         return revalorise(pension_au_31_decembre_annee_precedente, pension, annee_de_liquidation, revalorisation, period)
 
+class regime_general_cnav_salaire_de_base(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Salaire de base (salaire brut)'
+    set_input = set_input_divide_by_period
+
 class regime_general_cnav_salaire_de_reference(Variable):
     value_type = float
     entity = Person
@@ -638,7 +645,7 @@ class regime_general_cnav_salaire_de_reference(Variable):
             for annee_salaire in range(max(_annee_de_naissance + OFFSET, REVAL_S_YEAR_MIN), period.start.year):
                 revalorisation[annee_salaire] = parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]
             filter = (annee_de_naissance == _annee_de_naissance,)
-            arr = np.vstack([min_(individu('salaire_de_base', period=year)[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])
+            arr = np.vstack([min_(individu('regime_general_cnav_salaire_de_base', period=year)[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])
             compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
         return salaire_de_reference
 
@@ -651,7 +658,7 @@ class regime_general_cnav_salaire_de_reference(Variable):
         revalorisation[period.start.year] = 1
         for annee_salaire in range(max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), period.start.year + 1):
             revalorisation[annee_salaire] = np.prod(np.array([parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient for _annee in range(annee_salaire + 1, period.start.year + 1)]))
-        salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[annee_salaire] for year in range(period.start.year, max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), -1)]))
+        salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('regime_general_cnav_salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel) * revalorisation[annee_salaire] for year in range(period.start.year, max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), -1)]))
         return salaire_de_refererence
 
 class regime_general_cnav_salaire_validant_trimestre(Variable):

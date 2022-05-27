@@ -200,7 +200,7 @@ class fonction_publique_dernier_indice_atteint(Variable):
     label = 'Dernier indice connu dans la fonction publique'
 
     def formula_1970(individu, period, parameters):
-        salaire_de_base = individu('salaire_de_base', period)
+        salaire_de_base = individu('fonction_publique_salaire_de_base', period)
         taux_de_prime = individu('taux_de_prime', period)
         valeur_point_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
         dernier_indice = where(salaire_de_base > 0, salaire_de_base / (1 + taux_de_prime) / valeur_point_indice, individu('fonction_publique_dernier_indice_atteint', period.last_year))
@@ -217,19 +217,72 @@ class fonction_publique_duree_assurance(Variable):
         duree_assurance_annee_precedente = individu('fonction_publique_duree_assurance', period.last_year)
         if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
             return individu.empty_array()
-        return duree_assurance_annee_precedente + duree_assurance_annuelle + individu('fonction_publique_bonification_cpcm', period)
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        majoration_duree_assurance = individu('fonction_publique_majoration_duree_assurance', period)
+        return where(annee_de_liquidation == period.start.year, round_(duree_assurance_annee_precedente + duree_assurance_annuelle + majoration_duree_assurance), duree_assurance_annee_precedente + duree_assurance_annuelle)
+
+class fonction_publique_duree_assurance_accident_du_travail_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
 
 class fonction_publique_duree_assurance_annuelle(Variable):
     value_type = int
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance (trimestres validés dans la fonction publique)"
+    label = "Durée d'assurance annuelle (trimestres validés dans la fonction publique hors majoration)"
 
     def formula(individu, period, parameters):
         quotite_de_travail = min_(individu('fonction_publique_quotite_de_travail', period), 1.0)
-        duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
-        duree_de_service_annuelle = where(quotite_de_travail == 0, 0, duree_de_service_annuelle)
-        return duree_de_service_annuelle / (quotite_de_travail + (quotite_de_travail == 0))
+        duree_de_service_cotisee_annuelle = individu('fonction_publique_duree_de_service_cotisee_annuelle', period)
+        duree_de_service_cotisee_annuelle = where(quotite_de_travail == 0, 0, duree_de_service_cotisee_annuelle)
+        duree_assurance_cotisee_annuelle = duree_de_service_cotisee_annuelle / (quotite_de_travail + (quotite_de_travail == 0))
+        duree_assurance_rachetee_annuelle = individu('fonction_publique_duree_de_service_rachetee_annuelle', period)
+        duree_assurance_service_national_annuelle = individu('fonction_publique_duree_assurance_service_national_annuelle', period)
+        return duree_assurance_cotisee_annuelle + duree_assurance_rachetee_annuelle + duree_assurance_service_national_annuelle
+
+class fonction_publique_duree_assurance_autre_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
+
+class fonction_publique_duree_assurance_chomage_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
+
+class fonction_publique_duree_assurance_etranger_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance acquise à l'étranger"
+
+class fonction_publique_duree_assurance_invalidite_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
+
+class fonction_publique_duree_assurance_maladie_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
+
+class fonction_publique_duree_assurance_periode_assimilee(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance pour période assimilée cumullée "
+
+class fonction_publique_duree_assurance_service_national_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
 
 class fonction_publique_duree_de_service(Variable):
     value_type = float
@@ -243,13 +296,29 @@ class fonction_publique_duree_de_service(Variable):
         if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
             return individu.empty_array()
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle), duree_de_service_annee_precedente + duree_de_service_annuelle)
+        majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle + majoration_duree_de_service), duree_de_service_annee_precedente + duree_de_service_annuelle)
 
 class fonction_publique_duree_de_service_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification dans l'année"
+    label = "Durée de service dans la fonction publique hors rachst et bonification dans l'année"
+
+    def formula(individu, period, parameters):
+        return individu('fonction_publique_duree_de_service_cotisee_annuelle', period) + individu('fonction_publique_duree_de_service_rachetee_annuelle', period) + individu('fonction_publique_duree_assurance_service_national_annuelle', period)
+
+class fonction_publique_duree_de_service_cotisee_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Durée de service cotisée dans la fonction publique hors rachst et bonification dans l'année"
+
+class fonction_publique_duree_de_service_rachetee_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachst et bonification dans l'année"
 
 class fonction_publique_limite_d_age(Variable):
     value_type = float
@@ -282,6 +351,21 @@ class fonction_publique_liquidation_date(Variable):
     definition_period = ETERNITY
     label = 'Date de liquidation'
     default_value = date(2250, 12, 31)
+
+class fonction_publique_majoration_duree_assurance(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Majoration de durée d'assurance"
+
+    def formula(individu, period):
+        return individu('fonction_publique_bonification_cpcm', period)
+
+class fonction_publique_majoration_duree_de_service(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Majoration de durée de service'
 
 class fonction_publique_majoration_pension(Variable):
     value_type = float
@@ -447,6 +531,13 @@ class fonction_publique_quotite_de_travail(Variable):
     definition_period = YEAR
     label = 'Quotité de travail'
     default_value = 1.0
+
+class fonction_publique_salaire_de_base(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Salaire de base (salaire brut)'
+    set_input = set_input_divide_by_period
 
 class fonction_publique_salaire_de_reference(Variable):
     value_type = float

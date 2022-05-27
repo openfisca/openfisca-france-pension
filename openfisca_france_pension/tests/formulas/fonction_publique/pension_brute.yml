@@ -2,7 +2,7 @@
   absolute_error_margin: .01
   period: 2021
   input:
-    salaire_de_base: 20000
+    fonction_publique_salaire_de_base: 20000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_decote: 0
     fonction_publique_surcote: 0
