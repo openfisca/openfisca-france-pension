@@ -97,11 +97,53 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Décote"
 
-    class duree_assurance(Variable):
+    class duree_assurance_chomage_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance (en trimestres validés)"
+        label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
+
+    class duree_assurance_maladie_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_accident_du_travail_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_invalidite_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_service_national_annuelle(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_autre_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
+
+    class duree_assurance_etranger_annuelle(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance acquise à l'étranger"
+
+    class duree_assurance_periode_assimilee(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance pour période assimilée cumullée "
 
     class majoration_pension(Variable):
         value_type = float
@@ -211,6 +253,13 @@ class AbstractRegimeDeBase(AbstractRegime):
                 revalorisation,
                 period,
                 )
+
+    class salaire_de_base(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = 'Salaire de base (salaire brut)'
+        set_input = set_input_divide_by_period
 
     class salaire_de_reference(Variable):
         value_type = float

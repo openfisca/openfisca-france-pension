@@ -47,7 +47,7 @@ class RegimeArrco(AbstractRegimeComplementaire):
 
         def formula_2019(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             employeur = parameters(period).regime_name.prelevements_sociaux.agirc_arrco.employeur
             return (
@@ -57,7 +57,7 @@ class RegimeArrco(AbstractRegimeComplementaire):
 
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             employeur = parameters(period).regime_name.prelevements_sociaux.employeur
 
@@ -78,7 +78,7 @@ class RegimeArrco(AbstractRegimeComplementaire):
 
         def formula_2019(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             salarie = parameters(period).regime_name.prelevements_sociaux.agirc_arrco.salarie
             return (
@@ -88,7 +88,7 @@ class RegimeArrco(AbstractRegimeComplementaire):
 
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             salarie = parameters(period).regime_name.prelevements_sociaux.salarie
             salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
@@ -211,7 +211,7 @@ class RegimeAgirc(AbstractRegimeComplementaire):
 
         def formula_2019(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             employeur = parameters(period).regime_name.prelevements_sociaux.agirc_arrco.employeur
             return (
@@ -221,7 +221,7 @@ class RegimeAgirc(AbstractRegimeComplementaire):
 
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             employeur = parameters(period).regime_name.prelevements_sociaux.employeur
             return (
@@ -238,7 +238,7 @@ class RegimeAgirc(AbstractRegimeComplementaire):
 
         def formula_2019(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             salarie = parameters(period).regime_name.prelevements_sociaux.agirc_arrco.salarie
             return (
@@ -248,7 +248,7 @@ class RegimeAgirc(AbstractRegimeComplementaire):
 
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
-            salaire_de_base = individu("salaire_de_base", period)
+            salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
             salarie = parameters(period).regime_name.prelevements_sociaux.salarie
             return (

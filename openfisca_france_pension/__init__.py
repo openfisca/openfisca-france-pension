@@ -85,7 +85,7 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
         self.cache_blacklist = [
             "fonction_publique_aod",
             "fonction_publique_salaire_de_reference",
-            "regime_general_cnav_duree_assurance_periode_assimilee_avpf",
+            "regime_general_cnav_duree_assurance_avpf",
             "regime_general_cnav_duree_assurance_cotisee_annuelle",
             "regime_general_cnav_decote_trimestres",
             "regime_general_cnav_surcote_trimestres",

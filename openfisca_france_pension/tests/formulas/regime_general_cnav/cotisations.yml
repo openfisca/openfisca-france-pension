@@ -2,7 +2,7 @@
   description: test
   period: 2010
   input:
-    salaire_de_base:
+    regime_general_cnav_salaire_de_base:
       2010: 1000
       2015: 1000
       2019: 1000
@@ -21,7 +21,7 @@
   description: test
   period: 2010
   input:
-    salaire_de_base:
+    regime_general_cnav_salaire_de_base:
       2010: 2 * 12 * 2885
       2015: 2 * 12 * 3170
       2019: 2 * 12 * 3377

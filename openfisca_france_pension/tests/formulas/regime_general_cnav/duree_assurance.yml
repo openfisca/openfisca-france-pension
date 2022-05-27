@@ -3,7 +3,7 @@
   period: 1958
   input:
     date_de_naissance: 1906-11-19
-    salaire_de_base:
+    regime_general_cnav_salaire_de_base:
       year:1958: (20000 / 6.559) / 100
     statut_du_cotisant:
       year:1958: emploi
@@ -19,7 +19,7 @@
   period: 1970
   input:
     date_de_naissance: 1906-11-19
-    salaire_de_base:
+    regime_general_cnav_salaire_de_base:
       year:1970: 2000 / 6.559
     statut_du_cotisant:
       year:1970: emploi
@@ -35,7 +35,7 @@
   period: 1970
   input:
     date_de_naissance: 1906-11-19
-    salaire_de_base:
+    regime_general_cnav_salaire_de_base:
       year:1970: 1500 / 6.559
     statut_du_cotisant:
       year:1970: emploi

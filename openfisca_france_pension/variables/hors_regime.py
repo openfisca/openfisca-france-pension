@@ -13,7 +13,7 @@ class TypesCategorieSalarie(Enum):
     public_titulaire_territoriale = 'public_titulaire_territoriale'
     public_titulaire_hospitaliere = 'public_titulaire_hospitaliere'
     public_non_titulaire = 'public_non_titulaire'
-    non_pertinent = 'non_pertinent'
+    non_pertinent = 'non_pertinent'  # Ou autre dont polycotisant
 
 class TypesRaisonDepartTauxPleinAnticipe(Enum):
     __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant travailleur_manuel'
@@ -31,7 +31,7 @@ class TypesStatutDuCotisant(Enum):
     independant = "Indépendant"
     avpf = "AVPF"   # CNAF seulement
     chomage = "Chômage, pré-retraite, reconversion et formation"
-    maladie = "Maladie-maternité"  # TODO: sont séparés dans EIC donc peut-être qu'il faudrait lesséparer ici également
+    maladie = "Maladie-maternité"  # TODO: sont séparés dans EIC donc peut-être qu'il faudrait les séparer ici également
     accident_du_travail = "Accident du travail"
     invalidite = "Invalidite"
     service_national = "Service national"
@@ -120,15 +120,6 @@ class nombre_enfants_a_charge(Variable):
     entity = Person
     definition_period = ETERNITY
     label = "Nombre d'enfants à charge"
-
-
-class salaire_de_base(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Salaire de base (salaire brut)'
-    set_input = set_input_divide_by_period
-
 
 class statut_du_cotisant(Variable):
     value_type = Enum

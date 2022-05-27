@@ -4,7 +4,7 @@
   period: 2021
   input:
     date_de_naissance: 1940-11-19
-    salaire_de_base:
+    regime_general_cnav_salaire_de_base:
       2020: 10000
   output:
     regime_general_cnav_salaire_de_reference: 1.004 * 10000
@@ -16,7 +16,7 @@
   max_spiral_loops: 3
   input:
     date_de_naissance: 1940-11-19
-    salaire_de_base:
+    regime_general_cnav_salaire_de_base:
       2020: 10000
       2019: 10000
   output:
