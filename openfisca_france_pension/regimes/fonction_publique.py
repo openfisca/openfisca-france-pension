@@ -558,13 +558,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             # Vous avez atteint l'âge d'annulation de la décote
             # Vous êtes admis à la retraite pour invalidité
             # Vous êtes admis à la retraite anticipée en tant que parent d'un enfant invalide
-            # Vous êtes admis à la retraite anticipée en tant que fonctionnaire handicapé à pourcent50
+            # Vous êtes admis à la retraite anticipée en tant que fonctionnaire handicapé à 50 %
             # Vous êtes admis à la retraite anticipée pour infirmité ou maladie incurable
             condition_absence_decote = decote == 0
             condition_duree = duree_de_service_effective > duree_assurance_requise
-            condition_autre = all((annee_age_ouverture_droits < 2011) * (annee_de_liquidation > 2010))
+            condition_age_ouverture_des_droits = (annee_age_ouverture_droits < 2011) * (annee_de_liquidation >= 2011)
             post_condition = where(
-                annee_de_liquidation < 2011 + condition_autre,
+                (annee_de_liquidation < 2011) + condition_age_ouverture_des_droits,
                 True,
                 condition_duree + condition_absence_decote,
                 )

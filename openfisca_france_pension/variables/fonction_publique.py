@@ -424,8 +424,8 @@ class fonction_publique_minimum_garanti(Variable):
         coefficient_plus_40_ans = 1
         condition_absence_decote = decote == 0
         condition_duree = duree_de_service_effective > duree_assurance_requise
-        condition_autre = all((annee_age_ouverture_droits < 2011) * (annee_de_liquidation > 2010))
-        post_condition = where(annee_de_liquidation < 2011 + condition_autre, True, condition_duree + condition_absence_decote)
+        condition_age_ouverture_des_droits = (annee_age_ouverture_droits < 2011) * (annee_de_liquidation >= 2011)
+        post_condition = where((annee_de_liquidation < 2011) + condition_age_ouverture_des_droits, True, condition_duree + condition_absence_decote)
         return post_condition * indice_majore * pt_indice * select([duree_de_service_effective < 60, duree_de_service_effective < annee_moins_40_ans, duree_de_service_effective < 160, duree_de_service_effective >= 160], [coefficient_moins_15_ans, coefficient_plus_15_ans, coefficient_plus_30_ans, coefficient_plus_40_ans])
 
 class fonction_publique_nombre_annees_actif(Variable):
