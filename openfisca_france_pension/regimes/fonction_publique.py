@@ -564,7 +564,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             condition_duree = duree_de_service_effective > duree_assurance_requise
             condition_age_ouverture_des_droits = (annee_age_ouverture_droits < 2011) * (annee_de_liquidation >= 2011)
             post_condition = where(
-                (annee_de_liquidation < 2011) + condition_age_ouverture_des_droits,
+                (annee_de_liquidation < 2011) + condition_age_ouverture_des_droits,  # + is OR
                 True,
                 condition_duree + condition_absence_decote,
                 )

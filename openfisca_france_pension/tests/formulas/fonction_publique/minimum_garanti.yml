@@ -15,7 +15,7 @@
   absolute_error_margin: .001
   period: 2015
   input:
-    date_de_naissance: 1940-04-11
+    date_de_naissance: 1951-04-11
     fonction_publique_duree_assurance: 140
     fonction_publique_duree_de_service: 140
     fonction_publique_decote: 12
