@@ -133,12 +133,6 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
 
-    class duree_assurance_etranger_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance acquise à l'étranger"
-
     class duree_assurance_periode_assimilee(Variable):
         value_type = int
         entity = Person

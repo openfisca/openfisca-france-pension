@@ -260,8 +260,9 @@ class regime_general_cnav_duree_assurance(Variable):
         annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         liquidation = annee_de_liquidation == period.start.year
         duree_assurance_validee = individu('regime_general_cnav_duree_assurance_validee', period)
+        duree_assurance_etranger = individu('regime_general_cnav_duree_assurance_etranger', period)
         majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
-        return duree_assurance_validee + majoration_duree_assurance * liquidation
+        return duree_assurance_validee + (duree_assurance_etranger + majoration_duree_assurance) * liquidation
 
 class regime_general_cnav_duree_assurance_accident_du_travail_annuelle(Variable):
     value_type = int
@@ -325,6 +326,12 @@ class regime_general_cnav_duree_assurance_cotisee_annuelle(Variable):
         trimestres_validables = where(liquidation_date.astype('datetime64[Y]').astype(int) + 1970 == period.start.year, calendar_quarters_elapsed_this_year_asof(liquidation_date), 4)
         return min_((salaire_de_base * conversion_en_monnaie_courante(period) / salaire_validant_un_trimestre).astype(int), trimestres_validables)
 
+class regime_general_cnav_duree_assurance_etranger(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance acquise à l'étranger"
+
 class regime_general_cnav_duree_assurance_etranger_annuelle(Variable):
     value_type = int
     entity = Person
@@ -354,7 +361,7 @@ class regime_general_cnav_duree_assurance_periode_assimilee(Variable):
         duree_assurance_periodes_assimilees_annuelles = sum((individu(f'regime_general_cnav_duree_assurance_{periode_assimilee}_annuelle', period) for periode_assimilee in ['avpf', 'chomage', 'maladie', 'accident_du_travail', 'invalidite', 'service_national', 'autre']))
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         trimestres_validables = where(liquidation_date.astype('datetime64[Y]').astype(int) + 1970 == period.start.year, calendar_quarters_elapsed_this_year_asof(liquidation_date) - duree_assurance_cotisee_annuelle, 4 - duree_assurance_cotisee_annuelle)
-        duree_assurance_periode_assimilee_annuelle = np.clip(duree_assurance_periodes_assimilees_annuelles + individu('regime_general_cnav_duree_assurance_etranger_annuelle', period), 0, trimestres_validables)
+        duree_assurance_periode_assimilee_annuelle = np.clip(duree_assurance_periodes_assimilees_annuelles, 0, trimestres_validables)
         duree_assurance_periode_assimilee_annee_precedente = individu('regime_general_cnav_duree_assurance_periode_assimilee', period.last_year)
         if all((duree_assurance_periode_assimilee_annuelle == 0) & (duree_assurance_periode_assimilee_annee_precedente == 0)):
             return individu.empty_array()
@@ -404,7 +411,14 @@ class regime_general_cnav_majoration_duree_assurance(Variable):
         n_est_pas_a_la_fonction_publique = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970 >= 2250
         sexe = individu('sexe', period)
         majoration_duree_assurance_enfant = individu('nombre_enfants', period) * 4 + where(sexe, individu('nombre_enfants', period) * 4, 0)
-        return majoration_duree_assurance_enfant * n_est_pas_a_la_fonction_publique
+        majoration_duree_assurance_autre = individu('regime_general_cnav_majoration_duree_assurance_autre', period)
+        return majoration_duree_assurance_enfant * n_est_pas_a_la_fonction_publique + majoration_duree_assurance_autre
+
+class regime_general_cnav_majoration_duree_assurance_autre(Variable):
+    value_type = int
+    entity = Person
+    definition_period = ETERNITY
+    label = "Majoration de durée d'assurance autre que celle attribuée au motif des enfants"
 
 class regime_general_cnav_majoration_pension(Variable):
     value_type = float

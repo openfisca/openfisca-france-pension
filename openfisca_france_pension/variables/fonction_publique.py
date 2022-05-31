@@ -254,12 +254,6 @@ class fonction_publique_duree_assurance_chomage_annuelle(Variable):
     definition_period = YEAR
     label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
 
-class fonction_publique_duree_assurance_etranger_annuelle(Variable):
-    value_type = int
-    entity = Person
-    definition_period = YEAR
-    label = "Durée d'assurance acquise à l'étranger"
-
 class fonction_publique_duree_assurance_invalidite_annuelle(Variable):
     value_type = int
     entity = Person
