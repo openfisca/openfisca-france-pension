@@ -11,6 +11,7 @@
     fonction_publique_minimum_garanti: 11468.5625
     fonction_publique_pension_brute: 11468.5625
 
+
 - name: pas de minimum garanti
   absolute_error_margin: .001
   period: 2015
@@ -81,29 +82,32 @@
     fonction_publique_minimum_garanti: 11500.765
     fonction_publique_pension_brute: 11500.765
 
-- name: comparaison calculateur Observation 214361
+
+- name: Comparaison calculateur Observation EIR 214361
+  description: TODO
   absolute_error_margin: .001
   period: 2022
   input:
-   date_de_naissance: 1960-10-01
-   duree_assurance_tous_regimes: 175.0
-   nombre_enfants: 0
-   fonction_publique_nombre_enfants_nes_avant_2004: 0
-   fonction_publique_liquidation_date: 2022-11-11
-   raison_depart_taux_plein_anticipe: non_concerne
-   fonction_publique_actif_a_la_liquidation: false
-   fonction_publique_dernier_indice_atteint: 393.0
-   fonction_publique_duree_assurance: 115.0
-   fonction_publique_duree_de_service: 107.0
-   fonction_publique_majoration_duree_assurance: 0.0
-   fonction_publique_decote_trimestres: 0.0
-   fonction_publique_surcote_trimestres: 0.0
+    date_de_naissance: 1960-10-01
+    duree_assurance_tous_regimes: 175.0
+    nombre_enfants: 0
+    fonction_publique_nombre_enfants_nes_avant_2004: 0
+    fonction_publique_liquidation_date: 2022-11-11
+    raison_depart_taux_plein_anticipe: non_concerne
+    fonction_publique_actif_a_la_liquidation: false
+    fonction_publique_dernier_indice_atteint: 393.0
+    fonction_publique_duree_assurance: 107.0
+    fonction_publique_duree_de_service: 107.0
+    fonction_publique_majoration_duree_assurance: 0.0
+    fonction_publique_decote_trimestres: 0.0
+    fonction_publique_surcote_trimestres: 0.0
   output:
-   #fonction_publique_coefficient_de_proratisation: .4854 /.75
-   fonction_publique_minimum_garanti: 11089.361
-   fonction_publique_pension_brute_au_31_decembre: 11089.361
+    fonction_publique_coefficient_de_proratisation: .48054 /.75
+    fonction_publique_minimum_garanti: 11089.361
+    fonction_publique_pension_brute_au_31_decembre: 11089.361
 
-- name: test cgt 
+- name: test cgt
+  description: TODO
   absolute_error_margin: .001
   period: 2011
   input:
