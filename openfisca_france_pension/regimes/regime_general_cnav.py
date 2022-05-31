@@ -851,8 +851,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     # Pour un salaire 2020 tu le multiplies par le coefficient 01/01/2021 si tu veux sa valeur après le 1er janvier 21
                     revalorisation[annee_salaire] = parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]
 
-                filter = annee_de_naissance == _annee_de_naissance,
-                # TODO: try boolean indexing instead of where to lighten the burden on vstack and apply along_axis ?
+                filter = annee_de_naissance == _annee_de_naissance
                 arr = np.vstack([
                     min_(
                         individu("regime_name_salaire_de_base", period = year)[filter],

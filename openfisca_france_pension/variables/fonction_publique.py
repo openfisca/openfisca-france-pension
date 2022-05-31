@@ -407,6 +407,7 @@ class fonction_publique_minimum_garanti(Variable):
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
+        annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         decote = individu('fonction_publique_decote', period)
         service_public = parameters(period).secteur_public
         minimum_garanti = service_public.minimum_garanti
@@ -419,11 +420,12 @@ class fonction_publique_minimum_garanti(Variable):
         duree_assurance_requise = service_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         coefficient_moins_15_ans = duree_de_service_effective / duree_assurance_requise
         coefficient_plus_15_ans = part_fixe + max_(duree_de_service_effective - 4 * 15, 0) * points_plus_15_ans
-        coefficient_plus_30_ans = part_fixe + 4 * 15 * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
+        coefficient_plus_30_ans = part_fixe + max_(annee_moins_40_ans - 4 * 15, 0) * points_plus_15_ans + max_(duree_de_service_effective - annee_moins_40_ans, 0) * points_moins_40_ans
         coefficient_plus_40_ans = 1
         condition_absence_decote = decote == 0
         condition_duree = duree_de_service_effective > duree_assurance_requise
-        post_condition = where(annee_de_liquidation < 2011, True, condition_duree + condition_absence_decote)
+        condition_age_ouverture_des_droits = (annee_age_ouverture_droits < 2011) * (annee_de_liquidation >= 2011)
+        post_condition = where((annee_de_liquidation < 2011) + condition_age_ouverture_des_droits, True, condition_duree + condition_absence_decote)
         return post_condition * indice_majore * pt_indice * select([duree_de_service_effective < 60, duree_de_service_effective < annee_moins_40_ans, duree_de_service_effective < 160, duree_de_service_effective >= 160], [coefficient_moins_15_ans, coefficient_plus_15_ans, coefficient_plus_30_ans, coefficient_plus_40_ans])
 
 class fonction_publique_nombre_annees_actif(Variable):
