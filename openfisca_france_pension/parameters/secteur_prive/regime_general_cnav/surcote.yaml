@@ -2,7 +2,7 @@ description: Surcote RG
 taux_surcote_par_trimestre_cotise_selon_date_cotisation:
   description: Taux de surcote par trimestre cotisé, selon la date de cotisation
   avant_01_01_2003:
-    description: Avant 01/01/2003
+    description: Avant le 01/01/2003
     values:
       2004-01-01:
         value: 0.0
@@ -18,7 +18,7 @@ taux_surcote_par_trimestre_cotise_selon_date_cotisation:
       ipp_csv_id: surcote_0103
       unit: /1
   apres_01_01_2004:
-    description: 2004-01-01
+    description: A partir du 01/01/2004
     moins_de_4_trimestres:
       description: De 1 à 4 trimestres
       values:
