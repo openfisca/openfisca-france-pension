@@ -1,0 +1,151 @@
+description: Age légal de départ en retraite pour les carrieres longues seuil 1
+age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15:
+  description: Age d'ouverture des droits pour la fonction publique active, selon l'année de naissance
+  before_1953_07_01:
+    description: Né avant le 01/07/1953
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 58.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 0.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1953_07_01:
+    description: Né apres le 01/07/1953
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 58.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 4.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1954_07_01:
+    description: Né apres le 01/07/1954
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 58.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 8.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1955_07_01:
+    description: Né apres le 01/07/1955
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 59.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 0.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1956_07_01:
+    description: Né apres le 01/07/1956
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 59.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 4.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1957_07_01:
+    description: Né apres le 01/07/1957
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 59.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 8.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1958_07_01:
+    description: Né apres le 01/07/1958
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 57.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 4.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1959_07_01:
+    description: Né apres le 01/07/1959
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 57.00
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 8.0
+    metadata:
+      order:
+      - annee
+      - mois
+  after_1960_07_01:
+    description: Né apres le 01/07/1960
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 58.0
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 0.0
+    metadata:
+      order:
+      - annee
+      - mois
+metadata:
+  order:
+  - annee
+  - mois

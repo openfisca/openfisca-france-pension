@@ -58,9 +58,39 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            # Âge d'ouverture des droits
+            carriere_longue_seuil_determine_aod = individu('regime_name_carriere_longue_seuil_determine_aod', period)
             aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
+            aod_carriere_longue_2_annee = parameters(period).regime_name.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].annee
+            aod_carriere_longue_15_annee = parameters(period).regime_name.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].annee
+            aod_carriere_longue_1_annee = parameters(period).regime_name.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].annee
+            aod_carriere_longue_2_mois = parameters(period).regime_name.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].mois
+            aod_carriere_longue_15_mois = parameters(period).regime_name.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].mois
+            aod_carriere_longue_1_mois = parameters(period).regime_name.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].mois
+            aod_carriere_longue_annee = select(
+                [
+                    carriere_longue_seuil_determine_aod == 1,
+                    carriere_longue_seuil_determine_aod == 15,
+                    carriere_longue_seuil_determine_aod == 2
+                    ],
+                [
+                    aod_carriere_longue_1_annee,
+                    aod_carriere_longue_15_annee,
+                    aod_carriere_longue_2_annee
+                    ],
+                )
+            aod_carriere_longue_mois = select(
+                [
+                    carriere_longue_seuil_determine_aod == 1,
+                    carriere_longue_seuil_determine_aod == 15,
+                    carriere_longue_seuil_determine_aod == 2
+                    ],
+                [
+                    aod_carriere_longue_1_mois,
+                    aod_carriere_longue_15_mois,
+                    aod_carriere_longue_2_mois
+                    ]
+                )
             if period.start.year <= 2011:
                 aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
                 aod_sedentaire_mois = 0
@@ -71,11 +101,31 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                 aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
                 aod_active_annee = aod_active[date_de_naissance].annee
                 aod_active_mois = aod_active[date_de_naissance].mois
-
             # Âge d'annulation de la décôte
+            carriere_longue = individu('regime_name_carriere_longue', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
-            aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
-            aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
+            aod_annee = select(
+                [
+                    carriere_longue,
+                    actif_a_la_liquidation
+                    ],
+                [
+                    aod_carriere_longue_annee,
+                    aod_active_annee
+                    ],
+                default = aod_sedentaire_annee
+                )
+            aod_mois = select(
+                [
+                    carriere_longue,
+                    actif_a_la_liquidation,
+                    ],
+                [
+                    aod_carriere_longue_mois,
+                    aod_active_mois
+                    ],
+                default = aod_sedentaire_mois
+                )
             annee_age_ouverture_droits = np.trunc(
                 date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
                 + aod_annee
@@ -257,6 +307,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula_2006(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
+            carriere_longue = individu('regime_name_carriere_longue', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
             conditions_depart_anticipe_parent_trois_enfants = individu('regime_name_decote_a_date_depart_anticipe_parent_trois_enfants', period)
@@ -300,10 +351,16 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                     ),
                 20,
                 )
-            return where(
-                annee_age_ouverture_droits >= 2006,
-                min_(decote_trimestres, 20),
-                0
+            return select(
+                [
+                    carriere_longue,
+                    annee_age_ouverture_droits >= 2006
+                    ],
+                [
+                    0,
+                    min_(decote_trimestres, 20)
+                    ],
+                default = 0
                 )
 
     class decote(Variable):
@@ -527,6 +584,46 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Durée de service dans la fonction publique en catégorie super actif"
+
+    class duree_assurance_cotisee_seuil_bas(Variable):
+        value_type = int
+        entity = Person
+        definition_period = ETERNITY
+        label = "Durée d'assurance cotisée tous régimes (trimestres cotisés tous régimes confondus) avant le seuil minimum pour partir pour motif RACL"
+
+        def formula_1994(individu, period, parameters):
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            annee_de_naissance = (
+                individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+                )
+            annees_de_naissance_distinctes = np.unique(
+                annee_de_naissance[liquidation_date >= np.datetime64(period.start)]
+                )
+            duree_assurance_cotisee_16 = individu.empty_array()
+            for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
+                filter = annee_de_naissance == _annee_de_naissance
+                duree_assurance_cotisee_16 = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
+            return duree_assurance_cotisee_16
+
+    class duree_assurance_cotisee_seuil_haut(Variable):
+        value_type = int
+        entity = Person
+        definition_period = ETERNITY
+        label = "Durée d'assurance cotisée tous régimes (trimestres cotisés tous régimes confondus) avant le seuil maximum pour partir pour motif RACL"
+
+        def formula_1994(individu, period, parameters):
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            annee_de_naissance = (
+                individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+                )
+            annees_de_naissance_distinctes = np.unique(
+                annee_de_naissance[liquidation_date >= np.datetime64(period.start)]
+                )
+            duree_assurance_cotisee_20 = individu.empty_array()
+            for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
+                filter = annee_de_naissance == _annee_de_naissance
+                duree_assurance_cotisee_20 = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
+            return duree_assurance_cotisee_20
 
     class limite_d_age(Variable):
         value_type = float
@@ -860,6 +957,74 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
             return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
+
+    class carriere_longue_seuil_determine_aod(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Les personnes pouvant beneficier du dispositif RACL sont soumises à un aod different selon l'age de debut de cotisation"
+
+        def formula(individu, period, parameters):
+            carriere_longue = parameters(period).secteur_public.carriere_longue
+            date_de_naissance = individu('date_de_naissance', period)
+            naissance_mois = date_de_naissance.astype('datetime64[M]').astype(int) % 12 + 1
+            duree_assurance_cotisee_avant_16_ans = individu('regime_name_duree_assurance_cotisee_seuil_bas', period)
+            duree_assurance_cotisee_avant_20_ans = individu('regime_name_duree_assurance_cotisee_seuil_haut', period)
+            duree_assurance_cotisee_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
+            duree_assurance_seuil_1 = carriere_longue.duree_assurance_seuil_1.duree_assurance_minimale_seuil_1[date_de_naissance]
+            duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15.duree_assurance_minimale_seuil_15[date_de_naissance]
+            nbr_min_trimestres_debut_annee = carriere_longue.nbr_min_trimestres_debut_annee.trims_assurance_debut_retraite_deb_annee[date_de_naissance]
+            nbr_min_trimestres_fin_annee = carriere_longue.nbr_min_trimestres_fin_annee.trims_assurance_debut_retraite_fin_annee[date_de_naissance]
+            trims_requis_selon_mois_naissance = where(
+                naissance_mois < 10,
+                nbr_min_trimestres_debut_annee,
+                nbr_min_trimestres_fin_annee
+                )
+            condition_duree_cotisee_minimale = select(
+                [
+                    (duree_assurance_cotisee_avant_16_ans >= trims_requis_selon_mois_naissance) * (duree_assurance_cotisee_tous_regimes > duree_assurance_seuil_1),
+                    (duree_assurance_cotisee_avant_16_ans >= trims_requis_selon_mois_naissance) * (duree_assurance_cotisee_tous_regimes > duree_assurance_seuil_15),
+                    duree_assurance_cotisee_avant_20_ans >= trims_requis_selon_mois_naissance
+                    ],
+                [
+                    1,
+                    15,
+                    2
+                    ],
+                default = 0
+                )
+            return condition_duree_cotisee_minimale
+
+    class carriere_longue(Variable):
+        value_type = bool
+        entity = Person
+        definition_period = YEAR
+        label = "Depart anticipé possible pour motif: carriere longue"
+
+        def formula(individu, period, parameters):
+            date_de_naissance = individu('date_de_naissance', period)
+            carriere_longue = parameters(period).secteur_public.carriere_longue
+            duree_assurance_cotisee_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
+            duree_assurance_seuil_1 = carriere_longue.duree_assurance_seuil_1.duree_assurance_minimale_seuil_1[date_de_naissance]
+            duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15.duree_assurance_minimale_seuil_15[date_de_naissance]
+            duree_assurance_seuil_2 = carriere_longue.duree_assurance_seuil_2.duree_assurance_minimale_seuil_2[date_de_naissance]
+            carriere_longue_seuil_determine_aod = individu('regime_name_carriere_longue_seuil_determine_aod', period)
+            condition_duree_minimale = select(
+                [
+                    carriere_longue_seuil_determine_aod == 2,
+                    carriere_longue_seuil_determine_aod == 15,
+                    carriere_longue_seuil_determine_aod == 1
+                    ],
+                [
+                    duree_assurance_seuil_2,
+                    duree_assurance_seuil_15,
+                    duree_assurance_seuil_1
+                    ],
+                default = 1000
+                )
+
+            condition_assurance_total = duree_assurance_cotisee_tous_regimes > condition_duree_minimale
+            return condition_assurance_total
 
     class taux_de_liquidation_proratise(Variable):
         value_type = float

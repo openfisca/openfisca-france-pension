@@ -1,0 +1,39 @@
+description: Age légal de départ en retraite pour les carrieres longues seuil 2
+age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2:
+  description: Age d'ouverture des droits pour la fonction publique active, selon l'année de naissance
+  before_1954_07_01:
+    description: Né avant le 01/07/1954
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 60.0
+        1976-01-01:
+          value: null
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 0.0
+        1976-01-01:
+          value: null
+  after_1954_07_01:
+    description: Né apres le 01/07/1954
+    annee:
+      description: Année
+      values:
+        2003-01-01:
+          value: 60.0
+        1976-01-01:
+          value: null
+    mois:
+      description: Mois
+      values:
+        2003-01-01:
+          value: 0.0
+        1976-01-01:
+          value: null
+metadata:
+  order:
+  - annee
+  - mois

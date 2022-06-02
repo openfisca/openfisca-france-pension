@@ -1,0 +1,52 @@
+- name: Pas de carriere anticipee pour motif de carriere longue - pas commence travailler assez tot
+  absolute_error_margin: .001
+  period: 2014
+  input:
+    date_de_naissance: 1963-04-11
+    fonction_publique_liquidation_date: 2007-04-11
+    fonction_publique_duree_assurance_cotisee_seuil_bas: 0
+    fonction_publique_duree_assurance_cotisee_seuil_haut: 1
+    duree_assurance_cotisee_tous_regimes: 190
+  output:
+    fonction_publique_carriere_longue: False
+    fonction_publique_annee_age_ouverture_droits: 2025
+
+- name: Pas de carriere anticipee pour motif de carriere longue - pas assez trimestres
+  absolute_error_margin: .001
+  period: 2014
+  input:
+    date_de_naissance: 1963-04-11
+    fonction_publique_liquidation_date: 2007-04-11
+    fonction_publique_duree_assurance_cotisee_seuil_bas: 7
+    fonction_publique_duree_assurance_cotisee_seuil_haut: 9
+    duree_assurance_cotisee_tous_regimes: 130
+  output:
+    fonction_publique_carriere_longue: False
+    fonction_publique_annee_age_ouverture_droits: 2025
+
+- name: Depart anticipe pour motif de carriere longue - debut carriere à 16 ans 
+  absolute_error_margin: .001
+  period: 2014
+  input:
+    date_de_naissance: 1963-04-11
+    fonction_publique_liquidation_date: 2007-04-11
+    fonction_publique_duree_assurance_cotisee_seuil_bas: 5
+    fonction_publique_duree_assurance_cotisee_seuil_haut: 8
+    duree_assurance_cotisee_tous_regimes: 190
+  output:
+    fonction_publique_carriere_longue: True
+    fonction_publique_annee_age_ouverture_droits: 2021
+
+  
+- name: Depart anticipe pour motif de carriere longue - debut carriere à 20 ans 
+  absolute_error_margin: .001
+  period: 2014
+  input:
+    date_de_naissance: 1963-04-11
+    fonction_publique_liquidation_date: 2007-04-11
+    fonction_publique_duree_assurance_cotisee_seuil_bas: 3
+    fonction_publique_duree_assurance_cotisee_seuil_haut: 6
+    duree_assurance_cotisee_tous_regimes: 199
+  output:
+    fonction_publique_carriere_longue: True
+    fonction_publique_annee_age_ouverture_droits: 2023
