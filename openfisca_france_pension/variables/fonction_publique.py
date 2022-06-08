@@ -213,22 +213,19 @@ class fonction_publique_duree_assurance(Variable):
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
     def formula(individu, period, parameters):
-        duree_assurance_annuelle = individu('fonction_publique_duree_assurance_annuelle', period)
-        duree_assurance_annee_precedente = individu('fonction_publique_duree_assurance', period.last_year)
-        if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
-            return individu.empty_array()
+        duree_assurance_validee = individu('fonction_publique_duree_assurance_validee', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         majoration_duree_assurance = individu('fonction_publique_majoration_duree_assurance', period)
-        return where(annee_de_liquidation == period.start.year, round_(duree_assurance_annee_precedente + duree_assurance_annuelle + majoration_duree_assurance), duree_assurance_annee_precedente + duree_assurance_annuelle)
+        return where(annee_de_liquidation == period.start.year, round_(duree_assurance_validee + majoration_duree_assurance), duree_assurance_validee)
 
 class fonction_publique_duree_assurance_accident_du_travail_annuelle(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
+    label = "Durée d'assurance au titre des accidents du travail (en trimestres validés l'année considérée)"
 
 class fonction_publique_duree_assurance_annuelle(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance annuelle (trimestres validés dans la fonction publique hors majoration)"
@@ -243,40 +240,59 @@ class fonction_publique_duree_assurance_annuelle(Variable):
         return duree_assurance_cotisee_annuelle + duree_assurance_rachetee_annuelle + duree_assurance_service_national_annuelle
 
 class fonction_publique_duree_assurance_autre_annuelle(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
+    label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres validés l'année considérée)"
 
 class fonction_publique_duree_assurance_chomage_annuelle(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
 
 class fonction_publique_duree_assurance_invalidite_annuelle(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
+    label = "Durée d'assurance au titre de l'invalidté (en trimestres validés l'année considérée)"
 
 class fonction_publique_duree_assurance_maladie_annuelle(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
+    label = "Durée d'assurance au titre de la maladie (en trimestres validés l'année considérée)"
 
 class fonction_publique_duree_assurance_periode_assimilee(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance pour période assimilée cumullée "
+
+class fonction_publique_duree_assurance_rachetee_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance rachetée l'année considérée)"
 
 class fonction_publique_duree_assurance_service_national_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
+    label = "Durée d'assurance au titre du service national (en trimestres validés l'année considérée)"
+
+class fonction_publique_duree_assurance_validee(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance (trimestres validés dans la fonction publique)"
+
+    def formula(individu, period, parameters):
+        duree_assurance_annuelle = individu('fonction_publique_duree_assurance_annuelle', period)
+        duree_assurance_annee_precedente = individu('fonction_publique_duree_assurance', period.last_year)
+        if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
+            return individu.empty_array()
+        return duree_assurance_annee_precedente + duree_assurance_annuelle
 
 class fonction_publique_duree_de_service(Variable):
     value_type = float
@@ -556,24 +572,12 @@ class fonction_publique_surcote(Variable):
     label = 'Surcote'
 
     def formula_2004(individu, period, parameters):
-        surcote_trimestres = individu('fonction_publique_surcote_trimestres_avant_minimum', period)
+        surcote_trimestres = individu('fonction_publique_surcote_trimestres', period)
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
         taux_surcote = parameters(period).secteur_public.surcote.taux_surcote_par_trimestre
         return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
 
 class fonction_publique_surcote_trimestres(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Trimestres surcote'
-
-    def formula_2004(individu, period):
-        minimum_garanti = individu('fonction_publique_minimum_garanti', period)
-        pension_brute = individu('fonction_publique_pension_brute', period)
-        surcote_trimestres_avant_minimum = individu('fonction_publique_surcote_trimestres_avant_minimum', period)
-        return where(pension_brute > minimum_garanti, surcote_trimestres_avant_minimum, 0)
-
-class fonction_publique_surcote_trimestres_avant_minimum(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR

@@ -13,7 +13,7 @@ from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
-from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie, TypesStatutDuCotisant
+from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie  # , TypesStatutDuCotisant
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 
@@ -83,7 +83,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         label = "Âge auquel un individu peut partir au taux plein (éventuellement de façon anticipée)"
 
         def formula_2004(individu, period, parameters):
-            # TODO use legislative parameter
             aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
             aad_handicape = parameters(period).regime_name.aad.age_annulation_decote_handicape
             aad_inaptitude = parameters(period).regime_name.aad.age_annulation_decote_inaptitude
@@ -128,8 +127,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return aad
 
         def formula_1974_01_01(individu, period, parameters):
-            # TODO use legislative parameter
-            aad_droit_commun = 65
+            aad_droit_commun = individu("regime_name_age_annulation_decote_droit_commun", period)
             aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
             aad_inaptitude = parameters(period).regime_name.aad.age_annulation_decote_inaptitude
             aad_anciens_anciens_combattants = parameters(period).regime_name.aad.age_annulation_decote_anciens_combattants
@@ -147,8 +145,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return aad
 
         def formula_1972_01_01(individu, period, parameters):
-            # TODO use legislative parameter
-            aad_droit_commun = 65
+            aad_droit_commun = individu("regime_name_age_annulation_decote_droit_commun", period)
             aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
             aad_inaptitude = parameters(period).regime_name.aad.age_annulation_decote_inaptitude
             raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
@@ -163,8 +160,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return aad
 
         def formula_1965_05_01(individu, period, parameters):
-            # TODO use legislative parameter
-            aad_droit_commun = 65
+            aad_droit_commun = individu("regime_name_age_annulation_decote_droit_commun", period)
             aad_anciens_deportes = parameters(period).regime_name.aad.age_annulation_decote_anciens_deportes
             raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
             aad = switch(
@@ -177,8 +173,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return aad
 
         def formula_1945(individu, period, parameters):
-            # TODO use legislative parameter
-            aad_droit_commun = 65
+            aad_droit_commun = individu("regime_name_age_annulation_decote_droit_commun", period)
             return aad_droit_commun
 
     class coefficient_de_proratisation(Variable):
@@ -417,22 +412,21 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance validée avpf (en trimestres validés jusqu'à l'année considérée)"
+        label = "Durée d'assurance cotisée au titre de l'avpf (en trimestres cotisés l'année considérée)"
 
         def formula_1972(individu, period, parameters):
             # l'avpf est en euros
             avpf = individu("avpf", period)
-            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
             # le paramètres est en monnaie courante
             smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3
             avpf = avpf * conversion_en_monnaie_courante(period)
-            return min_((avpf / smic_trimestriel).astype(int), 4 - duree_assurance_cotisee_annuelle)
+            return np.clip((avpf / smic_trimestriel).astype(int), 0, 4)
 
-    class duree_assurance_cotisee_annuelle(Variable):
+    class duree_assurance_emploi_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance cotisée en emploi (en trimestres cotisés jusqu'à l'année considérée)"
+        label = "Durée d'assurance cotisée en emploi (en trimestres cotisés l'année considérée)"
 
         def formula(individu, period, parameters):
             salaire_de_base = individu("regime_name_salaire_de_base", period)
@@ -449,26 +443,37 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 calendar_quarters_elapsed_this_year_asof(liquidation_date),
                 4
                 )
-            return min_(
+            return np.clip(
                 (salaire_de_base * conversion_en_monnaie_courante(period) / salaire_validant_un_trimestre).astype(int),
+                0,
                 trimestres_validables
                 )
 
-    class duree_assurance_travail_annuelle(Variable):
+    class duree_assurance_cotisee_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance cotisée donc hors majoration de durée d'assurance (en trimestres cotisés l'année considérée)"
 
         def formula(individu, period, parameters):
-            statut_du_cotisant = individu("statut_du_cotisant", period)
-            duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
-            duree_assurance_avpf = individu("regime_name_duree_assurance_avpf", period)
-            return where(
-                (statut_du_cotisant == TypesStatutDuCotisant.emploi) | (statut_du_cotisant == TypesStatutDuCotisant.avpf),
-                min_(duree_assurance_cotisee_annuelle + duree_assurance_avpf, 4),
-                0
+            # statut_du_cotisant = individu("statut_du_cotisant", period)
+            duree_assurance_emploi_annuelle = individu("regime_name_duree_assurance_emploi_annuelle", period)
+            duree_assurance_avpf_annuelle = individu("regime_name_duree_assurance_avpf_annuelle", period)
+            duree_assurance_rachetee_annuelle = individu("regime_name_duree_assurance_rachetee_annuelle", period)
+            return np.clip(
+                (
+                    duree_assurance_emploi_annuelle
+                    + duree_assurance_avpf_annuelle
+                    + duree_assurance_rachetee_annuelle
+                    ),
+                0,
+                4,
                 )
+            # return where(
+            #     (statut_du_cotisant == TypesStatutDuCotisant.emploi) | (statut_du_cotisant == TypesStatutDuCotisant.avpf),
+            #     np.clip(duree_assurance_emploi_annuelle + duree_assurance_avpf_annuelle, 0, 4),
+            #     0
+            #     )
 
     class duree_assurance_cotisee(Variable):
         value_type = int
@@ -489,12 +494,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             return duree_assurance_cotisee_annee_precedente + duree_assurance_cotisee_annuelle
 
     class duree_assurance_etranger(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance acquise à l'étranger"
-
-    class duree_assurance_etranger_annuelle(Variable):
         value_type = int
         entity = Person
         definition_period = YEAR
@@ -528,7 +527,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 4 - duree_assurance_cotisee_annuelle
                 )
             duree_assurance_periode_assimilee_annuelle = np.clip(
-                duree_assurance_periodes_assimilees_annuelles,  # + individu("regime_name_duree_assurance_etranger_annuelle", period),
+                duree_assurance_periodes_assimilees_annuelles,
                 0,
                 trimestres_validables,
                 )
