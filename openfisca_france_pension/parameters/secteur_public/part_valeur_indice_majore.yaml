@@ -62,7 +62,6 @@ part_indice_majore_en_euros:
     - after_2010_01_01
     - after_2011_01_01
     - after_2012_01_01
-    - after_2013_01_01
 metadata:
   order:
   - part_indice_majore_en_euros

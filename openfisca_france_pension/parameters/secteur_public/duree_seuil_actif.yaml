@@ -51,7 +51,7 @@ duree_service_minimale_considere_comme_actif:
     - after_2015_01_01
 metadata:
   order:
-  - nombre_trimestres_cibles_taux_plein_par_generation_a
+  - duree_service_minimale_considere_comme_actif
   reference:
     2010-11-09:
       title: Loi 2010-1330 du 09/11/2010, chap. 3, art. 33
