@@ -1,5 +1,9 @@
 """Variables communes à tout les régimes."""
 
+
+import numpy as np
+
+
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
 
@@ -101,11 +105,53 @@ class duree_assurance_tous_regimes(Variable):
     label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
+        # TODO: hack to avoid infinite recursion depth loop
+        duree_assurance_tous_regimes_annuelle = individu("duree_assurance_tous_regimes_annuelle", period)
+        duree_assurance_tous_regimes_annee_precedente = individu("duree_assurance_tous_regimes", period.last_year)
+        if all((duree_assurance_tous_regimes_annuelle == 0) & (duree_assurance_tous_regimes_annee_precedente == 0)):
+            return individu.empty_array()
+
         regimes = ['regime_general_cnav', 'fonction_publique']
-        return sum(
-            individu(f'{regime}_duree_assurance', period)
+        majoration_duree_assurance = sum(
+            (
+                (individu(f'{regime}_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
+                == period.start.year
+                )
+            * individu(f'{regime}_majoration_duree_assurance', period)
             for regime in regimes
             )
+
+        liquidation_cnav = (
+                (individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
+                == period.start.year
+                )
+        duree_assurance_etranger = individu("regime_general_cnav_duree_assurance_etranger", period) * liquidation_cnav
+
+        return (
+            duree_assurance_tous_regimes_annuelle
+            + duree_assurance_tous_regimes_annee_precedente
+            + majoration_duree_assurance
+            + duree_assurance_etranger
+            )
+
+
+class duree_assurance_tous_regimes_annuelle(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
+
+    def formula(individu, period):
+        regimes = ['regime_general_cnav', 'fonction_publique']
+        return np.clip(
+            sum(
+                individu(f'{regime}_duree_assurance_annuelle', period)
+                for regime in regimes
+                ),
+            0,
+            4
+            )
+
 
 
 class nombre_enfants(Variable):

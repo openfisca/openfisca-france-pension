@@ -99,16 +99,18 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
                 )
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            sexe = individu('sexe', period)
             liquidation = (annee_de_liquidation == period.start.year)
-            return bonification_cpcm * liquidation
+            return where(sexe, bonification_cpcm * liquidation, 0)
 
-        def formula_1948(individu, period, parameters):
+        def formula_1949(individu, period, parameters):
             bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
             nombre_enfants = individu('nombre_enfants', period)
             bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            sexe = individu('sexe', period)
             liquidation = (annee_de_liquidation == period.start.year)
-            return bonification_cpcm * liquidation
+            return where(sexe, bonification_cpcm * liquidation, 0)
 
     class coefficient_de_proratisation(Variable):
         value_type = float

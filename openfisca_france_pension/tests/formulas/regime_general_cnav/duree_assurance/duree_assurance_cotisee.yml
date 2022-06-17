@@ -1,0 +1,33 @@
+- name: Trimestres cotisés calculés à partir des composantes (emploi)
+  absolute_error_margin: .001
+  period: 1958
+  input:
+    date_de_naissance: 1906-11-19
+    regime_general_cnav_duree_assurance_emploi_annuelle: 1
+
+  output:
+    regime_general_cnav_duree_assurance_cotisee_annuelle: 1
+
+
+- name: Trimestres cotisés calculés à partir des composantes
+  absolute_error_margin: .001
+  period: 1958
+  input:
+    date_de_naissance: 1906-11-19
+    regime_general_cnav_duree_assurance_emploi_annuelle: 1
+    regime_general_cnav_duree_assurance_avpf_annuelle: 1
+    regime_general_cnav_duree_assurance_rachetee_annuelle: 1
+  output:
+    regime_general_cnav_duree_assurance_cotisee_annuelle: 3
+
+
+- name: Trimestres cotisés calculés à partir des composantes (écrêtage)
+  absolute_error_margin: .001
+  period: 1958
+  input:
+    date_de_naissance: 1906-11-19
+    regime_general_cnav_duree_assurance_emploi_annuelle: 3
+    regime_general_cnav_duree_assurance_avpf_annuelle: 1
+    regime_general_cnav_duree_assurance_rachetee_annuelle: 1
+  output:
+    regime_general_cnav_duree_assurance_cotisee_annuelle: 4

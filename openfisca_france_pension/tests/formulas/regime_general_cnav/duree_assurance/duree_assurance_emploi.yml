@@ -7,11 +7,8 @@
       year:1958: (20000 / 6.559) / 100
     statut_du_cotisant:
       year:1958: emploi
-    regime_general_cnav_duree_assurance_cotisee:
-      year:1957: 0
-
   output:
-    regime_general_cnav_duree_assurance: 1
+    regime_general_cnav_duree_assurance_emploi_annuelle: 1
 
 
 - name: Trimestres cotisés calculés à partir du salaire de base (francs francais 1970)
@@ -23,11 +20,8 @@
       year:1970: 2000 / 6.559
     statut_du_cotisant:
       year:1970: emploi
-    regime_general_cnav_duree_assurance_cotisee:
-      year:1969: 0
-
   output:
-    regime_general_cnav_duree_assurance: 4
+    regime_general_cnav_duree_assurance_emploi_annuelle: 4
 
 
 - name: Acumulation de trimestres cotisés calculés à partir du salaire de base
@@ -40,7 +34,8 @@
     statut_du_cotisant:
       year:1970: emploi
     regime_general_cnav_duree_assurance_cotisee:
-      year:1969: 3
+      1969: 3
 
   output:
-    regime_general_cnav_duree_assurance: 6
+    regime_general_cnav_duree_assurance_emploi_annuelle: 3
+    regime_general_cnav_duree_assurance_cotisee: 6

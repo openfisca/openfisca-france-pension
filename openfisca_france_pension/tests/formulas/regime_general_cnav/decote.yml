@@ -118,7 +118,7 @@
   input:
     date_de_naissance: 1922-11-19
     regime_general_cnav_liquidation_date: 1985-11-18
-    regime_general_cnav_duree_assurance: 148
+    duree_assurance_tous_regimes: 148
     regime_general_cnav_salaire_de_reference: 1000
     regime_general_cnav_coefficient_de_proratisation: 1
   output:
@@ -133,7 +133,7 @@
   input:
     date_de_naissance: 1945-11-19
     regime_general_cnav_liquidation_date: 1995-11-18
-    regime_general_cnav_duree_assurance: 148
+    duree_assurance_tous_regimes: 148
     regime_general_cnav_salaire_de_reference: 1000
     regime_general_cnav_coefficient_de_proratisation: 1
   output:
@@ -148,7 +148,7 @@
   input:
     date_de_naissance: 1942-11-19
     regime_general_cnav_liquidation_date: 1995-11-18
-    regime_general_cnav_duree_assurance: 148
+    duree_assurance_tous_regimes: 148
     regime_general_cnav_salaire_de_reference: 1000
     regime_general_cnav_coefficient_de_proratisation: 1
   output:
@@ -163,10 +163,10 @@
   input:
     date_de_naissance: 1947-11-19
     regime_general_cnav_liquidation_date: 2008-11-18
-    regime_general_cnav_duree_assurance: 159
+    duree_assurance_tous_regimes: 159
+    regime_general_cnav_coefficient_de_proratisation: 1
     regime_general_cnav_salaire_de_reference: 1000
   output:
-    regime_general_cnav_coefficient_de_proratisation: 1
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: (160 - 159) * 0.02
     regime_general_cnav_pension_brute: 1000 * .5 * (1 - (160 - 159) * 0.02)
@@ -178,7 +178,7 @@
   input:
     date_de_naissance: 1952-04-11
     regime_general_cnav_liquidation_date: 2015-04-18
-    regime_general_cnav_duree_assurance: 145
+    duree_assurance_tous_regimes: 145
   output:
     regime_general_cnav_surcote: 0
     regime_general_cnav_decote: (2 * 12 + 9) / 3 * 0.01375
