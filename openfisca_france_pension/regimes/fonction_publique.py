@@ -139,10 +139,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ),
                 min_(
                     80 / 75,
-                    (
-                        min_(duree_de_service_effective, duree_de_service_requise)
-                        + bonification_cpcm
-                        ) / duree_de_service_requise
+                    (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm)
+                    / duree_de_service_requise
                     )
                 )
             return coefficient_de_proratisation
