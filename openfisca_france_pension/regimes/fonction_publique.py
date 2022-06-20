@@ -99,16 +99,18 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
                 )
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            sexe = individu('sexe', period)
             liquidation = (annee_de_liquidation == period.start.year)
-            return bonification_cpcm * liquidation
+            return where(sexe, bonification_cpcm * liquidation, 0)
 
-        def formula_1948(individu, period, parameters):
+        def formula_1949(individu, period, parameters):
             bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
             nombre_enfants = individu('nombre_enfants', period)
             bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            sexe = individu('sexe', period)
             liquidation = (annee_de_liquidation == period.start.year)
-            return bonification_cpcm * liquidation
+            return where(sexe, bonification_cpcm * liquidation, 0)
 
     class coefficient_de_proratisation(Variable):
         value_type = float
@@ -137,10 +139,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ),
                 min_(
                     80 / 75,
-                    (
-                        min_(duree_de_service_effective, duree_de_service_requise)
-                        + bonification_cpcm
-                        ) / duree_de_service_requise
+                    (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm)
+                    / duree_de_service_requise
                     )
                 )
             return coefficient_de_proratisation
@@ -271,38 +271,20 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
         def formula(individu, period, parameters):
-            duree_assurance_annuelle = individu("regime_name_duree_assurance_annuelle", period)
-            duree_assurance_annee_precedente = individu("regime_name_duree_assurance", period.last_year)
-            # TODO: hack to avoid infinite recursion depth loop
-            if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
-                return individu.empty_array()
-
+            duree_assurance_validee = individu("regime_name_duree_assurance_validee", period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             majoration_duree_assurance = individu('regime_name_majoration_duree_assurance', period)
             return where(
                 annee_de_liquidation == period.start.year,
-                round_(
-                    duree_assurance_annee_precedente
-                    + duree_assurance_annuelle
-                    + majoration_duree_assurance
-                    ),  # On arrondi l'année de la liquidation
-                duree_assurance_annee_precedente + duree_assurance_annuelle
+                round_(duree_assurance_validee + majoration_duree_assurance),  # On arrondi l'année de la liquidation
+                duree_assurance_validee
                 )
 
     class duree_assurance_annuelle(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance annuelle (trimestres validés dans la fonction publique hors majoration)"
-
-    #     def formula(individu, period, parameters):
-    #         return individu("regime_name_duree_assurance_cotisee_annuelle", period)
-
-    # class duree_assurance_cotisee_annuelle(Variable):
-    #     value_type = int
-    #     entity = Person
-    #     definition_period = YEAR
-    #     label = "Durée d'assurance cotisee annuelle (trimestres cotisés dans la fonction publique)"
 
         def formula(individu, period, parameters):
             quotite_de_travail = min_(individu("regime_name_quotite_de_travail", period), 1.0)
@@ -321,6 +303,20 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 + duree_assurance_rachetee_annuelle
                 + duree_assurance_service_national_annuelle
                 )
+
+    class duree_assurance_validee(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance (trimestres validés dans la fonction publique)"
+
+        def formula(individu, period, parameters):
+            duree_assurance_annuelle = individu("regime_name_duree_assurance_annuelle", period)
+            duree_assurance_annee_precedente = individu("regime_name_duree_assurance", period.last_year)
+            # TODO: hack to avoid infinite recursion depth loop
+            if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
+                return individu.empty_array()
+            return duree_assurance_annee_precedente + duree_assurance_annuelle
 
     class duree_de_service(Variable):
         value_type = float
@@ -657,7 +653,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
             return dernier_indice_atteint * valeur_point_indice
 
-    class surcote_trimestres_avant_minimum(Variable):
+    class surcote_trimestres(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
@@ -709,22 +705,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 trimestres_surcote,
                 )
 
-    class surcote_trimestres(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Trimestres surcote"
-
-        def formula_2004(individu, period):
-            minimum_garanti = individu('regime_name_minimum_garanti', period)
-            pension_brute = individu('regime_name_pension_brute', period)
-            surcote_trimestres_avant_minimum = individu('regime_name_surcote_trimestres_avant_minimum', period)
-            return where(
-                pension_brute > minimum_garanti,
-                surcote_trimestres_avant_minimum,
-                0
-                )
-
     class surcote(Variable):
         value_type = float
         entity = Person
@@ -732,7 +712,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Surcote"
 
         def formula_2004(individu, period, parameters):
-            surcote_trimestres = individu('regime_name_surcote_trimestres_avant_minimum', period)
+            surcote_trimestres = individu('regime_name_surcote_trimestres', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             taux_surcote = parameters(period).regime_name.surcote.taux_surcote_par_trimestre
             return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)

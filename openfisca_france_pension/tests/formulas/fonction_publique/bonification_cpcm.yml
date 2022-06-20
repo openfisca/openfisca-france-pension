@@ -4,6 +4,7 @@
   input:
     date_naissance_enfant: 2003-04-11
     fonction_publique_liquidation_date: 2008-04-11
+    sexe: True
     nombre_enfants: 6
     fonction_publique_nombre_enfants_nes_avant_2004: 6
   output:
@@ -16,6 +17,7 @@
   input:
     date_naissance_enfant: 2003-04-11
     fonction_publique_liquidation_date: 2009-04-11
+    sexe: True
     nombre_enfants: 6
     fonction_publique_nombre_enfants_nes_avant_2004: 6
   output:
@@ -27,6 +29,7 @@
   period: 2008
   input:
     fonction_publique_liquidation_date: 2008-04-11
+    sexe: True
     nombre_enfants: 1
     date_naissance_enfant: 2005-04-11
   output:

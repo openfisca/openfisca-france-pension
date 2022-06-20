@@ -98,49 +98,49 @@ class AbstractRegimeDeBase(AbstractRegime):
         label = "Décote"
 
     class duree_assurance_chomage_annuelle(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance au titre du chômage (en trimestres cotisés jusqu'à l'année considérée)"
 
     class duree_assurance_maladie_annuelle(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance au titre de la maladie (en trimestres cotisés l'année considérée)"
+        label = "Durée d'assurance au titre de la maladie (en trimestres validés l'année considérée)"
 
     class duree_assurance_accident_du_travail_annuelle(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance au titre des accidents du travail (en trimestres cotisés l'année considérée)"
+        label = "Durée d'assurance au titre des accidents du travail (en trimestres validés l'année considérée)"
 
     class duree_assurance_invalidite_annuelle(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance au titre de l'invalidté (en trimestres cotisés l'année considérée)"
+        label = "Durée d'assurance au titre de l'invalidté (en trimestres validés l'année considérée)"
+
+    class duree_assurance_rachetee_annuelle(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Durée d'assurance rachetée l'année considérée)"
 
     class duree_assurance_service_national_annuelle(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance au titre du service national (en trimestres cotisés l'année considérée)"
+        label = "Durée d'assurance au titre du service national (en trimestres validés l'année considérée)"
 
     class duree_assurance_autre_annuelle(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres cotisés l'année considérée)"
-
-    class duree_assurance_etranger_annuelle(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance acquise à l'étranger"
+        label = "Durée d'assurance au titre des autres périodes assimilées (en trimestres validés l'année considérée)"
 
     class duree_assurance_periode_assimilee(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance pour période assimilée cumullée "
