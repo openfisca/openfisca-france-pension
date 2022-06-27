@@ -673,7 +673,6 @@ class regime_general_cnav_pension_minimale(Variable):
         duree_assurance_regime_general = individu('regime_general_cnav_duree_assurance', period)
         duree_assurance_personnelement_cotisee_regime_general = individu('regime_general_cnav_duree_assurance_cotisee', period)
         duree_assurance_tous_regimes_non_ecretee = individu('regime_general_cnav_duree_assurance', period) + individu('fonction_publique_duree_assurance', period) + individu('regime_general_cnav_duree_assurance_etranger', period)
-        duree_assurance_cotisee_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
         majoration = min_(1, duree_assurance_personnelement_cotisee_regime_general / duree_de_proratisation) * mico_majoration
         mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete = (duree_assurance_tous_regimes_non_ecretee == duree_assurance_regime_general + individu('regime_general_cnav_duree_assurance_etranger', period)) + (duree_assurance_tous_regimes_non_ecretee < duree_assurance_cible_taux_plein)
         return where(mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete, min_(1, duree_assurance_regime_general / duree_de_proratisation), min_(1, duree_assurance_regime_general / duree_assurance_tous_regimes_non_ecretee)) * mico + majoration

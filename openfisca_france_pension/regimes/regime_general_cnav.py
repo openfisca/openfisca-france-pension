@@ -681,7 +681,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Pension"
 
-
         def formula_2012_01_01(individu, period, parameters):
             # 2012_01_01: Application de l'écrêtement de la durée d'assurance tous régimes; voir pension_minimale
             pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
@@ -788,7 +787,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         # def formula_2012_01_01(individu, period, parameters):
         # Application de l'écrêtement de la durée d'assurance tous régimes; voir pension_minimale()
-
 
         def formula_2009_04_01(individu, period, parameters):
             """Introdcution d'un seuil de trimestres cotisées. Surcote après minimum contributif"""
@@ -923,7 +921,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 + individu("fonction_publique_duree_assurance", period)
                 + individu("regime_general_cnav_duree_assurance_etranger", period)
                 )
-            duree_assurance_cotisee_tous_regimes = individu("duree_assurance_cotisee_tous_regimes", period)
 
             majoration = min_(1, duree_assurance_personnelement_cotisee_regime_general / duree_de_proratisation) * mico_majoration
 
