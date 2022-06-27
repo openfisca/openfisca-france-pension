@@ -417,23 +417,30 @@ class regime_general_cnav_liquidation_date(Variable):
     default_value = date(2250, 12, 31)
 
 class regime_general_cnav_majoration_duree_assurance(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = ETERNITY
-    label = "Majoration de durée d'assurance (trimestres augmentant la durée d'assurance au régime général)"
+    label = "Majoration de durée d'assurance"
+
+    def formula(individu, period):
+        return individu('regime_general_cnav_majoration_duree_assurance_enfant', period) + individu('regime_general_cnav_majoration_duree_assurance_autre', period)
+
+class regime_general_cnav_majoration_duree_assurance_autre(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = "Majoration de durée d'assurance autre que celle attribuée au motif des enfants"
+
+class regime_general_cnav_majoration_duree_assurance_enfant(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = "Majoration de durée d'assurance pour présence d'enfants"
 
     def formula(individu, period):
         n_est_pas_a_la_fonction_publique = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970 >= 2250
         sexe = individu('sexe', period)
-        majoration_duree_assurance_enfant = where(sexe, individu('nombre_enfants', period) * 8, 0)
-        majoration_duree_assurance_autre = individu('regime_general_cnav_majoration_duree_assurance_autre', period)
-        return majoration_duree_assurance_enfant * n_est_pas_a_la_fonction_publique + majoration_duree_assurance_autre
-
-class regime_general_cnav_majoration_duree_assurance_autre(Variable):
-    value_type = int
-    entity = Person
-    definition_period = ETERNITY
-    label = "Majoration de durée d'assurance autre que celle attribuée au motif des enfants"
+        return where(sexe * n_est_pas_a_la_fonction_publique, individu('nombre_enfants', period) * 8, 0)
 
 class regime_general_cnav_majoration_pension(Variable):
     value_type = float

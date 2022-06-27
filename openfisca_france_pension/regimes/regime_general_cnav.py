@@ -395,7 +395,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         label = "Durée d'assurance (trimestres validés au régime général)"
 
         def formula(individu, period):
-            # TODO: hack to avoid infinite recursion depth loop
             duree_assurance_validee = individu("regime_name_duree_assurance_validee", period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             liquidation = (annee_de_liquidation == period.start.year)
@@ -570,27 +569,20 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
             return duree_assurance_annee_precedente + duree_assurance_annuelle
 
-    class majoration_duree_assurance(Variable):
-        value_type = int
+    class majoration_duree_assurance_enfant(Variable):
+        value_type = float
         entity = Person
         definition_period = ETERNITY
-        label = "Majoration de durée d'assurance (trimestres augmentant la durée d'assurance au régime général)"
+        label = "Majoration de durée d'assurance pour présence d'enfants"
 
         def formula(individu, period):
-            # annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-            # liquidation = (annee_de_liquidation == period.start.year)
-            # TODO créer une variable dédiée pour refléter la législation voir précis de législation retraite
             n_est_pas_a_la_fonction_publique = (individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970 >= 2250)
             sexe = individu('sexe', period)
-            majoration_duree_assurance_enfant = where(sexe, individu('nombre_enfants', period) * 8, 0)
-            majoration_duree_assurance_autre = individu('regime_name_majoration_duree_assurance_autre', period)
-            return majoration_duree_assurance_enfant * n_est_pas_a_la_fonction_publique + majoration_duree_assurance_autre
-
-    class majoration_duree_assurance_autre(Variable):
-        value_type = int
-        entity = Person
-        definition_period = ETERNITY
-        label = "Majoration de durée d'assurance autre que celle attribuée au motif des enfants"
+            return where(
+                sexe * n_est_pas_a_la_fonction_publique,
+                individu('nombre_enfants', period) * 8,
+                0
+                )
 
     class majoration_pension(Variable):
         value_type = float
