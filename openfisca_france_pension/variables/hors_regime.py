@@ -96,8 +96,6 @@ class duree_assurance_cotisee_tous_regimes(Variable):
             individu('regime_general_cnav_duree_assurance_cotisee', period)
             + individu('fonction_publique_duree_de_service', period)
             )
-
-
 class duree_assurance_tous_regimes(Variable):
     value_type = int
     entity = Person
@@ -120,13 +118,11 @@ class duree_assurance_tous_regimes(Variable):
             * individu(f'{regime}_majoration_duree_assurance', period)
             for regime in regimes
             )
-
         liquidation_cnav = (
                 (individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
                 == period.start.year
                 )
         duree_assurance_etranger = individu("regime_general_cnav_duree_assurance_etranger", period) * liquidation_cnav
-
         return (
             duree_assurance_tous_regimes_annuelle
             + duree_assurance_tous_regimes_annee_precedente

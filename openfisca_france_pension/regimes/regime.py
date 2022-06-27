@@ -145,6 +145,24 @@ class AbstractRegimeDeBase(AbstractRegime):
         definition_period = YEAR
         label = "Durée d'assurance pour période assimilée cumullée "
 
+    class majoration_duree_assurance(Variable):
+        value_type = float
+        entity = Person
+        definition_period = ETERNITY
+        label = "Majoration de durée d'assurance"
+
+        def formula(individu, period):
+            return (
+                individu("regime_name_majoration_duree_assurance_enfant", period)
+                + individu("regime_name_majoration_duree_assurance_autre", period)
+                )
+
+    class majoration_duree_assurance_autre(Variable):
+        value_type = float
+        entity = Person
+        definition_period = ETERNITY
+        label = "Majoration de durée d'assurance autre que celle attribuée au motif des enfants"
+
     class majoration_pension(Variable):
         value_type = float
         entity = Person
