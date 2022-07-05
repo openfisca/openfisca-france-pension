@@ -6,6 +6,7 @@
     # fonction_publique_liquidation_date: 2000-10-31
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0
@@ -21,6 +22,7 @@
     duree_assurance_tous_regimes: 181
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote_trimestres: 20 
     fonction_publique_decote: 0
@@ -37,6 +39,7 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: .045
     fonction_publique_decote: 0
@@ -53,6 +56,7 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0.075
     fonction_publique_decote: 0
@@ -69,6 +73,7 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: .0125
     fonction_publique_decote: 0
@@ -85,6 +90,7 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: .05
     fonction_publique_decote: 0
@@ -101,6 +107,7 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: .0125
     fonction_publique_decote: 0
@@ -117,6 +124,7 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: .05
     fonction_publique_decote: 0

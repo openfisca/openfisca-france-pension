@@ -7,6 +7,7 @@
     fonction_publique_duree_de_service: 140
     fonction_publique_decote: 12
     fonction_publique_liquidation_date: 2005-01-01
+    #fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 11468.5625
     fonction_publique_pension_brute: 11468.5625
@@ -22,6 +23,7 @@
     fonction_publique_decote: 12
     fonction_publique_liquidation_date: 2015-01-01
     fonction_publique_pension_avant_minimum_et_plafonnement: 10000
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 0
     fonction_publique_pension_brute: 10000
@@ -36,6 +38,7 @@
     fonction_publique_duree_de_service: 55
     fonction_publique_decote: 0
     fonction_publique_liquidation_date: 2015-01-01
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 4178.977696
     fonction_publique_pension_brute: 4178.977696
@@ -50,6 +53,7 @@
     fonction_publique_duree_de_service: 80
     fonction_publique_decote: 0
     fonction_publique_liquidation_date: 2011-01-01
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 8880.380824
     fonction_publique_pension_brute: 8880.380824
@@ -64,6 +68,7 @@
     fonction_publique_duree_de_service: 140
     fonction_publique_liquidation_date: 2007-04-11
     fonction_publique_decote: 0
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 11742.484
     fonction_publique_pension_brute: 11742.484
@@ -78,6 +83,7 @@
     fonction_publique_duree_de_service: 160
     fonction_publique_liquidation_date: 2005-04-11
     fonction_publique_decote: 12
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 11500.765
     fonction_publique_pension_brute: 11500.765
@@ -101,6 +107,7 @@
     fonction_publique_majoration_duree_assurance: 0.0
     fonction_publique_decote_trimestres: 0.0
     fonction_publique_surcote_trimestres: 0.0
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_coefficient_de_proratisation: .48054 /.75
     fonction_publique_minimum_garanti: 11089.361
@@ -116,6 +123,7 @@
     fonction_publique_duree_de_service: 124
     fonction_publique_liquidation_date: 2011-04-11
     fonction_publique_decote: 0
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 12047.945
     fonction_publique_pension_brute: 12047.945

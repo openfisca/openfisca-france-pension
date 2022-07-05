@@ -54,7 +54,9 @@ class fonction_publique_annee_age_ouverture_droits(Variable):
         aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
         aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
-        return annee_age_ouverture_droits
+        depart_anticipe_parent_trois_enfants = individu('fonction_publique_depart_anticipe_parent_trois_enfants', period)
+        date_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants', period)
+        return select(depart_anticipe_parent_trois_enfants, date_satisfaction_condition_depart_anticipe_aprents_trois_enfants.astype('datetime64[Y]').astype('int'), annee_age_ouverture_droits)
 
 class fonction_publique_aod(Variable):
     value_type = int
@@ -134,6 +136,31 @@ class fonction_publique_date_quinze_ans_actif(Variable):
         date = select([date_actif_annee_precedente < np.datetime64('2250-12-31'), nombre_annees_actif_annee_courante <= 15, date_actif_annee_precedente == np.datetime64('2250-12-31')], [date_actif_annee_precedente, np.datetime64('2250-12-31'), np.datetime64(str(period.start))], default=np.datetime64('2250-12-31'))
         return date
 
+class fonction_publique_date_quinze_ans_service(Variable):
+    value_type = date
+    entity = Person
+    definition_period = YEAR
+    label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+
+    def formula(individu, period):
+        last_year = period.start.period('year').offset(-1)
+        nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
+        date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
+        date = select([date_service_annee_precedente < np.datetime64('2250-12-31'), nombre_annees_service_annee_courante <= 15, date_service_annee_precedente == np.datetime64('2250-12-31')], [date_service_annee_precedente, np.datetime64('2250-12-31'), np.datetime64(str(period.start))], default=np.datetime64('2250-12-31'))
+        return date
+
+class fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Date à laquelle les deux conditions permettant un depart anticipe pour motif de parent de trois enfant sont satisfaites'
+
+    def formula(individu, period):
+        date_naissance_enfant = individu('date_naissance_enfant', period)
+        date_trois_enfants = date_naissance_enfant
+        date_quinze_ans_service = individu('fonction_publique_date_quinze_ans_service', period)
+        return max(date_trois_enfants, date_quinze_ans_service)
+
 class fonction_publique_decote(Variable):
     value_type = float
     entity = Person
@@ -158,7 +185,10 @@ class fonction_publique_decote_trimestres(Variable):
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
         reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
-        aad_en_mois = individu('fonction_publique_limite_d_age', period) * 12 + reduction_add_en_mois
+        depart_anticipe_parent_trois_enfants = individu('fonction_publique_depart_anticipe_parent_trois_enfants', period)
+        aad_en_mois_general = individu('fonction_publique_limite_d_age', period) * 12 + reduction_add_en_mois
+        aad_en_mois_parents_trois_enfants = (annee_age_ouverture_droits + 5) * 12 + reduction_add_en_mois
+        aad_en_mois = select(depart_anticipe_parent_trois_enfants, aad_en_mois_parents_trois_enfants, aad_en_mois_general)
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = max_(0, np.ceil((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
         duree_assurance_requise_sedentaires = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
@@ -167,6 +197,26 @@ class fonction_publique_decote_trimestres(Variable):
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
         return where(annee_age_ouverture_droits >= 2006, min_(decote_trimestres, 20), 0)
+
+class fonction_publique_depart_anticipe_parent_trois_enfants(Variable):
+    value_type = bool
+    entity = Person
+    definition_period = YEAR
+    label = 'Depart anticipé pour motif de parent de trois enfants'
+    default_value = False
+
+    def formula(individu, period):
+        nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
+        annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
+        liquidation_date = individu('fonction_publique_liquidation_date', period)
+        annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+        condition_enfant = nombre_enfants_a_charge >= 3
+        condition_service = duree_de_service_effective >= 60
+        condition_date = annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants < 2012
+        condition_aod = annee_age_ouverture_droits < 2016
+        condition_date_liquidation = liquidation_date < np.datetime64('2011-07-01')
+        return condition_enfant * condition_service * condition_date * condition_aod * condition_date_liquidation
 
 class fonction_publique_dernier_indice_atteint(Variable):
     value_type = float

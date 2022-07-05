@@ -66,8 +66,9 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     + aod_mois
                     ) / 12
                 ).astype(int)
-
-            return annee_age_ouverture_droits
+            depart_anticipe_parent_trois_enfants = individu('fonction_publique_depart_anticipe_parent_trois_enfants', period)
+            date_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants', period)
+            return select(depart_anticipe_parent_trois_enfants, date_satisfaction_condition_depart_anticipe_aprents_trois_enfants.astype('datetime64[Y]').astype('int'), annee_age_ouverture_droits)
 
     class aod(Variable):
         value_type = int
@@ -168,7 +169,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)],
                 0
                 )
-            aad_en_mois = individu("regime_name_limite_d_age", period) * 12 + reduction_add_en_mois
+            depart_anticipe_parent_trois_enfants = individu("fonction_publique_depart_anticipe_parent_trois_enfants", period)
+            aad_en_mois_general = individu("regime_name_limite_d_age", period) * 12 + reduction_add_en_mois
+            aad_en_mois_parents_trois_enfants = (annee_age_ouverture_droits + 5) * 12 + reduction_add_en_mois
+            aad_en_mois = select(depart_anticipe_parent_trois_enfants, aad_en_mois_parents_trois_enfants, aad_en_mois_general)
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
@@ -597,6 +601,63 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         entity = Person
         label = "Nombre d'enfants nés avant 2004"
         definition_period = ETERNITY
+
+    class date_quinze_ans_service(Variable):
+        value_type = date
+        entity = Person
+        definition_period = YEAR
+        label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+
+        def formula(individu, period):
+            last_year = period.start.period('year').offset(-1)
+            nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
+            date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
+            date = select(
+                [
+                    date_service_annee_precedente < np.datetime64("2250-12-31"),
+                    nombre_annees_service_annee_courante <= 15,
+                    date_service_annee_precedente == np.datetime64("2250-12-31")
+                    ],
+                [
+                    date_service_annee_precedente,
+                    np.datetime64("2250-12-31"),
+                    np.datetime64(str(period.start))
+                    ],
+                default = np.datetime64("2250-12-31")
+                )
+            return date
+
+    class date_satisfaction_condition_depart_anticipe_aprents_trois_enfants(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Date à laquelle les deux conditions permettant un depart anticipe pour motif de parent de trois enfant sont satisfaites"
+
+        def formula(individu, period):
+            date_naissance_enfant = individu('date_naissance_enfant', period)
+            date_trois_enfants = date_naissance_enfant
+            date_quinze_ans_service = individu('regime_name_date_quinze_ans_service', period)
+            return max(date_trois_enfants, date_quinze_ans_service)
+
+    class depart_anticipe_parent_trois_enfants (Variable):
+        value_type = bool
+        entity = Person
+        definition_period = YEAR
+        label = "Depart anticipé pour motif de parent de trois enfants"
+        default_value = False
+
+        def formula(individu, period):
+            nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
+            duree_de_service_effective = individu("regime_name_duree_de_service", period)
+            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+            condition_enfant = nombre_enfants_a_charge >= 3
+            condition_service = duree_de_service_effective >= 60
+            condition_date = annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants < 2012
+            condition_aod = annee_age_ouverture_droits < 2016
+            condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
+            return condition_enfant * condition_service * condition_date * condition_aod * condition_date_liquidation
 
     class pension(Variable):
         value_type = float

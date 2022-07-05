@@ -7,6 +7,7 @@
     fonction_publique_duree_assurance: 171
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
+    fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0
