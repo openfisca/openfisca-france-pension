@@ -140,7 +140,7 @@ class fonction_publique_date_quinze_ans_service(Variable):
     value_type = date
     entity = Person
     definition_period = YEAR
-    label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+    label = "Date d'atteinte des quinze ans d'activité"
 
     def formula(individu, period):
         last_year = period.start.period('year').offset(-1)
@@ -150,7 +150,7 @@ class fonction_publique_date_quinze_ans_service(Variable):
         return date
 
 class fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants(Variable):
-    value_type = float
+    value_type = date
     entity = Person
     definition_period = YEAR
     label = 'Date à laquelle les deux conditions permettant un depart anticipe pour motif de parent de trois enfant sont satisfaites'
