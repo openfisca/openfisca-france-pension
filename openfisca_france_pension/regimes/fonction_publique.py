@@ -68,7 +68,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 ).astype(int)
             depart_anticipe_parent_trois_enfants = individu('fonction_publique_depart_anticipe_parent_trois_enfants', period)
             date_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants', period)
-            return select(depart_anticipe_parent_trois_enfants, date_satisfaction_condition_depart_anticipe_aprents_trois_enfants.astype('datetime64[Y]').astype('int')+1970, annee_age_ouverture_droits)
+            return select(depart_anticipe_parent_trois_enfants, date_satisfaction_condition_depart_anticipe_aprents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970, annee_age_ouverture_droits)
 
     class aod(Variable):
         value_type = int
@@ -185,7 +185,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_naissance_enfant = individu('date_naissance_enfant', period)
             date_trois_enfants = date_naissance_enfant
             date_quinze_ans_service = individu('regime_name_date_quinze_ans_service', period)
-            print("date_quinze_ans_service:",date_quinze_ans_service)
             return max(date_trois_enfants, date_quinze_ans_service)
 
     class depart_anticipe_parent_trois_enfants (Variable):
@@ -218,7 +217,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
-            print("annee_age_ouverture_droits:",annee_age_ouverture_droits)
             aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
             reduction_add_en_mois = where(
                 # Double condition car cette réduction de l'AAD s'éteint en 2020 et vaut -1 en 2019
