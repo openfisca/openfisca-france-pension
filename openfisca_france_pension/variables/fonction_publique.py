@@ -54,7 +54,9 @@ class fonction_publique_annee_age_ouverture_droits(Variable):
         aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
         aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
-        return annee_age_ouverture_droits
+        depart_anticipe_parent_trois_enfants = individu('fonction_publique_depart_anticipe_parent_trois_enfants', period)
+        date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+        return select(depart_anticipe_parent_trois_enfants, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970, annee_age_ouverture_droits)
 
 class fonction_publique_aod(Variable):
     value_type = int
@@ -144,11 +146,10 @@ class fonction_publique_date_quinze_ans_service(Variable):
         last_year = period.start.period('year').offset(-1)
         nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
         date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
-        BIM
         date = select([date_service_annee_precedente < np.datetime64('2250-12-31'), nombre_annees_service_annee_courante <= 15, date_service_annee_precedente == np.datetime64('2250-12-31')], [date_service_annee_precedente, np.datetime64('2250-12-31'), np.datetime64(str(period.start))], default=np.datetime64('2250-12-31'))
         return date
 
-class fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants(Variable):
+class fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants(Variable):
     value_type = date
     entity = Person
     definition_period = YEAR
@@ -209,7 +210,7 @@ class fonction_publique_depart_anticipe_parent_trois_enfants(Variable):
         duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
-        annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_aprents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+        annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
         condition_enfant = nombre_enfants_a_charge >= 3
         condition_service = duree_de_service_effective >= 60
         condition_date = annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants < 2012
@@ -327,7 +328,6 @@ class fonction_publique_duree_de_service(Variable):
     def formula(individu, period, parameters):
         duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
         duree_de_service_annee_precedente = individu('fonction_publique_duree_de_service', period.last_year)
-        BIM
         if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
             return individu.empty_array()
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
