@@ -6,7 +6,8 @@
     # fonction_publique_liquidation_date: 2000-10-31
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0
@@ -20,7 +21,8 @@
     fonction_publique_liquidation_date: 2006-06-01
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0
@@ -35,7 +37,8 @@
     fonction_publique_liquidation_date: 2004-11-20
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0
@@ -51,7 +54,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 4 * .00125
@@ -67,7 +71,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 11 * .0075
@@ -83,7 +88,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 6 * 0.0075
@@ -99,7 +105,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_limite_d_age: 65 + 9 / 12
@@ -116,7 +123,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_limite_d_age: 66 + 7 / 12
@@ -133,7 +141,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 14 * 0.0125
@@ -148,7 +157,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 20 * 0.0125
@@ -164,7 +174,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: True
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: True
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: True
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0
@@ -180,7 +191,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_categorie_activite: sedentaire
-    fonction_publique_depart_anticipe_parent_trois_enfants: True
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: True
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 0.025
