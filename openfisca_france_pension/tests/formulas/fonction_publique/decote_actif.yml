@@ -7,7 +7,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 4 * .00125
@@ -23,7 +24,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 6 * .0075
@@ -39,7 +41,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 12 * 0.00875
@@ -55,7 +58,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 9 * 0.01
@@ -71,7 +75,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 9 * 0.01125
@@ -87,7 +92,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 6 * 0.01250
@@ -103,7 +109,8 @@
     fonction_publique_salaire_de_reference: 1000
     fonction_publique_coefficient_de_proratisation: 1
     fonction_publique_actif_a_la_liquidation: True
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_surcote: 0
     fonction_publique_decote: 4 * 0.01250
