@@ -8,7 +8,8 @@
     fonction_publique_liquidation_date: 2012-01-01
     fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants: 2003-01-01
   output:
-    fonction_publique_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
 
 - name: depart anticipe au motif de parent de trois enfants
   absolute_error_margin: .001
@@ -20,4 +21,5 @@
     fonction_publique_liquidation_date: 2010-01-01
     fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants: 2003-01-01
   output:
-    fonction_publique_depart_anticipe_parent_trois_enfants: True
+    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: True
+    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: True

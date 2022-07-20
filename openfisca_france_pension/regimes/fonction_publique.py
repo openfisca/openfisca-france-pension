@@ -67,7 +67,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     + aod_mois
                     ) / 12
                 ).astype(int)
-            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants",period)
+            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants", period)
             conditions_pr_aod_depart_anticipe_parent_trois_enfants = individu('regime_name_conditions_pr_aod_depart_anticipe_parent_trois_enfants', period)
             condition_aod = annee_age_ouverture_droits < 2016
             return where(conditions_pr_aod_depart_anticipe_parent_trois_enfants * condition_aod, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970, annee_age_ouverture_droits)
