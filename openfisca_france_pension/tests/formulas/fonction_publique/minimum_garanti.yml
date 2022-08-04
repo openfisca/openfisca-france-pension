@@ -7,7 +7,6 @@
     fonction_publique_duree_de_service: 140
     fonction_publique_decote: 12
     fonction_publique_liquidation_date: 2005-01-01
-    #fonction_publique_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 11468.5625
     fonction_publique_pension_brute: 11468.5625
@@ -23,8 +22,6 @@
     fonction_publique_decote: 12
     fonction_publique_liquidation_date: 2015-01-01
     fonction_publique_pension_avant_minimum_et_plafonnement: 10000
-    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
-    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 0
     fonction_publique_pension_brute: 10000
@@ -39,8 +36,6 @@
     fonction_publique_duree_de_service: 55
     fonction_publique_decote: 0
     fonction_publique_liquidation_date: 2015-01-01
-    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
-    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 4178.977696
     fonction_publique_pension_brute: 4178.977696
@@ -55,8 +50,6 @@
     fonction_publique_duree_de_service: 80
     fonction_publique_decote: 0
     fonction_publique_liquidation_date: 2011-01-01
-    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
-    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 8880.380824
     fonction_publique_pension_brute: 8880.380824
@@ -71,8 +64,6 @@
     fonction_publique_duree_de_service: 140
     fonction_publique_liquidation_date: 2007-04-11
     fonction_publique_decote: 0
-    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
-    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 11742.484
     fonction_publique_pension_brute: 11742.484
@@ -87,8 +78,6 @@
     fonction_publique_duree_de_service: 160
     fonction_publique_liquidation_date: 2005-04-11
     fonction_publique_decote: 12
-    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
-    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 11500.765
     fonction_publique_pension_brute: 11500.765
@@ -112,15 +101,13 @@
     fonction_publique_majoration_duree_assurance: 0.0
     fonction_publique_decote_trimestres: 0.0
     fonction_publique_surcote_trimestres: 0.0
-    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
-    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_coefficient_de_proratisation: .48054 /.75
     fonction_publique_minimum_garanti: 11089.361
     fonction_publique_pension_brute_au_31_decembre: 11089.361
 
 - name: test cgt
-  description: replication de l'exemple de la CGT (http://equipementcgt.fr/spip.php?article502) pour déterminer le pourcentage de pension au titre du minimum garanti 
+  description: replication de l'exemple de la CGT (http://equipementcgt.fr/spip.php?article502) pour déterminer le pourcentage de pension au titre du minimum garanti
   absolute_error_margin: .001
   period: 2011
   input:
@@ -129,8 +116,6 @@
     fonction_publique_duree_de_service: 124
     fonction_publique_liquidation_date: 2011-04-11
     fonction_publique_decote: 0
-    fonction_publique_conditions_pr_aod_depart_anticipe_parent_trois_enfants: False
-    fonction_publique_conditions_pr_decote_depart_anticipe_parent_trois_enfants: False
   output:
     fonction_publique_minimum_garanti: 12047.945
     fonction_publique_pension_brute: 12047.945

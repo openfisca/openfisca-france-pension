@@ -67,11 +67,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ) / 12
                 ).astype(int)
             date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants", period)
-            conditions_pr_aod_depart_anticipe_parent_trois_enfants = individu('regime_name_conditions_pr_aod_depart_anticipe_parent_trois_enfants', period)
+            aod_egal_date_depart_anticipe_parent_trois_enfants = individu('regime_name_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
             condition_aod = annee_age_ouverture_droits < 2016
             condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
             return where(
-                conditions_pr_aod_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote),
+                aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote),
                 date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970,
                 annee_age_ouverture_droits
                 )
@@ -143,13 +143,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_actif_annee_precedente = individu('regime_name_date_quinze_ans_actif', last_year)
             date = select(
                 [
-                    #date_actif_annee_precedente < np.datetime64("2250-12-31"),
+                    # date_actif_annee_precedente < np.datetime64("2250-12-31"),
                     nombre_annees_actif_annee_courante <= 15,
                     date_actif_annee_precedente == np.datetime64("2250-12-31"),
                     date_actif_annee_precedente < np.datetime64("2250-12-31")
                     ],
                 [
-                    #date_actif_annee_precedente,
+                    # date_actif_annee_precedente,
                     np.datetime64("2250-12-31"),
                     np.datetime64(str(period.start)),
                     date_actif_annee_precedente
@@ -170,13 +170,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
             date = select(
                 [
-                    #date_service_annee_precedente < np.datetime64("2250-12-31"),
+                    # date_service_annee_precedente < np.datetime64("2250-12-31"),
                     nombre_annees_service_annee_courante <= 60,
                     date_service_annee_precedente == np.datetime64("2250-12-31"),
                     date_service_annee_precedente < np.datetime64("2250-12-31")
                     ],
                 [
-                    #date_service_annee_precedente,
+                    # date_service_annee_precedente,
                     np.datetime64("2250-12-31"),
                     np.datetime64(str(period.start)),
                     date_service_annee_precedente
@@ -203,7 +203,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 max_(date_trois_enfants, date_quinze_ans_service)
                 )
 
-    class conditions_pr_aod_depart_anticipe_parent_trois_enfants(Variable):
+    class aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
         value_type = bool
         entity = Person
         definition_period = YEAR
@@ -211,7 +211,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         default_value = False
 
         def formula(individu, period):
-            nombre_enfants_a_charge = individu('nombre_enfants', period)
+            nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
             duree_de_service_effective = individu("regime_name_duree_de_service", period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
@@ -221,7 +221,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
             return condition_enfant * condition_service * condition_date_liquidation * condition_date
 
-    class conditions_pr_decote_depart_anticipe_parent_trois_enfants(Variable):
+    class decote_a_date_depart_anticipe_parent_trois_enfants(Variable):
         value_type = bool
         entity = Person
         definition_period = YEAR
@@ -239,7 +239,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             condition_service = duree_de_service_effective >= 60
             condition_aod = annee_age_ouverture_droits < 2016
             condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
-            return condition_enfant * condition_service * condition_aod * condition_date_liquidation *condition_date
+            return condition_enfant * condition_service * condition_aod * condition_date_liquidation * condition_date
 
     class decote_trimestres(Variable):
         value_type = float
@@ -251,7 +251,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
-            conditions_depart_anticipe_parent_trois_enfants = individu('regime_name_conditions_pr_decote_depart_anticipe_parent_trois_enfants', period)
+            conditions_depart_anticipe_parent_trois_enfants = individu('regime_name_decote_a_date_depart_anticipe_parent_trois_enfants', period)
             aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
             reduction_add_en_mois = where(
                 # Double condition car cette réduction de l'AAD s'éteint en 2020 et vaut -1 en 2019
