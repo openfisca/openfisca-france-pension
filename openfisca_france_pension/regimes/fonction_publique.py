@@ -1,6 +1,5 @@
 """Régime de base de la fonction publique."""
 
-from certifi import where
 import numpy as np
 
 from openfisca_core.model_api import *

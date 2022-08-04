@@ -7,7 +7,6 @@ from openfisca_france_pension.entities import Person
 def revalorise(variable_31_decembre_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
     return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_31_decembre_annee_precedente * revalorisation])
 'Régime de base de la fonction publique.'
-from certifi import where
 import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.parameters import ParameterNotFound
