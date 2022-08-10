@@ -97,9 +97,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            duree_de_service_effective = individu("fonction_publique_duree_de_service", period)
-            # TODO
-            majoration_duree_assurance = individu('fonction_publique_majoration_duree_assurance', period)
+            majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
+            duree_de_service_effective = (
+                individu("fonction_publique_duree_de_service", period)
+                - majoration_duree_de_service
+                )
             super_actif = False  # individu('regime_name_super_actif', period)
             bonification_du_cinquieme = (
                 super_actif * min_(
@@ -111,12 +113,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             coefficient_de_proratisation = max_(
                 min_(
                     1,
-                    (duree_de_service_effective + bonification_du_cinquieme)
+                    (duree_de_service_effective + majoration_duree_de_service + bonification_du_cinquieme)
                     / duree_de_service_requise
                     ),
                 min_(
                     80 / 75,
-                    (min_(duree_de_service_effective, duree_de_service_requise) + majoration_duree_assurance)
+                    (min_(duree_de_service_effective, duree_de_service_requise) +  majoration_duree_de_service)
                     / duree_de_service_requise
                     )
                 )
@@ -136,6 +138,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+        default_value = date(2250, 12, 31)
 
         def formula(individu, period):
             last_year = period.start.period('year').offset(-1)
@@ -163,6 +166,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Date d'atteinte des quinze ans d'activité"
+        default_value = date(2250, 12, 31)
 
         def formula(individu, period):
             last_year = period.start.period('year').offset(-1)
@@ -190,6 +194,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Date à laquelle les deux conditions permettant un depart anticipe pour motif de parent de trois enfant sont satisfaites"
+        default_value = date(2250, 12, 31)
 
         def formula(individu, period):
             date_naissance_enfant = individu('date_naissance_enfant', period)

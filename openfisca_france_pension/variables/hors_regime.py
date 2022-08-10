@@ -109,15 +109,6 @@ class duree_assurance_tous_regimes(Variable):
         if all((duree_assurance_tous_regimes_annuelle == 0) & (duree_assurance_tous_regimes_annee_precedente == 0)):
             return individu.empty_array()
 
-        regimes = ['regime_general_cnav', 'fonction_publique']
-        majoration_duree_assurance = sum(
-            (
-                (individu(f'{regime}_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
-                == period.start.year
-                )
-            * individu(f'{regime}_majoration_duree_assurance', period)
-            for regime in regimes
-            )
         liquidation_cnav = (
                 (individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
                 == period.start.year
@@ -126,7 +117,7 @@ class duree_assurance_tous_regimes(Variable):
         return (
             duree_assurance_tous_regimes_annuelle
             + duree_assurance_tous_regimes_annee_precedente
-            + majoration_duree_assurance
+            # + majoration_duree_assurance
             + duree_assurance_etranger
             )
 
@@ -139,7 +130,7 @@ class duree_assurance_tous_regimes_annuelle(Variable):
 
     def formula(individu, period):
         regimes = ['regime_general_cnav', 'fonction_publique']
-        return np.clip(
+        duree_assurance_hors_majoration =  np.clip(
             sum(
                 individu(f'{regime}_duree_assurance_annuelle', period)
                 for regime in regimes
@@ -147,6 +138,15 @@ class duree_assurance_tous_regimes_annuelle(Variable):
             0,
             4
             )
+        majoration_duree_assurance = sum(
+            (
+                (individu(f'{regime}_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
+                == period.start.year
+                )
+            * individu(f'{regime}_majoration_duree_assurance', period)
+            for regime in regimes
+            )
+        return duree_assurance_hors_majoration + majoration_duree_assurance
 
 
 

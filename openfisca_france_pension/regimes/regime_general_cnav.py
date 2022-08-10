@@ -639,6 +639,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         entity = Person
         definition_period = YEAR
         label = "Date de l'ouverture des droits"
+        default_value = date(2250, 12, 31)
 
         def formula_2009_04_01(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
