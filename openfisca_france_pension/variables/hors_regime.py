@@ -33,7 +33,7 @@ class TypesStatutDuCotisant(Enum):
     __order__ = 'emploi independant avpf chomage maladie accident_du_travail invalidite service_national periode_assimilee_autre inactif non_pertinent'
     emploi = "Emploi salarié"
     independant = "Indépendant"
-    avpf = "AVPF"   # CNAF seulement
+    avpf = "AVPV"   # CNAV seulement
     chomage = "Chômage, pré-retraite, reconversion et formation"
     maladie = "Maladie-maternité"  # TODO: sont séparés dans EIC donc peut-être qu'il faudrait les séparer ici également
     accident_du_travail = "Accident du travail"
@@ -53,13 +53,6 @@ class age_au_31_decembre(Variable):
         # https://stackoverflow.com/questions/13648774/get-year-month-or-day-from-numpy-datetime64
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         return period.start.year - annee_de_naissance
-
-class avpf(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = "Salaire porté au compte au titre de l'assurance vieillesse des parents au foyer"
-
 
 class categorie_salarie(Variable):
     value_type = Enum
@@ -93,9 +86,11 @@ class duree_assurance_cotisee_tous_regimes(Variable):
 
     def formula(individu, period):
         return (
-            individu('regime_general_cnav_duree_assurance_cotisee', period)
+            individu('regime_general_cnav_duree_assurance_personnellement_cotisee', period)
             + individu('fonction_publique_duree_de_service', period)
             )
+
+
 class duree_assurance_tous_regimes(Variable):
     value_type = int
     entity = Person

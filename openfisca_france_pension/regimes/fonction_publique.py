@@ -28,8 +28,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-            actif_annee = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
-            actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
+            duree_service_minimale_considere_comme_actif = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+            actif = individu('fonction_publique_nombre_annees_actif', period) >= duree_service_minimale_considere_comme_actif
             return actif
 
     class annee_age_ouverture_droits(Variable):
@@ -118,7 +118,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ),
                 min_(
                     80 / 75,
-                    (min_(duree_de_service_effective, duree_de_service_requise) +  majoration_duree_de_service)
+                    (min_(duree_de_service_effective, duree_de_service_requise) + majoration_duree_de_service)
                     / duree_de_service_requise
                     )
                 )
@@ -137,7 +137,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = date
         entity = Person
         definition_period = YEAR
-        label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+        label = "Date d'atteinte de la durée en tant qu'actif requise pour liquider sa pension en tant qu'actif"
         default_value = date(2250, 12, 31)
 
         def formula(individu, period):
@@ -146,16 +146,14 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_actif_annee_precedente = individu('regime_name_date_quinze_ans_actif', last_year)
             date = select(
                 [
-                    # date_actif_annee_precedente < np.datetime64("2250-12-31"),
-                    nombre_annees_actif_annee_courante <= 15,
-                    date_actif_annee_precedente == np.datetime64("2250-12-31"),
-                    date_actif_annee_precedente < np.datetime64("2250-12-31")
+                    date_actif_annee_precedente < np.datetime64("2250-12-31"),
+                    (nombre_annees_actif_annee_courante >= 15) & (date_actif_annee_precedente == np.datetime64("2250-12-31")),
+                    (nombre_annees_actif_annee_courante < 15) & (date_actif_annee_precedente == np.datetime64("2250-12-31"))
                     ],
                 [
-                    # date_actif_annee_precedente,
-                    np.datetime64("2250-12-31"),
+                    date_actif_annee_precedente,
                     np.datetime64(str(period.start)),
-                    date_actif_annee_precedente
+                    np.datetime64("2250-12-31")
                     ],
                 default = np.datetime64("2250-12-31")
                 )
@@ -174,16 +172,14 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
             date = select(
                 [
-                    # date_service_annee_precedente < np.datetime64("2250-12-31"),
-                    nombre_annees_service_annee_courante <= 60,
-                    date_service_annee_precedente == np.datetime64("2250-12-31"),
-                    date_service_annee_precedente < np.datetime64("2250-12-31")
+                    date_service_annee_precedente < np.datetime64("2250-12-31"),
+                    (nombre_annees_service_annee_courante >= 60) and (date_service_annee_precedente == np.datetime64("2250-12-31")),
+                    (nombre_annees_service_annee_courante < 60) and (date_service_annee_precedente == np.datetime64("2250-12-31")),
                     ],
                 [
-                    # date_service_annee_precedente,
-                    np.datetime64("2250-12-31"),
+                    date_service_annee_precedente,
                     np.datetime64(str(period.start)),
-                    date_service_annee_precedente
+                    np.datetime64("2250-12-31"),
                     ],
                 default = np.datetime64("2250-12-31")
                 )

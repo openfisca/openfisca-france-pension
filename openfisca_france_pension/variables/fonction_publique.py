@@ -26,8 +26,8 @@ class fonction_publique_actif_a_la_liquidation(Variable):
 
     def formula(individu, period, parameters):
         date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-        actif_annee = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
-        actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
+        duree_service_minimale_considere_comme_actif = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+        actif = individu('fonction_publique_nombre_annees_actif', period) >= duree_service_minimale_considere_comme_actif
         return actif
 
 class fonction_publique_annee_age_ouverture_droits(Variable):
@@ -147,14 +147,14 @@ class fonction_publique_date_quinze_ans_actif(Variable):
     value_type = date
     entity = Person
     definition_period = YEAR
-    label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+    label = "Date d'atteinte de la durée en tant qu'actif requise pour liquider sa pension en tant qu'actif"
     default_value = date(2250, 12, 31)
 
     def formula(individu, period):
         last_year = period.start.period('year').offset(-1)
         nombre_annees_actif_annee_courante = individu('fonction_publique_nombre_annees_actif', period)
         date_actif_annee_precedente = individu('fonction_publique_date_quinze_ans_actif', last_year)
-        date = select([nombre_annees_actif_annee_courante <= 15, date_actif_annee_precedente == np.datetime64('2250-12-31'), date_actif_annee_precedente < np.datetime64('2250-12-31')], [np.datetime64('2250-12-31'), np.datetime64(str(period.start)), date_actif_annee_precedente], default=np.datetime64('2250-12-31'))
+        date = select([date_actif_annee_precedente < np.datetime64('2250-12-31'), (nombre_annees_actif_annee_courante >= 15) & (date_actif_annee_precedente == np.datetime64('2250-12-31')), (nombre_annees_actif_annee_courante < 15) & (date_actif_annee_precedente == np.datetime64('2250-12-31'))], [date_actif_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
         return date
 
 class fonction_publique_date_quinze_ans_service(Variable):
@@ -168,7 +168,7 @@ class fonction_publique_date_quinze_ans_service(Variable):
         last_year = period.start.period('year').offset(-1)
         nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
         date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
-        date = select([nombre_annees_service_annee_courante <= 60, date_service_annee_precedente == np.datetime64('2250-12-31'), date_service_annee_precedente < np.datetime64('2250-12-31')], [np.datetime64('2250-12-31'), np.datetime64(str(period.start)), date_service_annee_precedente], default=np.datetime64('2250-12-31'))
+        date = select([date_service_annee_precedente < np.datetime64('2250-12-31'), nombre_annees_service_annee_courante >= 60 and date_service_annee_precedente == np.datetime64('2250-12-31'), nombre_annees_service_annee_courante < 60 and date_service_annee_precedente == np.datetime64('2250-12-31')], [date_service_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
         return date
 
 class fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants(Variable):
