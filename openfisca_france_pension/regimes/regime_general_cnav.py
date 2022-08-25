@@ -848,23 +848,14 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 + (duree_assurance_tous_regimes < duree_assurance_cible_taux_plein)
                 )
-            polypensionne_cotisant_moins_que_duree_requise = (
-                not_(mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete)
-                * (duree_assurance_cotisee_tous_regimes < duree_assurance_cible_taux_plein)
-                )
-            polypensionne_cotisant_plus_que_duree_requise = (
-                not_(mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete)
-                * (duree_assurance_cotisee_tous_regimes >= duree_assurance_cible_taux_plein)
-                )
+            polypensionne_cotisant_carriere_complete = not_(mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete)
 
             numerateur_montant_de_base = select(
                 [
                     mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete,
-                    polypensionne_cotisant_moins_que_duree_requise,
-                    polypensionne_cotisant_plus_que_duree_requise,
+                    polypensionne_cotisant_carriere_complete,
                     ],
                 [
-                    duree_assurance_regime_general,
                     duree_assurance_regime_general,
                     duree_assurance_regime_general,
                     ]
@@ -872,54 +863,46 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             denominateur_montant_de_base = select(
                 [
                     mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete,
-                    polypensionne_cotisant_moins_que_duree_requise,
-                    polypensionne_cotisant_plus_que_duree_requise,
+                    polypensionne_cotisant_carriere_complete,
                     ],
                 [
                     duree_de_proratisation,
                     duree_assurance_tous_regimes,
-                    duree_assurance_tous_regimes,
                     ]
+                )
+
+            coefficient_de_proratisation_montant_de_base = min_(
+                1,
+                numerateur_montant_de_base / denominateur_montant_de_base
                 )
 
             numerateur_majoration = select(
                 [
                     mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete,
-                    polypensionne_cotisant_moins_que_duree_requise,
-                    polypensionne_cotisant_plus_que_duree_requise,
+                    polypensionne_cotisant_carriere_complete,
                     ],
                 [
                     duree_assurance_personnellement_cotisee_regime_general,
                     duree_assurance_cotisee_tous_regimes,
-                    duree_assurance_regime_general,
                     ]
                 )
-            denominateur_majoration = select(
-                [
-                    mono_pensionne_regime_general_ou_polypensionne_carriere_incomplete,
-                    polypensionne_cotisant_moins_que_duree_requise,
-                    polypensionne_cotisant_plus_que_duree_requise,
-                    ],
-                [
-                    duree_de_proratisation,
-                    duree_de_proratisation,
-                    duree_assurance_tous_regimes,
-                    ]
-                )
-            coefficient_de_proratisation_montant_de_base = min_(
-                1,
-                numerateur_montant_de_base / denominateur_montant_de_base
-                )
+            denominateur_majoration = duree_de_proratisation
 
             liquidation_date = individu('regime_name_liquidation_date', period)
             condition_de_duree = (
                 (duree_assurance_personnellement_cotisee_regime_general >= 120)
                 | (liquidation_date < date(2009, 4, 1))
                 )
-
-            coefficient_de_proratisation_majoration = condition_de_duree * min_(
-                1,
-                numerateur_majoration / denominateur_majoration
+            coefficient_de_proratisation_majoration = (
+                condition_de_duree
+                * min_(
+                    1,
+                    numerateur_majoration / denominateur_majoration
+                    )
+                * min_(
+                    1,
+                    duree_assurance_regime_general / duree_assurance_tous_regimes
+                    )
                 )
 
             surcote = individu("regime_name_surcote", period)

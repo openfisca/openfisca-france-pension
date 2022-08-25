@@ -6,7 +6,7 @@
     regime_general_cnav_liquidation_date: 2002-04-01
     regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000
     regime_general_cnav_duree_assurance_personnellement_cotisee: 150
-    regime_general_cnav_duree_assurance_validee: 150
+    regime_general_cnav_duree_assurance: 150
   output:
     regime_general_cnav_pension_brute: 6307.62
 
@@ -19,23 +19,24 @@
     regime_general_cnav_liquidation_date: 2002-04-01
     regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000
     regime_general_cnav_duree_assurance_personnellement_cotisee: 120
-    regime_general_cnav_duree_assurance_validee: 120
+    regime_general_cnav_duree_assurance: 120
   output:
     regime_general_cnav_pension_brute: 6307.62 * .8
 
-# - name: Assurée née en 1945 et affiliée au seul régime général
-#   # TODO Retraite attribuée au titre de l'inaptitude au travail
-#   # Tout premier exemple https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2005030_04072005
-#   absolute_error_margin: .001
-#   period: 2005
-#   input:
-#     date_de_naissance: 1945-01-01
-#     regime_general_cnav_liquidation_date: 2005-10-01
-#     regime_general_cnav_pension_avant_minimum_et_plafonnement: 4000
-#     regime_general_cnav_duree_assurance_validee: XXX
-#     regime_general_cnav_duree_assurance_personnellement_cotisee: XXX
-#   output:
-#     regime_general_cnav_pension_brute: 4416.00
+- name: Assurée née en 1945 et affiliée au seul régime général
+  # TODO Retraite attribuée au titre de l'inaptitude au travail
+  # Tout premier exemple https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2005030_04072005
+  absolute_error_margin: .1
+  period: 2005
+  input:
+    date_de_naissance: 1945-01-01
+    raison_depart_taux_plein_anticipe: inapte
+    regime_general_cnav_liquidation_date: 2005-10-01
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 4000
+    regime_general_cnav_duree_assurance: 100
+    regime_general_cnav_duree_assurance_personnellement_cotisee: 80
+  output:
+    regime_general_cnav_pension_brute: 4416.00
 
 
 - name: Assuré né en 1945, départ en 2005, monopensionné avec 162 trimestres dont 156 cotisés
@@ -47,7 +48,7 @@
     raison_depart_taux_plein_anticipe: inapte
     regime_general_cnav_liquidation_date: 2005-10-01
     regime_general_cnav_pension_avant_minimum_et_plafonnement: 4000
-    regime_general_cnav_duree_assurance_validee: 162
+    regime_general_cnav_duree_assurance: 162
     regime_general_cnav_duree_assurance_personnellement_cotisee: 156
   output:
     regime_general_cnav_taux_de_liquidation: .5
@@ -63,7 +64,7 @@
     raison_depart_taux_plein_anticipe: inapte
     regime_general_cnav_liquidation_date: 2005-11-01
     regime_general_cnav_pension_avant_minimum_et_plafonnement: 4000
-    regime_general_cnav_duree_assurance_validee: 140
+    regime_general_cnav_duree_assurance: 140
     regime_general_cnav_duree_assurance_personnellement_cotisee: 140
   output:
     regime_general_cnav_pension_brute: 6218.63
@@ -78,29 +79,29 @@
     raison_depart_taux_plein_anticipe: inapte
     regime_general_cnav_liquidation_date: 2005-11-01
     regime_general_cnav_pension_avant_minimum_et_plafonnement: 4000
-    regime_general_cnav_duree_assurance_validee: 140
+    regime_general_cnav_duree_assurance: 140
     regime_general_cnav_duree_assurance_personnellement_cotisee: 40
   output:
     regime_general_cnav_pension_brute: 6089.26
 
 
-- name: Assuré né en 1949, départ en 2009, polypensionné avec 100+56 trimestres dont 90+54 cotisés
-  # Exemple 1 de https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2009017_16022009#22
-  # Corrigée la criculaire date de février et l'exemple d'avant la réforme d'avril 2009
-  absolute_error_margin: .2
-  period: 2009
-  input:
-    date_de_naissance: 1949-02-01
-    raison_depart_taux_plein_anticipe: inapte
-    regime_general_cnav_liquidation_date: 2009-03-01
-    regime_general_cnav_pension_avant_minimum_et_plafonnement: 390 * 12
-    regime_general_cnav_duree_assurance_validee: 100
-    regime_general_cnav_duree_assurance_personnellement_cotisee: 90
-    duree_assurance_tous_regimes: 156
-    duree_assurance_cotisee_tous_regimes: 154
-  output:
-    regime_general_cnav_taux_de_liquidation: .5
-    regime_general_cnav_pension_brute: 12 * 393.32 # 12 * (590.33 * 100.0 / 161.0 + 54.74 * 90.0 / 161.0) #
+# - name: Assuré né en 1949, départ en 2009, polypensionné avec 100+56 trimestres dont 90+54 cotisés
+#   # Exemple 1 de https://www.legislation.cnav.fr/Pages/texte.aspx?Nom=CR_CN_2009017_16022009#22
+#   # Corrigée la criculaire date de février et l'exemple d'avant la réforme d'avril 2009
+#   absolute_error_margin: .2
+#   period: 2009
+#   input:
+#     date_de_naissance: 1949-02-01
+#     raison_depart_taux_plein_anticipe: inapte
+#     regime_general_cnav_liquidation_date: 2009-03-01
+#     regime_general_cnav_pension_avant_minimum_et_plafonnement: 390 * 12
+#     regime_general_cnav_duree_assurance: 100
+#     regime_general_cnav_duree_assurance_personnellement_cotisee: 90
+#     duree_assurance_tous_regimes: 156
+#     duree_assurance_cotisee_tous_regimes: 144
+#   output:
+#     regime_general_cnav_taux_de_liquidation: .5
+#     regime_general_cnav_pension_brute: 12 * 393.32 # 12 * (590.33 * 100.0 / 161.0 + 54.74 * 90.0 / 161.0) #
 
 
 - name: Assuré né en 1944, départ en 2009, monopensionné avec 150 trimestres dont 118 cotisés
@@ -112,7 +113,7 @@
     date_de_naissance: 1944-07-01
     regime_general_cnav_liquidation_date: 2009-08-01
     regime_general_cnav_pension_avant_minimum_et_plafonnement: 480 * 12
-    regime_general_cnav_duree_assurance_validee: 150
+    regime_general_cnav_duree_assurance: 150
     regime_general_cnav_duree_assurance_personnellement_cotisee: 118
   output:
     regime_general_cnav_pension_brute: 576.68 * 12
