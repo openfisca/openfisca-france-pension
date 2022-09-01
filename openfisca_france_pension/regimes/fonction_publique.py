@@ -89,6 +89,24 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
             return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
+    class aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
+        value_type = bool
+        entity = Person
+        definition_period = YEAR
+        label = "Condition remplie pour que l'AOD soit égale à la date de satisfaction des conditions pour un départ anticipé au titre de parent de trois enfants"
+        default_value = False
+
+        def formula(individu, period):
+            nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
+            duree_de_service_effective = individu("regime_name_duree_de_service", period)
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+            condition_enfant = nombre_enfants_a_charge >= 3
+            condition_service = duree_de_service_effective >= 60
+            condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
+            condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
+            return condition_enfant * condition_service * condition_date_liquidation * condition_date
+
     class coefficient_de_proratisation(Variable):
         value_type = float
         entity = Person
@@ -189,38 +207,20 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = date
         entity = Person
         definition_period = YEAR
-        label = "Date à laquelle les deux conditions permettant un depart anticipe pour motif de parent de trois enfant sont satisfaites"
+        label = "Date à laquelle les deux conditions permettant un départ anticipé pour motif de parent de trois enfant sont satisfaites"
         default_value = date(2250, 12, 31)
 
         def formula(individu, period):
             date_naissance_enfant = individu('date_naissance_enfant', period)
             date_trois_enfants = date_naissance_enfant  # date de naissance du 3e enfant
             date_quinze_ans_service = individu('regime_name_date_quinze_ans_service', period)
-            condition1 = date_quinze_ans_service == np.datetime64("1970-01-01")
-            condition2 = date_trois_enfants == np.datetime64("1970-01-01")
+            condition1 = date_quinze_ans_service == np.datetime64("1970-01-01")  # TODO this is always true
+            condition2 = date_trois_enfants == np.datetime64("1970-01-01")  # TODO this is always true
             return where(
                 condition1 * condition2,
                 np.datetime64("2250-12-31"),
                 max_(date_trois_enfants, date_quinze_ans_service)
                 )
-
-    class aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
-        value_type = bool
-        entity = Person
-        definition_period = YEAR
-        label = "Condition remplie pour que l'AOD soit égale à la date de satisfaction des conditions pour un départ anticipé au titre de parent de trois enfants"
-        default_value = False
-
-        def formula(individu, period):
-            nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
-            duree_de_service_effective = individu("regime_name_duree_de_service", period)
-            liquidation_date = individu('regime_name_liquidation_date', period)
-            annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
-            condition_enfant = nombre_enfants_a_charge >= 3
-            condition_service = duree_de_service_effective >= 60
-            condition_date = annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants < 2012
-            condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
-            return condition_enfant * condition_service * condition_date_liquidation * condition_date
 
     class decote_a_date_depart_anticipe_parent_trois_enfants(Variable):
         value_type = bool
@@ -234,8 +234,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             duree_de_service_effective = individu("regime_name_duree_de_service", period)
             annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
-            annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
-            condition_date = annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants < 2012
+            annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+            condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
             condition_enfant = nombre_enfants_a_charge >= 3
             condition_service = duree_de_service_effective >= 60
             condition_aod = annee_age_ouverture_droits < 2016
@@ -315,6 +315,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ]
                 )
             return taux_decote * decote_trimestres
+
+    class depart_anticipe_trois_enfants():
+        value_type = bool
+        entity = Person
+        definition_period = ETERNITY
+        label = "Demande de dépar anticipé pour 3 enfants"
+        # TODO not used for the moment
 
     class dernier_indice_atteint(Variable):
         value_type = float
@@ -605,7 +612,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     class majoration_duree_de_service(Variable):
         value_type = float
         entity = Person
-        definition_period = YEAR
+        definition_period = ETERNITY
         label = "Majoration de durée de service"
 
     class minimum_garanti(Variable):

@@ -454,7 +454,7 @@ class fonction_publique_majoration_duree_assurance_enfant(Variable):
 class fonction_publique_majoration_duree_de_service(Variable):
     value_type = float
     entity = Person
-    definition_period = YEAR
+    definition_period = ETERNITY
     label = 'Majoration de durée de service'
 
 class fonction_publique_majoration_pension(Variable):
