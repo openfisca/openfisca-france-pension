@@ -276,7 +276,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
             salaire_de_base = individu("regime_name_salaire_de_base", period)
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
             employeur = parameters(period).regime_name.prelevements_sociaux.employeur
             salarie_concerne = (
                 (categorie_salarie == TypesCategorieSalarie.prive_non_cadre)
@@ -297,7 +297,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
             salaire_de_base = individu("regime_name_salaire_de_base", period)
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
             salarie = parameters(period).regime_name.prelevements_sociaux.salarie
             salarie_concerne = (
                 (categorie_salarie == TypesCategorieSalarie.prive_non_cadre)
@@ -696,7 +696,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
 
             minimum_contributif_plafond_annuel = 12 * parameters(period).regime_name.plafond_mico.minimum_contributif_plafond_mensuel
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
 
             a_atteint_taux_plein = (taux_de_liquidation >= taux_plein)
@@ -746,7 +746,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
             minimum_contributif = individu('regime_name_pension_minimale', period)
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
 
             # Plafonnement (se calcule avant surcote et bonification)
@@ -776,7 +776,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
             a_atteint_taux_plein = (taux_de_liquidation >= taux_plein)
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
 
             # Plafonnement (se calcule avant surcote et bonification)
             pension_avant_minimum_et_plafonnement_a_taux_plein = where(
@@ -978,7 +978,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             # TODO: gérer les plus de 65 ans au 1er janvier 1983'''
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
             pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
             pension_brute = individu('regime_name_pension_brute', period)

@@ -187,7 +187,7 @@ class regime_general_cnav_cotisation_employeur(Variable):
     def formula(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         employeur = parameters(period).secteur_prive.regime_general_cnav.prelevements_sociaux.employeur
         salarie_concerne = (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) + (categorie_salarie == TypesCategorieSalarie.prive_cadre) + (categorie_salarie == TypesCategorieSalarie.public_non_titulaire)
         return salarie_concerne * (employeur.vieillesse_deplafonnee.calc(salaire_de_base, factor=plafond_securite_sociale) + employeur.vieillesse_plafonnee.calc(salaire_de_base, factor=plafond_securite_sociale))
@@ -201,7 +201,7 @@ class regime_general_cnav_cotisation_salarie(Variable):
     def formula(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         salarie = parameters(period).secteur_prive.regime_general_cnav.prelevements_sociaux.salarie
         salarie_concerne = (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) + (categorie_salarie == TypesCategorieSalarie.prive_cadre) + (categorie_salarie == TypesCategorieSalarie.public_non_titulaire)
         return salarie_concerne * (salarie.vieillesse_deplafonnee.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.vieillesse_plafonnee.calc(salaire_de_base, factor=plafond_securite_sociale))
@@ -570,7 +570,7 @@ class regime_general_cnav_pension_brute(Variable):
         minimum_contributif = individu('regime_general_cnav_pension_minimale', period)
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
         minimum_contributif_plafond_annuel = 12 * parameters(period).secteur_prive.regime_general_cnav.plafond_mico.minimum_contributif_plafond_mensuel
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         a_atteint_taux_plein = taux_de_liquidation >= taux_plein
         pension_avant_minimum_et_plafonnement_a_taux_plein = where(taux_de_liquidation > 0, taux_plein * pension_avant_minimum_et_plafonnement / (taux_de_liquidation + (taux_de_liquidation <= 0)), 0)
@@ -586,7 +586,7 @@ class regime_general_cnav_pension_brute(Variable):
         pension_avant_minimum_et_plafonnement = individu('regime_general_cnav_pension_avant_minimum_et_plafonnement', period)
         minimum_contributif = individu('regime_general_cnav_pension_minimale', period)
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         pension_avant_minimum_et_plafonnement_a_taux_plein = where(taux_de_liquidation > 0, taux_plein * pension_avant_minimum_et_plafonnement / (taux_de_liquidation + (taux_de_liquidation <= 0)), 0)
         pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
@@ -600,7 +600,7 @@ class regime_general_cnav_pension_brute(Variable):
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         taux_de_liquidation = individu('regime_general_cnav_taux_de_liquidation', period)
         a_atteint_taux_plein = taux_de_liquidation >= taux_plein
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         pension_avant_minimum_et_plafonnement_a_taux_plein = where(taux_de_liquidation > 0, taux_plein * pension_avant_minimum_et_plafonnement / (taux_de_liquidation + (taux_de_liquidation <= 0)), 0)
         pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
         pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein, max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
@@ -629,7 +629,7 @@ class regime_general_cnav_pension_maximale(Variable):
     label = 'Pension maximale'
 
     def formula(individu, period, parameters):
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         taux_plein = parameters(period).secteur_prive.regime_general_cnav.taux_plein.taux_plein
         pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
         pension_brute = individu('regime_general_cnav_pension_brute', period)

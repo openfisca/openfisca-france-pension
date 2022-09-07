@@ -84,10 +84,10 @@ class fonction_publique_aod_egal_date_depart_anticipe_parent_trois_enfants(Varia
         nombre_enfants_a_charge = individu('nombre_enfants_a_charge', period)
         duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
-        annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+        annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
         condition_enfant = nombre_enfants_a_charge >= 3
         condition_service = duree_de_service_effective >= 60
-        condition_date = annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants < 2012
+        condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
         condition_date_liquidation = liquidation_date < np.datetime64('2011-07-01')
         return condition_enfant * condition_service * condition_date_liquidation * condition_date
 
@@ -175,7 +175,7 @@ class fonction_publique_date_satisfaction_condition_depart_anticipe_parents_troi
     value_type = date
     entity = Person
     definition_period = YEAR
-    label = 'Date à laquelle les deux conditions permettant un depart anticipe pour motif de parent de trois enfant sont satisfaites'
+    label = 'Date à laquelle les deux conditions permettant un départ anticipé pour motif de parent de trois enfant sont satisfaites'
     default_value = date(2250, 12, 31)
 
     def formula(individu, period):
@@ -210,8 +210,8 @@ class fonction_publique_decote_a_date_depart_anticipe_parent_trois_enfants(Varia
         duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
-        annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
-        condition_date = annee_satisfaction_condition_depart_anticipe_aprents_trois_enfants < 2012
+        annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+        condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
         condition_enfant = nombre_enfants_a_charge >= 3
         condition_service = duree_de_service_effective >= 60
         condition_aod = annee_age_ouverture_droits < 2016
@@ -242,6 +242,12 @@ class fonction_publique_decote_trimestres(Variable):
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
         return where(annee_age_ouverture_droits >= 2006, min_(decote_trimestres, 20), 0)
+
+class fonction_publique_depart_anticipe_trois_enfants:
+    value_type = bool
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Demande de dépar anticipé pour 3 enfants'
 
 class fonction_publique_dernier_indice_atteint(Variable):
     value_type = float
