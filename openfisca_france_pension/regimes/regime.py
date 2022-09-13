@@ -466,6 +466,8 @@ class AbstractRegimeComplementaire(AbstractRegime):
                 return individu.empty_array()
             cotisation = individu("regime_name_cotisation", period)
             points_annee_courante = cotisation / salaire_de_reference / taux_appel
+            print(f"taux_appel: {taux_appel}")
+            print(f"{period}: {points_annee_courante}")
             points_annee_precedente = individu('regime_name_points', last_year)
             if all(points_annee_precedente == 0):
                 return points_annee_courante

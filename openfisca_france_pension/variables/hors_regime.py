@@ -141,11 +141,6 @@ class duree_assurance_tous_regimes_annuelle(Variable):
             * individu(f'{regime}_majoration_duree_assurance', period)
             for regime in regimes
             )
-        print(period)
-        print(majoration_duree_assurance)
-        # if majoration_duree_assurance > 0:
-        #     BIM
-        print(duree_assurance_hors_majoration + majoration_duree_assurance)
         return duree_assurance_hors_majoration + majoration_duree_assurance
 
 
