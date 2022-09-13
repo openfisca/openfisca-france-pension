@@ -224,7 +224,6 @@ class agirc_points(Variable):
             return individu.empty_array()
         cotisation = individu('agirc_cotisation', period)
         points_annee_courante = cotisation / salaire_de_reference / taux_appel
-        print(f'taux_appel: {taux_appel}')
         print(f'{period}: {points_annee_courante}')
         points_annee_precedente = individu('agirc_points', last_year)
         if all(points_annee_precedente == 0):
@@ -492,7 +491,6 @@ class arrco_points(Variable):
             return individu.empty_array()
         cotisation = individu('arrco_cotisation', period)
         points_annee_courante = cotisation / salaire_de_reference / taux_appel
-        print(f'taux_appel: {taux_appel}')
         print(f'{period}: {points_annee_courante}')
         points_annee_precedente = individu('arrco_points', last_year)
         if all(points_annee_precedente == 0):
