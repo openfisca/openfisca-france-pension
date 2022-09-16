@@ -216,6 +216,20 @@ class agirc_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
+        points_annuels_annee_courante = individu('agirc_points_annuels', period)
+        points_annee_precedente = individu('agirc_points', last_year)
+        if all(points_annee_precedente == 0):
+            return points_annuels_annee_courante
+        points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annuels_annee_courante])
+        return points
+
+class agirc_points_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points'
+
+    def formula(individu, period, parameters):
         from openfisca_core.errors import ParameterNotFound
         try:
             salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
@@ -223,13 +237,7 @@ class agirc_points(Variable):
         except ParameterNotFound:
             return individu.empty_array()
         cotisation = individu('agirc_cotisation', period)
-        points_annee_courante = cotisation / salaire_de_reference / taux_appel
-        print(f'{period}: {points_annee_courante}')
-        points_annee_precedente = individu('agirc_points', last_year)
-        if all(points_annee_precedente == 0):
-            return points_annee_courante
-        points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annee_courante])
-        return points
+        return cotisation / salaire_de_reference / taux_appel
 
 class agirc_points_enfants(Variable):
     value_type = float
@@ -483,6 +491,20 @@ class arrco_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
+        points_annuels_annee_courante = individu('arrco_points_annuels', period)
+        points_annee_precedente = individu('arrco_points', last_year)
+        if all(points_annee_precedente == 0):
+            return points_annuels_annee_courante
+        points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annuels_annee_courante])
+        return points
+
+class arrco_points_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points'
+
+    def formula(individu, period, parameters):
         from openfisca_core.errors import ParameterNotFound
         try:
             salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
@@ -490,13 +512,7 @@ class arrco_points(Variable):
         except ParameterNotFound:
             return individu.empty_array()
         cotisation = individu('arrco_cotisation', period)
-        points_annee_courante = cotisation / salaire_de_reference / taux_appel
-        print(f'{period}: {points_annee_courante}')
-        points_annee_precedente = individu('arrco_points', last_year)
-        if all(points_annee_precedente == 0):
-            return points_annee_courante
-        points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annee_courante])
-        return points
+        return cotisation / salaire_de_reference / taux_appel
 
 class arrco_points_enfants(Variable):
     value_type = float
