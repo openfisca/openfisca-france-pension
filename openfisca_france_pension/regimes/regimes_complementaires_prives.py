@@ -225,11 +225,6 @@ class RegimeAgirc(AbstractRegimeComplementaire):
             salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
             employeur = parameters(period).regime_name.prelevements_sociaux.employeur
-            if period.start.year == 1971:
-                print(employeur.agirc)
-                print(f"plafond_securite_sociale: {plafond_securite_sociale}")
-                print(f"salaire_de_base: {salaire_de_base}")
-
             return (
                 (categorie_salarie == TypesCategorieSalarie.prive_cadre)
                 * employeur.agirc.calc(salaire_de_base, factor = plafond_securite_sociale)

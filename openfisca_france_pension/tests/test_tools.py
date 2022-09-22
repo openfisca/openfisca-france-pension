@@ -6,6 +6,7 @@ import pandas as pd
 
 
 from openfisca_france_pension.tools import (
+    count_calendar_quarters,
     calendar_quarters_elapsed_this_year_asof,
     mean_over_k_nonzero_largest,
     next_calendar_quarter_start_date,
@@ -110,3 +111,27 @@ def test_next_calendar_quarter_start_date():
 
     result = next_calendar_quarter_start_date(datetime_vector)
     assert all(result == target.astype('datetime64[M]'))
+
+
+def test_count_calendar_quarters():
+    start_date = pd.to_datetime([
+        "2012-01-01",
+        "2012-02-01",
+        "2012-01-05",
+        "2012-01-01",
+        ]).values
+    stop_date = pd.to_datetime([
+        "2012-07-01",
+        "2012-07-01",
+        "2012-07-01",
+        "2013-07-01",
+        ]).values
+
+    target = [
+        2,
+        1,
+        1,
+        6,
+        ]
+
+    np.testing.assert_almost_equal(count_calendar_quarters(start_date, stop_date), target)

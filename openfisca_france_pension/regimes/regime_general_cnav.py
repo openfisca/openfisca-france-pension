@@ -12,7 +12,7 @@ from openfisca_core.variables import Variable
 
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
-from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
+from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, count_calendar_quarters, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie  # , TypesStatutDuCotisant
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
@@ -727,15 +727,19 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 max_(minimum_contributif, pension_avant_minimum),
                 pension_avant_minimum
                 )
+
             pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
             pension_brute = where(
                 (
                     (pension_avant_minimum > 0)
                     * a_atteint_taux_plein
-                    * (pension_tous_regime_apres_minimum < minimum_contributif_plafond_annuel)
+                    * (pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel)
                     * (pension_apres_minimum <= minimum_contributif)
                     ),
-                min_(minimum_contributif_plafond_annuel - autres_pensions, pension_apres_minimum),
+                min_(
+                    max_(minimum_contributif_plafond_annuel - autres_pensions, 0),
+                    pension_apres_minimum,
+                    ),
                 pension_apres_minimum
                 )
             return pension_brute
@@ -1026,11 +1030,10 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                             individu("regime_name_salaire_de_base", period = year)
                             + individu("regime_name_avpf", period = year)
                             )[filter],
-                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
-                        * conversion_parametre_en_euros(year)
+                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year),
                         )
                     * revalorisation.get(year, revalorisation[min(revalorisation.keys())])  # FIXME revalorisation before 1949
-                    for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)
+                    for year in range(period.start.year - 1, _annee_de_naissance + OFFSET, -1)
                     ])
 
                 compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
@@ -1060,11 +1063,10 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 arr = np.vstack([
                     min_(
                         individu("regime_name_salaire_de_base", period = year),
-                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel
-                        * conversion_parametre_en_euros(year)
+                        parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year),
                         )
                     * revalorisation.get(year, revalorisation[min(revalorisation.keys())])  # FIXME revalorisation before 1949
-                    for year in range(period.start.year, annee_initiale + OFFSET, -1)
+                    for year in range(period.start.year - 1, annee_initiale + OFFSET, -1)
                     ])
                 )
             return salaire_de_refererence
@@ -1149,23 +1151,16 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             duree_assurance_cotisee_annuelle = individu('regime_name_duree_assurance_cotisee_annuelle', period)
             surcote_trimestres_periode_precedente = individu('regime_name_surcote_trimestres', period.last_year)
             surcote_trimestres_max = np.clip(
-                np.floor(
-                    (
-                        liquidation_date
-                        - max_(
-                            ouverture_des_droits_date_surcote,
-                            np.datetime64(period.start)
-                            )
-                        ).astype("timedelta64[M]").astype(int)
-                    / 3
+                count_calendar_quarters(
+                    start_date = max_(ouverture_des_droits_date_surcote, np.datetime64(period.start)),
+                    stop_date = liquidation_date,
                     ),
                 0,
                 4
                 )
-
             surcote_trimestres_periode_actuelle = where(
                 (
-                    (liquidation_date > ouverture_des_droits_date_surcote)
+                    (liquidation_date >= ouverture_des_droits_date_surcote)
                     & (ouverture_des_droits_date_surcote <= np.datetime64(period.start))
                     ),
                 np.clip(duree_assurance_cotisee_annuelle, 0, surcote_trimestres_max),

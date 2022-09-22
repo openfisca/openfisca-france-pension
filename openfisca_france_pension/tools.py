@@ -53,3 +53,16 @@ def calendar_quarters_elapsed_this_year_asof(datetime_vector):
     return (
         datetime_vector.astype('datetime64[M]') - datetime_vector.astype('datetime64[Y]').astype('datetime64[M]')
         ).astype(int) // 3
+
+
+def count_calendar_quarters(start_date, stop_date):
+    start_date_year = start_date.astype('datetime64[Y]').astype(int) + 1970
+    start_date_month = start_date.astype('datetime64[M]').astype(int) % 12 + 1
+    start_date_day = start_date - start_date.astype('datetime64[M]') + 1
+
+    stop_date_year = stop_date.astype('datetime64[Y]').astype(int) + 1970
+    stop_date_month = stop_date.astype('datetime64[M]').astype(int) % 12 + 1
+    stop_date_day = stop_date - stop_date.astype('datetime64[M]') + 1
+
+    d = (stop_date_year - start_date_year) * 12 + (stop_date_month - start_date_month) - 1 * (stop_date_day < start_date_day)
+    return d // 3

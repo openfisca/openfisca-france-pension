@@ -389,7 +389,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             duree_assurance_annuelle = individu("regime_name_duree_assurance_annuelle", period)
-            duree_assurance_annee_precedente = individu("regime_name_duree_assurance", period.last_year)
+            duree_assurance_annee_precedente = individu("regime_name_duree_assurance_validee", period.last_year)
             # TODO: hack to avoid infinite recursion depth loop
             if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
                 return individu.empty_array()
@@ -600,7 +600,10 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
                 )
             sexe = individu('sexe', period)
-            return where(sexe, bonification_cpcm, 0)
+            est_a_la_fonction_publique = (
+                individu('fonction_publique_liquidation_date', period)
+                < individu('regime_general_cnav_liquidation_date', period)
+                )
 
         def formula_1949(individu, period, parameters):
             bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
