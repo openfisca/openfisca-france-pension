@@ -600,10 +600,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
                 )
             sexe = individu('sexe', period)
+
             est_a_la_fonction_publique = (
                 individu('fonction_publique_liquidation_date', period)
                 < individu('regime_general_cnav_liquidation_date', period)
                 )
+
+            return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
 
         def formula_1949(individu, period, parameters):
             bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
