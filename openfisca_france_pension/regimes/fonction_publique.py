@@ -14,8 +14,7 @@ class TypesCategorieActivite(Enum):
     sedentaire = 'Sédentaire'
     actif = "Actif"
 
-
-class RegimeFonctionPublique(AbstractRegimeDeBase):
+class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
     parameters_prefix = "secteur_public"
@@ -774,6 +773,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
                 aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
 
+            # TODO passer pr des dates
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
@@ -853,3 +853,14 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     #     return {'sal': cot_sal_by_year, 'pat': cot_pat_by_year}
 
     # TODO majoration et bonification
+
+class RegimeFonctionPublique(AbstractRegimeFonctionPublique):
+    name = "Régime de base de la fonction publique"
+    variable_prefix = "fonction_publique"
+    parameters_prefix = "secteur_public"
+
+
+class RegimeCnracl(AbstractRegimeFonctionPublique):
+    name = 'Régime de la Caisse nationale des agents des collectivités locales'
+    variable_prefix = 'cnracl'
+    parameters_prefix = 'secteur_public'

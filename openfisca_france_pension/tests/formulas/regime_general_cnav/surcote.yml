@@ -98,3 +98,49 @@
     regime_general_cnav_surcote_trimestres: 2
     regime_general_cnav_surcote: 2 * .0125
     regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5 * (1 + 2 * 0.0125)
+
+
+- name: Surcote après 2009 pour une personne de 61 ans et 170 trimestres après majoration
+  absolute_error_margin: .001
+  max_spiral_loops: 40
+  period: 2010
+  input:
+    date_de_naissance: 1949-11-19
+    regime_general_cnav_liquidation_date: 2010-07-01
+    duree_assurance_tous_regimes:
+      2009: 170 - 12 - 2
+    regime_general_cnav_majoration_duree_assurance: 12
+    regime_general_cnav_duree_assurance_cotisee_annuelle: 2
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    duree_assurance_tous_regimes: 170
+    regime_general_cnav_decote: 0
+    regime_general_cnav_surcote_trimestres: 2
+    regime_general_cnav_surcote: 2 * .0125
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5 * (1 + 2 * 0.0125)
+
+
+- name: Surcote après 2009 pour une personne de 61 ans et 170 trimestres après majoration
+  absolute_error_margin: .001
+  max_spiral_loops: 40
+  period: 2011
+  input:
+    date_de_naissance: 1949-11-19
+    regime_general_cnav_liquidation_date: 2011-07-01
+    duree_assurance_tous_regimes:
+      2009: 170 - 12 - 4 - 2
+    regime_general_cnav_majoration_duree_assurance: 12
+    regime_general_cnav_duree_assurance_cotisee_annuelle:
+      2010: 4
+      2011: 2
+    regime_general_cnav_salaire_de_reference: 1000
+    regime_general_cnav_coefficient_de_proratisation: 1
+  output:
+    duree_assurance_tous_regimes: 170
+    regime_general_cnav_decote: 0
+    regime_general_cnav_surcote_trimestres:
+      2010: 4
+      2011: 6
+    regime_general_cnav_surcote: 6 * .0125
+    regime_general_cnav_pension_avant_minimum_et_plafonnement: 1000 * .5 * (1 + 6 * 0.0125)

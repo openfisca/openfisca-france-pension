@@ -15,7 +15,7 @@ from openfisca_core.periods import YEAR
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
-from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
+from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, count_calendar_quarters, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 REVAL_S_YEAR_MIN = 1949
@@ -579,7 +579,7 @@ class regime_general_cnav_pension_brute(Variable):
         pension_tous_regime_avant_minimum = pension_avant_minimum + autres_pensions
         pension_apres_minimum = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
-        pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_apres_minimum < minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), min_(minimum_contributif_plafond_annuel - autres_pensions, pension_apres_minimum), pension_apres_minimum)
+        pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), min_(max_(minimum_contributif_plafond_annuel - autres_pensions, 0), pension_apres_minimum), pension_apres_minimum)
         return pension_brute
 
     def formula_2004_01_01(individu, period, parameters):
@@ -733,6 +733,7 @@ class regime_general_cnav_salaire_de_reference(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Salaire annuel moyen de base dit salaire de référence'
+    reference = 'https://www.cor-retraites.fr/sites/default/files/2019-06/doc-1554.pdf'
 
     def formula_1994(individu, period, parameters):
         OFFSET = 10
@@ -740,17 +741,14 @@ class regime_general_cnav_salaire_de_reference(Variable):
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         annees_de_naissance_distinctes = np.unique(annee_de_naissance[liquidation_date >= np.datetime64(period.start)])
         salaire_de_reference = individu.empty_array()
+        revalorisation = dict(((annee_salaire, parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]) for annee_salaire in range(max(min(annees_de_naissance_distinctes) + OFFSET if annees_de_naissance_distinctes.size > 0 else REVAL_S_YEAR_MIN, REVAL_S_YEAR_MIN), period.start.year)))
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
             if _annee_de_naissance + OFFSET >= period.start.year:
                 break
             k = int(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[np.array(str(_annee_de_naissance), dtype='datetime64[Y]')])
             mean_over_largest = make_mean_over_largest(k)
-            revalorisation = dict()
-            revalorisation[period.start.year] = 1
-            for annee_salaire in range(max(_annee_de_naissance + OFFSET, REVAL_S_YEAR_MIN), period.start.year):
-                revalorisation[annee_salaire] = parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]
             filter = annee_de_naissance == _annee_de_naissance
-            arr = np.vstack([min_((individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year))[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year, _annee_de_naissance + OFFSET, -1)])
+            arr = np.vstack([min_(((individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year)) * ((period.start.year < 2004) | (individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year) >= parameters(max(year, 1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre[individu('regime_general_cnav_salaire_validant_trimestre', year)] * conversion_parametre_en_euros(year))))[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year - 1, _annee_de_naissance + OFFSET, -1)])
             compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
         return salaire_de_reference
 
@@ -760,11 +758,17 @@ class regime_general_cnav_salaire_de_reference(Variable):
         n = parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.before_1934_01_01
         mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
         annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
-        revalorisation = dict()
-        revalorisation[period.start.year] = 1
-        for annee_salaire in range(max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), period.start.year + 1):
-            revalorisation[annee_salaire] = np.prod(np.array([parameters(_annee).secteur_prive.regime_general_cnav.reval_s.coefficient for _annee in range(annee_salaire + 1, period.start.year + 1)]))
-        salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('regime_general_cnav_salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year, annee_initiale + OFFSET, -1)]))
+        revalorisation = dict(((annee_salaire, parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]) for annee_salaire in range(max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), period.start.year)))
+        salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year - 1, annee_initiale + OFFSET, -1)]))
+        return salaire_de_refererence
+
+    def formula(individu, period, parameters):
+        OFFSET = 10
+        n = parameters(1972).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.before_1934_01_01
+        mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
+        annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
+        revalorisation = dict(((annee_salaire, parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]) for annee_salaire in range(max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), period.start.year)))
+        salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('regime_general_cnav_salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year - 1, annee_initiale + OFFSET, -1)]))
         return salaire_de_refererence
 
 class regime_general_cnav_salaire_validant_trimestre(Variable):
@@ -826,10 +830,12 @@ class regime_general_cnav_surcote_trimestres(Variable):
         ouverture_des_droits_date_surcote = next_calendar_quarter_start_date(ouverture_des_droits_date)
         duree_assurance_cotisee_annuelle = individu('regime_general_cnav_duree_assurance_cotisee_annuelle', period)
         surcote_trimestres_periode_precedente = individu('regime_general_cnav_surcote_trimestres', period.last_year)
-        surcote_trimestres_max = np.clip(np.floor((liquidation_date - max_(ouverture_des_droits_date_surcote, np.datetime64(period.start))).astype('timedelta64[M]').astype(int) / 3), 0, 4)
-        surcote_trimestres_periode_actuelle = where((liquidation_date > ouverture_des_droits_date_surcote) & (ouverture_des_droits_date_surcote <= np.datetime64(period.start)), np.clip(duree_assurance_cotisee_annuelle, 0, surcote_trimestres_max), 0)
+        surcote_trimestres_max = np.clip(count_calendar_quarters(start_date=max_(ouverture_des_droits_date_surcote, np.datetime64(period.start)), stop_date=liquidation_date), 0, 4)
+        surcote_trimestres_periode_actuelle = where((liquidation_date >= ouverture_des_droits_date_surcote) & (ouverture_des_droits_date_surcote <= np.datetime64(period.start)), np.clip(duree_assurance_cotisee_annuelle, 0, surcote_trimestres_max), 0)
         trimestres_apres_aod = surcote_trimestres_periode_precedente + surcote_trimestres_periode_actuelle
-        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
+        regimes_de_base = ['regime_general_cnav', 'fonction_publique']
+        majoration_duree_assurance_avant_liquidation = sum(((liquidation_date > np.datetime64(period.offset(1, 'year').start)) * individu(f'{regime}_majoration_duree_assurance', period) for regime in regimes_de_base))
+        duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period) + majoration_duree_assurance_avant_liquidation
         date_de_naissance = individu('date_de_naissance', period)
         duree_assurance_cible_taux_plein = parameters(period).secteur_prive.regime_general_cnav.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
         surcote_trimestres = max_(0, min_(trimestres_apres_aod, duree_assurance_tous_regimes - duree_assurance_cible_taux_plein))

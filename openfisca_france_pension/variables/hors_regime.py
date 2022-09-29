@@ -124,11 +124,11 @@ class duree_assurance_tous_regimes_annuelle(Variable):
     label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
-        regimes = ['regime_general_cnav', 'fonction_publique']
+        regimes_de_base = ['regime_general_cnav', 'fonction_publique']
         duree_assurance_hors_majoration =  np.clip(
             sum(
                 individu(f'{regime}_duree_assurance_annuelle', period)
-                for regime in regimes
+                for regime in regimes_de_base
                 ),
             0,
             4
@@ -139,7 +139,7 @@ class duree_assurance_tous_regimes_annuelle(Variable):
                 == period.start.year
                 )
             * individu(f'{regime}_majoration_duree_assurance', period)
-            for regime in regimes
+            for regime in regimes_de_base
             )
         return duree_assurance_hors_majoration + majoration_duree_assurance
 
