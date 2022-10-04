@@ -175,8 +175,8 @@ class regime_general_cnav_cotisation(Variable):
     definition_period = YEAR
     label = 'cotisation retraite employeur'
 
-    def formula(individu, period):
-        return individu('regime_general_cnav_cotisation_employeur', period) + individu('regime_general_cnav_cotisation_salarie', period)
+    def formula(individu, period, parameters):
+        NotImplementedError
 
 class regime_general_cnav_cotisation_employeur(Variable):
     value_type = float

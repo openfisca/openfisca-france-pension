@@ -32,54 +32,43 @@ class agirc_coefficient_de_minoration(Variable):
 
 class agirc_cotisation(Variable):
     value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('agirc_cotisation_employeur', period) + individu('agirc_cotisation_salarie', period)
-
-class agirc_cotisation_employeur(Variable):
-    value_type = float
     default_value = 0
     entity = Person
     definition_period = YEAR
-    label = 'Cotisation employeur'
+    label = 'Cotisation'
 
     def formula_2019(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         employeur = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.agirc_arrco.employeur
-        return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-
-    def formula(individu, period, parameters):
-        categorie_salarie = individu('categorie_salarie', period)
-        salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.employeur
-        return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * employeur.agirc.calc(salaire_de_base, factor=plafond_securite_sociale)
-
-class agirc_cotisation_salarie(Variable):
-    value_type = float
-    default_value = 0
-    entity = Person
-    definition_period = YEAR
-    label = 'Cotisation salarié'
-
-    def formula_2019(individu, period, parameters):
-        categorie_salarie = individu('categorie_salarie', period)
-        salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.agirc_arrco.salarie
-        return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
+        return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * (employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale))
 
     def formula(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.salarie
-        return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * salarie.agirc.calc(salaire_de_base, factor=plafond_securite_sociale)
+        employeur = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.employeur.agirc
+        salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.salarie.agirc
+        agirc = employeur.copy()
+        agirc.add_tax_scale(salarie)
+        points_gmp = parameters(period).secteur_prive.regimes_complementaires.agirc.gmp.garantie_minimale_points
+        try:
+            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
+            taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
+        except ParameterNotFound:
+            return individu.empty_array()
+        cotisation_gmp_annuelle = points_gmp * salaire_de_reference * taux_appel
+        base_gmp_annuelle = cotisation_gmp_annuelle / agirc.rates[1]
+        salaire_charniere_annuel = plafond_securite_sociale + base_gmp_annuelle
+        salaire_charniere = salaire_charniere_annuel / plafond_securite_sociale
+        cotisation = cotisation_gmp_annuelle
+        n = (cotisation + 0.1) * 12
+        agirc.add_bracket(n / plafond_securite_sociale, 0)
+        agirc.rates[0] = cotisation / n
+        agirc.thresholds[2] = salaire_charniere
+        return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * agirc.calc(salaire_de_base, factor=plafond_securite_sociale)
 
 class agirc_liquidation_date(Variable):
     value_type = date
@@ -303,26 +292,18 @@ class arrco_coefficient_de_minoration(Variable):
 
 class arrco_cotisation(Variable):
     value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('arrco_cotisation_employeur', period) + individu('arrco_cotisation_salarie', period)
-
-class arrco_cotisation_employeur(Variable):
-    value_type = float
     default_value = 0
     entity = Person
     definition_period = YEAR
-    label = 'Cotisation employeur'
+    label = 'Cotisation'
 
     def formula_2019(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         employeur = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.employeur
-        return (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) * employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
+        salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.salarie
+        return (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) * (employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale))
 
     def formula(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
@@ -331,30 +312,10 @@ class arrco_cotisation_employeur(Variable):
         employeur = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.employeur
         employeur_non_cadre = employeur.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         employeur_cadre = employeur.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, categorie_salarie == TypesCategorieSalarie.prive_cadre], [employeur_non_cadre, employeur_cadre])
-
-class arrco_cotisation_salarie(Variable):
-    value_type = float
-    default_value = 0
-    entity = Person
-    definition_period = YEAR
-    label = 'Cotisation salarié'
-
-    def formula_2019(individu, period, parameters):
-        categorie_salarie = individu('categorie_salarie', period)
-        salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.salarie
-        return (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) * salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-
-    def formula(individu, period, parameters):
-        categorie_salarie = individu('categorie_salarie', period)
-        salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
-        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
         salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.salarie
         salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, categorie_salarie == TypesCategorieSalarie.prive_cadre], [salarie_non_cadre, salarie_cadre])
+        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, categorie_salarie == TypesCategorieSalarie.prive_cadre], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre])
 
 class arrco_liquidation_date(Variable):
     value_type = date

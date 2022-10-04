@@ -21,8 +21,8 @@ class AbstractRegime(object):
         definition_period = YEAR
         label = "cotisation retraite employeur"
 
-        def formula(individu, period):
-            return individu("regime_name_cotisation_employeur", period) + individu("regime_name_cotisation_salarie", period)
+        def formula(individu, period, parameters):
+            NotImplementedError
 
     class liquidation_date(Variable):
         value_type = date
@@ -30,24 +30,6 @@ class AbstractRegime(object):
         definition_period = ETERNITY
         label = 'Date de liquidation'
         default_value = date(2250, 12, 31)
-
-    class cotisation_employeur(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "cotisation retraite employeur"
-
-        def formula(individu, period, parameters):
-            NotImplementedError
-
-    class cotisation_salarie(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "cotisation retraite employeur"
-
-        def formula(individu, period, parameters):
-            NotImplementedError
 
     class majoration_pension(Variable):
         value_type = int

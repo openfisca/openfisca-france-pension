@@ -122,24 +122,6 @@ class cnracl_cotisation(Variable):
     definition_period = YEAR
     label = 'cotisation retraite employeur'
 
-    def formula(individu, period):
-        return individu('cnracl_cotisation_employeur', period) + individu('cnracl_cotisation_salarie', period)
-
-class cnracl_cotisation_employeur(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period, parameters):
-        NotImplementedError
-
-class cnracl_cotisation_salarie(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
     def formula(individu, period, parameters):
         NotImplementedError
 
@@ -809,24 +791,6 @@ class fonction_publique_coefficient_de_proratisation(Variable):
         return coefficient_de_proratisation
 
 class fonction_publique_cotisation(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period):
-        return individu('fonction_publique_cotisation_employeur', period) + individu('fonction_publique_cotisation_salarie', period)
-
-class fonction_publique_cotisation_employeur(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'cotisation retraite employeur'
-
-    def formula(individu, period, parameters):
-        NotImplementedError
-
-class fonction_publique_cotisation_salarie(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR

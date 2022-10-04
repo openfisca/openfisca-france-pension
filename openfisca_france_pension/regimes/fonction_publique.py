@@ -14,6 +14,7 @@ class TypesCategorieActivite(Enum):
     sedentaire = 'Sédentaire'
     actif = "Actif"
 
+
 class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
@@ -853,6 +854,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
     #     return {'sal': cot_sal_by_year, 'pat': cot_pat_by_year}
 
     # TODO majoration et bonification
+
 
 class RegimeFonctionPublique(AbstractRegimeFonctionPublique):
     name = "Régime de base de la fonction publique"

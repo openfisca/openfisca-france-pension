@@ -7,22 +7,14 @@
       2015: 1000
       2019: 1000
   output:
-    agirc_cotisation_employeur:
+    agirc_cotisation:
       2010: 0
       2015: 0
       2019: 0
-    agirc_cotisation_salarie:
-      2010: 0
-      2015: 0
-      2019: 0
-    arrco_cotisation_employeur:
-      2010: .045 * 1000
-      2015: .0465 * 1000
-      2019: .0472 * 1000
-    arrco_cotisation_salarie:
-      2010: .03 * 1000
-      2015: .031 * 1000
-      2019: .0315 * 1000
+    arrco_cotisation:
+      2010: (.045  + .03) * 1000
+      2015: (.0465 + .031) * 1000
+      2019: (.0472 + .0315) * 1000
 
 - name: cotisation Arrco non cadre au dessus du plafond
   description: test
@@ -33,19 +25,11 @@
       2015: 2 * 12 * 3170
       2019: 2 * 12 * 3377
   output:
-    agirc_cotisation_employeur:
+    agirc_cotisation:
       2010: 0
       2015: 0
       2019: 0
-    agirc_cotisation_salarie:
-      2010: 0
-      2015: 0
-      2019: 0
-    arrco_cotisation_employeur:
-      2010: 12 * (.045 + .12) * 2885
-      2015: 12 * (.0465  + .1215) * 3170
-      2019: 12 * (.0472 + .1295) * 3377
-    arrco_cotisation_salarie:
-      2010: 12 * (.03 + .08) * 2885
-      2015: 12 * (.031 + .081) * 3170
-      2019: 12 * (.0315 + .0864) * 3377
+    arrco_cotisation:
+      2010: 12 * (.045 + .12 + .03 + .08) * 2885
+      2015: 12 * (.0465  + .1215 + .031 + .081) * 3170
+      2019: 12 * (.0472 + .1295 + .0315 + .0864) * 3377
