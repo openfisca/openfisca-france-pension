@@ -48,6 +48,17 @@ class TypesSalaireValidantTrimestre(Enum):
     guadeloupe_guyane_martinique = 'Guadeloupe, Guyane et Martinique'
     reunion = 'Réunion'
 
+class regime_general_cnav_age_a_la_liquidation(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Âge à la liquidation'
+
+    def formula(individu, period):
+        liquidation_date = individu('regime_general_cnav_liquidation_date', period)
+        age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
+        return age_en_mois_a_la_liquidation / 12
+
 class regime_general_cnav_age_annulation_decote(Variable):
     value_type = float
     entity = Person

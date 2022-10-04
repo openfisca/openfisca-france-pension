@@ -77,6 +77,20 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         def formula_1945(individu, period, parameters):
             return parameters(period).regime_name.aad.age_annulation_decote_en_fonction_date_naissance.before_1951_07_01.annee
 
+    class age_a_la_liquidation(Variable):
+        value_type = float
+        entity = Person
+        definition_period = ETERNITY
+        label = "Âge à la liquidation"
+
+        def formula(individu, period):
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            age_en_mois_a_la_liquidation = (
+                liquidation_date
+                - individu('date_de_naissance', period)
+                ).astype("timedelta64[M]").astype(int)
+            return age_en_mois_a_la_liquidation / 12
+
     class age_annulation_decote(Variable):
         value_type = float
         entity = Person
