@@ -38,7 +38,23 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Annee_age_ouverture_droits"
 
-        def formula_2006(individu, period, parameters):
+        def formula_2006(individu, period):
+            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants", period)
+            depart_anticipe_trois_enfants = individu("regime_name_depart_anticipe_trois_enfants", period)
+            annee_age_ouverture_droits = individu("regime_name_annee_age_ouverture_droits_normale", period)
+            return where(
+                depart_anticipe_trois_enfants,
+                date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970,
+                annee_age_ouverture_droits
+                )
+
+    class annee_age_ouverture_droits_normale(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Annee_age_ouverture_droits"
+
+        def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
             aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
@@ -66,15 +82,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                     + aod_mois
                     ) / 12
                 ).astype(int)
-            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants", period)
-            aod_egal_date_depart_anticipe_parent_trois_enfants = individu('regime_name_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
-            condition_aod = annee_age_ouverture_droits < 2016
-            condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
-            return where(
-                aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote),
-                date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970,
-                annee_age_ouverture_droits
-                )
+            return annee_age_ouverture_droits
 
     class aod(Variable):
         value_type = int
@@ -316,11 +324,19 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                 )
             return taux_decote * decote_trimestres
 
-    class depart_anticipe_trois_enfants():
+    class depart_anticipe_trois_enfants(Variable):
         value_type = bool
         entity = Person
         definition_period = ETERNITY
         label = "Demande de dépar anticipé pour 3 enfants"
+
+        def formula(individu, period, parameters):
+            aod_egal_date_depart_anticipe_parent_trois_enfants = individu('regime_name_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
+            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits_normale', period)
+            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+            condition_aod = annee_age_ouverture_droits < 2016
+            condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
+            return aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote)
         # TODO not used for the moment
 
     class dernier_indice_atteint(Variable):
@@ -382,7 +398,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                 )
 
     class duree_assurance_validee(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance (trimestres validés dans la fonction publique)"

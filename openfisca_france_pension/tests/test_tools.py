@@ -6,8 +6,8 @@ import pandas as pd
 
 
 from openfisca_france_pension.tools import (
-    count_calendar_quarters,
     calendar_quarters_elapsed_this_year_asof,
+    count_calendar_quarters,
     mean_over_k_nonzero_largest,
     next_calendar_quarter_start_date,
     previous_calendar_quarter_start_date,

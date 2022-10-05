@@ -36,7 +36,19 @@ class cnracl_annee_age_ouverture_droits(Variable):
     definition_period = YEAR
     label = 'Annee_age_ouverture_droits'
 
-    def formula_2006(individu, period, parameters):
+    def formula_2006(individu, period):
+        date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('cnracl_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+        depart_anticipe_trois_enfants = individu('cnracl_depart_anticipe_trois_enfants', period)
+        annee_age_ouverture_droits = individu('cnracl_annee_age_ouverture_droits_normale', period)
+        return where(depart_anticipe_trois_enfants, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970, annee_age_ouverture_droits)
+
+class cnracl_annee_age_ouverture_droits_normale(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = 'Annee_age_ouverture_droits'
+
+    def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
         aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
@@ -54,11 +66,7 @@ class cnracl_annee_age_ouverture_droits(Variable):
         aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
         aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
-        date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('cnracl_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
-        aod_egal_date_depart_anticipe_parent_trois_enfants = individu('cnracl_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
-        condition_aod = annee_age_ouverture_droits < 2016
-        condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
-        return where(aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote), date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970, annee_age_ouverture_droits)
+        return annee_age_ouverture_droits
 
 class cnracl_aod(Variable):
     value_type = int
@@ -225,11 +233,19 @@ class cnracl_decote_trimestres(Variable):
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
         return where(annee_age_ouverture_droits >= 2006, min_(decote_trimestres, 20), 0)
 
-class cnracl_depart_anticipe_trois_enfants:
+class cnracl_depart_anticipe_trois_enfants(Variable):
     value_type = bool
     entity = Person
     definition_period = ETERNITY
     label = 'Demande de dépar anticipé pour 3 enfants'
+
+    def formula(individu, period, parameters):
+        aod_egal_date_depart_anticipe_parent_trois_enfants = individu('cnracl_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
+        annee_age_ouverture_droits = individu('cnracl_annee_age_ouverture_droits_normale', period)
+        date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('cnracl_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+        condition_aod = annee_age_ouverture_droits < 2016
+        condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
+        return aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote)
 
 class cnracl_dernier_indice_atteint(Variable):
     value_type = float
@@ -320,7 +336,7 @@ class cnracl_duree_assurance_service_national_annuelle(Variable):
     label = "Durée d'assurance au titre du service national (en trimestres validés l'année considérée)"
 
 class cnracl_duree_assurance_validee(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"
@@ -710,7 +726,19 @@ class fonction_publique_annee_age_ouverture_droits(Variable):
     definition_period = YEAR
     label = 'Annee_age_ouverture_droits'
 
-    def formula_2006(individu, period, parameters):
+    def formula_2006(individu, period):
+        date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+        depart_anticipe_trois_enfants = individu('fonction_publique_depart_anticipe_trois_enfants', period)
+        annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits_normale', period)
+        return where(depart_anticipe_trois_enfants, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970, annee_age_ouverture_droits)
+
+class fonction_publique_annee_age_ouverture_droits_normale(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = 'Annee_age_ouverture_droits'
+
+    def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
         aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
@@ -728,11 +756,7 @@ class fonction_publique_annee_age_ouverture_droits(Variable):
         aod_annee = where(actif_a_la_liquidation, aod_active_annee, aod_sedentaire_annee)
         aod_mois = where(actif_a_la_liquidation, aod_active_mois, aod_sedentaire_mois)
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
-        date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
-        aod_egal_date_depart_anticipe_parent_trois_enfants = individu('fonction_publique_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
-        condition_aod = annee_age_ouverture_droits < 2016
-        condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
-        return where(aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote), date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970, annee_age_ouverture_droits)
+        return annee_age_ouverture_droits
 
 class fonction_publique_aod(Variable):
     value_type = int
@@ -899,11 +923,19 @@ class fonction_publique_decote_trimestres(Variable):
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
         return where(annee_age_ouverture_droits >= 2006, min_(decote_trimestres, 20), 0)
 
-class fonction_publique_depart_anticipe_trois_enfants:
+class fonction_publique_depart_anticipe_trois_enfants(Variable):
     value_type = bool
     entity = Person
     definition_period = ETERNITY
     label = 'Demande de dépar anticipé pour 3 enfants'
+
+    def formula(individu, period, parameters):
+        aod_egal_date_depart_anticipe_parent_trois_enfants = individu('fonction_publique_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
+        annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits_normale', period)
+        date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+        condition_aod = annee_age_ouverture_droits < 2016
+        condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
+        return aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote)
 
 class fonction_publique_dernier_indice_atteint(Variable):
     value_type = float
@@ -994,7 +1026,7 @@ class fonction_publique_duree_assurance_service_national_annuelle(Variable):
     label = "Durée d'assurance au titre du service national (en trimestres validés l'année considérée)"
 
 class fonction_publique_duree_assurance_validee(Variable):
-    value_type = int
+    value_type = float
     entity = Person
     definition_period = YEAR
     label = "Durée d'assurance (trimestres validés dans la fonction publique)"

@@ -104,7 +104,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             aad_anciens_anciens_combattants = parameters(period).regime_name.aad.age_annulation_decote_anciens_combattants
             aad_anciens_travailleurs_manuels = parameters(period).regime_name.aad.travailleurs_manuels.age_annulation_decote
             aad_droit_commun = individu("regime_name_age_annulation_decote_droit_commun", period)
-            # TODO Ajouter durée d'assurance pour les travailleurs manuels
+            # TODO: ajouter durée d'assurance pour les travailleurs manuels
             raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
             aad = switch(
                 raison_depart_taux_plein_anticipe,
@@ -125,7 +125,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
             aad_anciens_anciens_combattants = parameters(period).regime_name.aad.age_annulation_decote_anciens_combattants
             aad_anciens_travailleurs_manuels = parameters(period).regime_name.aad.travailleurs_manuels.age_annulation_decote
             aad_droit_commun = individu("regime_name_age_annulation_decote_droit_commun", period)
-            # TODO: Ajouter durée d'assurance pour les travailleurs manuels
+            # TODO: ajouter durée d'assurance pour les travailleurs manuels
             raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
             aad = switch(
                 raison_depart_taux_plein_anticipe,
