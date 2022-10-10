@@ -448,11 +448,40 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                 duree_de_service_annee_precedente + duree_de_service_annuelle
                 )
 
+    class duree_de_service_actif(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Durée de service en catégorie active (trimestres cotisés dans la fonction publique active)"
+
+        def formula(individu, period, parameters):
+            duree_de_service_actif_annuelle = individu("regime_name_duree_de_service_actif_annuelle", period)
+            duree_de_service_actif_annee_precedente = individu("regime_name_duree_de_service_actif", period.last_year)
+            # TODO: hack to avoid infinite recursion depth loop
+            if all((duree_de_service_actif_annuelle == 0.0) & (duree_de_service_actif_annee_precedente == 0.0)):
+                return individu.empty_array()
+
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            return where(
+                annee_de_liquidation == period.start.year,
+                round_(
+                    duree_de_service_actif_annee_precedente
+                    + duree_de_service_actif_annuelle
+                    ),  # On arrondi l'année de la liquidation
+                duree_de_service_actif_annee_precedente + duree_de_service_actif_annuelle
+                )
+
+    class duree_de_service_actif_annuelle(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Durée de service dans la fonction publique au service actif"
+
     class duree_de_service_annuelle(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée de service dans la fonction publique hors rachst et bonification dans l'année"
+        label = "Durée de service dans la fonction publique hors rachat et bonification dans l'année"
 
         def formula(individu, period, parameters):
             return np.clip(
@@ -467,13 +496,42 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée de service cotisée dans la fonction publique hors rachst et bonification dans l'année"
+        label = "Durée de service cotisée dans la fonction publique hors rachat et bonification dans l'année"
 
     class duree_de_service_rachetee_annuelle(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachst et bonification dans l'année"
+        label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachat et bonification dans l'année"
+
+    class duree_de_service_super_actif(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Durée de service en catégorie super active (trimestres cotisés dans la fonction publique active)"
+
+        def formula(individu, period, parameters):
+            duree_de_service_super_actif_annuelle = individu("regime_name_duree_de_service_super_actif_annuelle", period)
+            duree_de_service_super_actif_annee_precedente = individu("regime_name_duree_de_service_super_actif", period.last_year)
+            # TODO: hack to avoid infinite recursion depth loop
+            if all((duree_de_service_super_actif_annuelle == 0.0) & (duree_de_service_super_actif_annee_precedente == 0.0)):
+                return individu.empty_array()
+
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            return where(
+                annee_de_liquidation == period.start.year,
+                round_(
+                    duree_de_service_super_actif_annee_precedente
+                    + duree_de_service_super_actif_annuelle
+                    ),  # On arrondi l'année de la liquidation
+                duree_de_service_super_actif_annee_precedente + duree_de_service_super_actif_annuelle
+                )
+
+    class duree_de_service_super_actif_annuelle(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Durée de service dans la fonction publique en catégorie super actif"
 
     class limite_d_age(Variable):
         value_type = float

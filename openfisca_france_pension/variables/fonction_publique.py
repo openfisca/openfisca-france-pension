@@ -15,9 +15,10 @@ from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 class TypesCategorieActivite(Enum):
-    __order__ = 'sedentaire actif'
+    __order__ = 'sedentaire actif super_actif'
     sedentaire = 'Sédentaire'
     actif = 'Actif'
+    super_actif = 'Super actif'
 
 class cnracl_actif_a_la_liquidation(Variable):
     value_type = bool
@@ -715,7 +716,7 @@ class fonction_publique_actif_a_la_liquidation(Variable):
     value_type = bool
     entity = Person
     definition_period = YEAR
-    label = "Atteinte des quinze ans d'activité"
+    label = 'Est considéré comme actif à la liquiation (a atteint des quinze ans de service sur un emploi de civil actif'
 
     def formula(individu, period, parameters):
         date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
@@ -1058,11 +1059,31 @@ class fonction_publique_duree_de_service(Variable):
         majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
         return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle + majoration_duree_de_service), duree_de_service_annee_precedente + duree_de_service_annuelle)
 
+class fonction_publique_duree_de_service_actif(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service en catégorie active (trimestres cotisés dans la fonction publique active)'
+
+    def formula(individu, period, parameters):
+        duree_de_service_actif_annuelle = individu('fonction_publique_duree_de_service_actif_annuelle', period)
+        duree_de_service_actif_annee_precedente = individu('fonction_publique_duree_de_service_actif', period.last_year)
+        if all((duree_de_service_actif_annuelle == 0.0) & (duree_de_service_actif_annee_precedente == 0.0)):
+            return individu.empty_array()
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_actif_annee_precedente + duree_de_service_actif_annuelle), duree_de_service_actif_annee_precedente + duree_de_service_actif_annuelle)
+
+class fonction_publique_duree_de_service_actif_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service dans la fonction publique au service actif'
+
 class fonction_publique_duree_de_service_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service dans la fonction publique hors rachst et bonification dans l'année"
+    label = "Durée de service dans la fonction publique hors rachat et bonification dans l'année"
 
     def formula(individu, period, parameters):
         return np.clip(individu('fonction_publique_duree_de_service_cotisee_annuelle', period) + individu('fonction_publique_duree_de_service_rachetee_annuelle', period) + individu('fonction_publique_duree_assurance_service_national_annuelle', period), 0, 4)
@@ -1071,13 +1092,33 @@ class fonction_publique_duree_de_service_cotisee_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service cotisée dans la fonction publique hors rachst et bonification dans l'année"
+    label = "Durée de service cotisée dans la fonction publique hors rachat et bonification dans l'année"
 
 class fonction_publique_duree_de_service_rachetee_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachst et bonification dans l'année"
+    label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachat et bonification dans l'année"
+
+class fonction_publique_duree_de_service_super_actif(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service en catégorie super active (trimestres cotisés dans la fonction publique active)'
+
+    def formula(individu, period, parameters):
+        duree_de_service_super_actif_annuelle = individu('fonction_publique_duree_de_service_super_actif_annuelle', period)
+        duree_de_service_super_actif_annee_precedente = individu('fonction_publique_duree_de_service_super_actif', period.last_year)
+        if all((duree_de_service_super_actif_annuelle == 0.0) & (duree_de_service_super_actif_annee_precedente == 0.0)):
+            return individu.empty_array()
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_super_actif_annee_precedente + duree_de_service_super_actif_annuelle), duree_de_service_super_actif_annee_precedente + duree_de_service_super_actif_annuelle)
+
+class fonction_publique_duree_de_service_super_actif_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service dans la fonction publique en catégorie super actif'
 
 class fonction_publique_limite_d_age(Variable):
     value_type = float
@@ -1344,6 +1385,12 @@ class fonction_publique_salaire_de_reference(Variable):
         except ParameterNotFound:
             valeur_point_indice = 0
         return dernier_indice_atteint * valeur_point_indice
+
+class fonction_publique_super_actif_a_la_liquidation(Variable):
+    value_type = bool
+    entity = Person
+    definition_period = YEAR
+    label = 'Est considéré comme super actif à la liquiation (a atteint la durée de service requise sur un emploi de civil actif insalubre ou roulant'
 
 class fonction_publique_surcote(Variable):
     value_type = float
