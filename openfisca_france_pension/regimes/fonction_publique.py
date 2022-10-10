@@ -11,9 +11,10 @@ from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTaux
 
 
 class TypesCategorieActivite(Enum):
-    __order__ = 'sedentaire actif'  # Needed to preserve the enum order in Python 2
+    __order__ = 'sedentaire actif super_actif'  # Needed to preserve the enum order in Python 2
     sedentaire = 'Sédentaire'
     actif = "Actif"
+    super_actif = "Super actif"
 
 
 class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
@@ -25,7 +26,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = bool
         entity = Person
         definition_period = YEAR
-        label = "Atteinte des quinze ans d'activité"
+        label = "Est considéré comme actif à la liquiation (a atteint des quinze ans de service sur un emploi de civil actif"
 
         def formula(individu, period, parameters):
             date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
@@ -474,95 +475,6 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachst et bonification dans l'année"
 
-    # Utiliser la duréee de service
-    # def FP_to_RG(self, data, trim_cot_by_year, sal_cot):
-    #     ''' Détermine les personnes à rapporter au régime général'''
-    #     P = reduce(getattr, self.param_name.split('.'), self.P)
-    #     # N_min donné en mois
-    #     trim_cot = trim_cot_by_year.sum(axis=1)
-    #     last_fp = data.workstate.last_time_in(self.code_regime)
-    #     to_RG_actif = (3 * trim_cot < P.actif.N_min) * (last_fp == self.code_actif)
-    #     to_RG_sedentaire = (3 * trim_cot < P.sedentaire.N_min) * (last_fp == self.code_sedentaire)
-    #     return (to_RG_actif + to_RG_sedentaire)
-
-    # def sal_FP_to_RG(self, sal_cot, FP_to_RG):
-    #     sal = sal_cot.copy()
-    #     sal[~FP_to_RG] = 0
-    #     return sal
-
-    # def trim_FP_to_RG(self, trim_cot_by_year, FP_to_RG):
-    #     trim = trim_cot_by_year.copy()
-    #     trim[~FP_to_RG] = 0
-    #     return trim
-
-    # def wages(self, sal_cot, FP_to_RG):
-    #     sal = sal_cot.copy()
-    #     sal[FP_to_RG] = 0
-    #     return sal
-
-    # def trimesters(self, trim_cot_by_year, FP_to_RG):
-    #     trim = trim_cot_by_year.copy()
-    #     trim[FP_to_RG] = 0
-    #     return trim
-
-    # def nb_trimesters(self, trimesters):
-    #     return trimesters.sum(axis=1)
-
-    # def trim_maj_mda_ini(self, info_ind, nb_trimesters):
-        # P_mda = self.P.public.fp.mda
-        # return trim_mda(info_ind, self.name, P_mda) * (nb_trimesters > 0)
-
-    # def trim_maj_mda_RG(self, regime='RG'):
-    #     pass
-
-    # def trim_maj_mda_RSI(self, regime='RSI'):
-    #     pass
-
-    # def trim_maj_mda(self, trim_maj_mda_ini, nb_trimesters, trim_maj_mda_RG,
-    #                  trim_maj_mda_RSI):
-    #     ''' La Mda (attribuée par tous les régimes de base), ne peut être
-    #     accordé par plus d'un régime.
-    #     Régle d'attribution : a cotisé au régime + si polypensionnés ->
-    #       ordre d'attribution : RG, RSI, FP
-    #     Rq : Pas beau mais temporaire, pour comparaison Destinie'''
-    #     if sum(trim_maj_mda_RG) + sum(trim_maj_mda_RSI) > 0:
-    #         return 0 * trim_maj_mda_RG
-    #     return trim_maj_mda_ini * (nb_trimesters > 0)
-
-    # def trim_maj_5eme(self, nb_trimesters):
-    #     # TODO: 5*4 ? d'ou ca vient ?
-    #     # TODO: Add bonification au cinquième pour les superactifs
-    #     # (policiers, surveillants pénitentiaires, contrôleurs aériens...)
-    #     super_actif = 0  # condition superactif à définir
-    #     taux_5eme = 0.2
-    #     bonif_5eme = minimum(nb_trimesters * taux_5eme, 5 * 4)
-    #     return array(bonif_5eme * super_actif) * (nb_trimesters > 0)
-
-    # def trim_maj_ini(self, trim_maj_mda_ini, trim_maj_5eme):
-    #     return trim_maj_mda_ini + trim_maj_5eme
-
-    # def trim_maj(self, trim_maj_mda, trim_maj_5eme):
-    #     return trim_maj_mda + trim_maj_5eme
-
-    # # coeff_proratisation
-    # def CP_5eme(self, nb_trimesters, trim_maj_5eme):
-    #     print self.P.public.fp
-    #     N_CP = self.P.public.fp.plein.n_trim
-    #     return minimum(divide(nb_trimesters + trim_maj_5eme, N_CP), 1)
-
-    # def CP_CPCM(self, nb_trimesters, trim_maj_mda_ini):
-    #     # TODO: change to not trim_maj_mda instead of trim_maj_mda_ini ?
-    #     P = self.P.public.fp
-    #     N_CP = P.plein.n_trim
-    #     taux = P.plein.taux
-    #     taux_bonif = P.taux_bonif
-    #     return minimum(divide(maximum(nb_trimesters, N_CP) + trim_maj_mda_ini,
-    #                           N_CP),
-    #                    divide(taux_bonif, taux))
-    # def coeff_proratisation_Destinie(self, nb_trimesters, trim_maj_mda_ini):
-    #     P = self.P.public.fp
-    #     N_CP = P.plein.n_trim
-    #     return minimum(divide(nb_trimesters + trim_maj_mda_ini, N_CP), 1)
     class limite_d_age(Variable):
         value_type = float
         entity = Person
@@ -835,6 +747,18 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                 min_(trimestres_surcote, 20),
                 trimestres_surcote,
                 )
+
+    class super_actif_a_la_liquidation(Variable):
+        value_type = bool
+        entity = Person
+        definition_period = YEAR
+        label = "Est considéré comme super actif à la liquiation (a atteint la durée de service requise sur un emploi de civil actif insalubre ou roulant"
+
+        def formula(individu, period, parameters):
+            date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
+            actif_annee = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+            actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
+            return actif
 
     class surcote(Variable):
         value_type = float
