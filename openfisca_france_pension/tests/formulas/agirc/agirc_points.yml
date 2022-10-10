@@ -1,6 +1,6 @@
 - name: points Agirc
   description: Exemple de brochure Agirc_Arrco https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/cotisations_points.pdf
-  absolute_error_margin: .005
+  absolute_error_margin: .1
   period: 2016
   input:
     categorie_salarie: prive_cadre
@@ -10,3 +10,15 @@
     arrco_points: 152.93
     agirc_cotisation: 3767.06 * 1.25
     agirc_points: 691.78  # Normalement arrondi à l'euro
+
+
+- name: points Agirc (GMP)
+  description: Exemple de brochure Agirc_Arrco https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/notices/cotisations_points.pdf
+  absolute_error_margin: .1
+  period: 2016
+  input:
+    categorie_salarie: prive_cadre
+    regime_general_cnav_salaire_de_base: 12 * 3000
+  output:
+    agirc_points: 120
+    agirc_cotisation: 816.8

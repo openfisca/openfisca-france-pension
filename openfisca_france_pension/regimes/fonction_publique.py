@@ -7,6 +7,7 @@ from openfisca_core.parameters import ParameterNotFound
 
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 
 class TypesCategorieActivite(Enum):
@@ -15,7 +16,7 @@ class TypesCategorieActivite(Enum):
     actif = "Actif"
 
 
-class RegimeFonctionPublique(AbstractRegimeDeBase):
+class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
     parameters_prefix = "secteur_public"
@@ -28,8 +29,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-            actif_annee = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
-            actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
+            duree_service_minimale_considere_comme_actif = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+            actif = individu('fonction_publique_nombre_annees_actif', period) >= duree_service_minimale_considere_comme_actif
             return actif
 
     class annee_age_ouverture_droits(Variable):
@@ -38,7 +39,23 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Annee_age_ouverture_droits"
 
-        def formula_2006(individu, period, parameters):
+        def formula_2006(individu, period):
+            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants", period)
+            depart_anticipe_trois_enfants = individu("regime_name_depart_anticipe_trois_enfants", period)
+            annee_age_ouverture_droits_normale = individu("regime_name_annee_age_ouverture_droits_normale", period)
+            return where(
+                depart_anticipe_trois_enfants,
+                min_(annee_age_ouverture_droits_normale, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970),
+                annee_age_ouverture_droits_normale
+                )
+
+    class annee_age_ouverture_droits_normale(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Annee_age_ouverture_droits"
+
+        def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
             # Âge d'ouverture des droits
             aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
@@ -66,7 +83,6 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     + aod_mois
                     ) / 12
                 ).astype(int)
-
             return annee_age_ouverture_droits
 
     class aod(Variable):
@@ -82,6 +98,24 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
             return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
+    class aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
+        value_type = bool
+        entity = Person
+        definition_period = YEAR
+        label = "Condition remplie pour que l'AOD soit égale à la date de satisfaction des conditions pour un départ anticipé au titre de parent de trois enfants"
+        default_value = False
+
+        def formula(individu, period):
+            nombre_enfants = individu('nombre_enfants', period)
+            duree_de_service_effective = individu("regime_name_duree_de_service", period)
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+            condition_enfant = nombre_enfants >= 3
+            condition_service = duree_de_service_effective >= 60
+            condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
+            condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
+            return condition_enfant * condition_service * condition_date_liquidation * condition_date
+
     class coefficient_de_proratisation(Variable):
         value_type = float
         entity = Person
@@ -90,9 +124,11 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            duree_de_service_effective = individu("fonction_publique_duree_de_service", period)
-            # TODO
-            majoration_duree_assurance = individu('fonction_publique_majoration_duree_assurance', period)
+            majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
+            duree_de_service_effective = (
+                individu("fonction_publique_duree_de_service", period)
+                - majoration_duree_de_service
+                )
             super_actif = False  # individu('regime_name_super_actif', period)
             bonification_du_cinquieme = (
                 super_actif * min_(
@@ -104,12 +140,12 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             coefficient_de_proratisation = max_(
                 min_(
                     1,
-                    (duree_de_service_effective + bonification_du_cinquieme)
+                    (duree_de_service_effective + majoration_duree_de_service + bonification_du_cinquieme)
                     / duree_de_service_requise
                     ),
                 min_(
                     80 / 75,
-                    (min_(duree_de_service_effective, duree_de_service_requise) + majoration_duree_assurance)
+                    (min_(duree_de_service_effective, duree_de_service_requise) + majoration_duree_de_service)
                     / duree_de_service_requise
                     )
                 )
@@ -128,7 +164,8 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = date
         entity = Person
         definition_period = YEAR
-        label = "Date d'atteinte des quinze ans d'activité en tant qu'actif"
+        label = "Date d'atteinte de la durée en tant qu'actif requise pour liquider sa pension en tant qu'actif"
+        default_value = date(2250, 12, 31)
 
         def formula(individu, period):
             last_year = period.start.period('year').offset(-1)
@@ -137,17 +174,82 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date = select(
                 [
                     date_actif_annee_precedente < np.datetime64("2250-12-31"),
-                    nombre_annees_actif_annee_courante <= 15,
-                    date_actif_annee_precedente == np.datetime64("2250-12-31")
+                    (nombre_annees_actif_annee_courante >= 15) & (date_actif_annee_precedente == np.datetime64("2250-12-31")),
+                    (nombre_annees_actif_annee_courante < 15) & (date_actif_annee_precedente == np.datetime64("2250-12-31"))
                     ],
                 [
                     date_actif_annee_precedente,
-                    np.datetime64("2250-12-31"),
-                    np.datetime64(str(period.start))
+                    np.datetime64(str(period.start)),
+                    np.datetime64("2250-12-31")
                     ],
                 default = np.datetime64("2250-12-31")
                 )
             return date
+
+    class date_quinze_ans_service(Variable):
+        value_type = date
+        entity = Person
+        definition_period = YEAR
+        label = "Date d'atteinte des quinze ans d'activité"
+        default_value = date(2250, 12, 31)
+
+        def formula(individu, period):
+            last_year = period.start.period('year').offset(-1)
+            nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
+            date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
+            date = select(
+                [
+                    date_service_annee_precedente < np.datetime64("2250-12-31"),
+                    (nombre_annees_service_annee_courante >= 60) * (date_service_annee_precedente == np.datetime64("2250-12-31")),
+                    (nombre_annees_service_annee_courante < 60) * (date_service_annee_precedente == np.datetime64("2250-12-31")),
+                    ],
+                [
+                    date_service_annee_precedente,
+                    np.datetime64(str(period.start)),
+                    np.datetime64("2250-12-31"),
+                    ],
+                default = np.datetime64("2250-12-31")
+                )
+            return date
+
+    class date_satisfaction_condition_depart_anticipe_parents_trois_enfants(Variable):
+        value_type = date
+        entity = Person
+        definition_period = ETERNITY
+        label = "Date à laquelle les deux conditions permettant un départ anticipé pour motif de parent de trois enfant sont satisfaites"
+        default_value = date(2250, 12, 31)
+
+        def formula(individu, period):
+            date_naissance_enfant = individu('date_naissance_enfant', period)
+            date_trois_enfants = date_naissance_enfant  # date de naissance du 3e enfant
+            date_quinze_ans_service = individu('regime_name_date_quinze_ans_service', period)
+            raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            return where(
+                (raison_depart_taux_plein_anticipe == TypesRaisonDepartTauxPleinAnticipe.famille),
+                liquidation_date,
+                max_(date_trois_enfants, date_quinze_ans_service),
+                )
+
+    class decote_a_date_depart_anticipe_parent_trois_enfants(Variable):
+        value_type = bool
+        entity = Person
+        definition_period = YEAR
+        label = "Condition remplie pour que la décote dépende de la date où les condtions pour départ anticipé pour motif de parent de trois enfants sont remplies (et pas de la génération)"
+        default_value = False
+
+        def formula(individu, period):
+            nombre_enfants = individu('nombre_enfants', period)
+            duree_de_service_effective = individu("regime_name_duree_de_service", period)
+            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
+            liquidation_date = individu('regime_name_liquidation_date', period)
+            annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
+            condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
+            condition_enfant = nombre_enfants >= 3
+            condition_service = duree_de_service_effective >= 60
+            condition_aod = annee_age_ouverture_droits < 2016
+            condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
+            return condition_enfant * condition_service * condition_aod * condition_date_liquidation * condition_date
 
     class decote_trimestres(Variable):
         value_type = float
@@ -159,6 +261,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
+            conditions_depart_anticipe_parent_trois_enfants = individu('regime_name_decote_a_date_depart_anticipe_parent_trois_enfants', period)
             aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
             reduction_add_en_mois = where(
                 # Double condition car cette réduction de l'AAD s'éteint en 2020 et vaut -1 en 2019
@@ -168,7 +271,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)],
                 0
                 )
-            aad_en_mois = individu("regime_name_limite_d_age", period) * 12 + reduction_add_en_mois
+            aad_en_mois_general = individu("regime_name_limite_d_age", period) * 12 + reduction_add_en_mois
+            aad_en_mois_parents_trois_enfants = 65 * 12 + reduction_add_en_mois  # les parents de 3 enfants béénficie de la limite d'âge en vigueur avant la réforme de 2010
+            aad_en_mois = where(
+                conditions_depart_anticipe_parent_trois_enfants,
+                aad_en_mois_parents_trois_enfants,
+                aad_en_mois_general
+                )
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
@@ -215,6 +324,25 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                     ]
                 )
             return taux_decote * decote_trimestres
+
+    class depart_anticipe_trois_enfants(Variable):
+        value_type = bool
+        entity = Person
+        definition_period = ETERNITY
+        label = "Demande de dépar anticipé pour 3 enfants"
+
+        def formula(individu, period, parameters):
+            aod_egal_date_depart_anticipe_parent_trois_enfants = individu('regime_name_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
+            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits_normale', period)
+            raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
+            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+            condition_aod = annee_age_ouverture_droits < 2016
+            condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
+
+            return (
+                aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote)
+                + (raison_depart_taux_plein_anticipe == TypesRaisonDepartTauxPleinAnticipe.famille)
+                )
 
     class dernier_indice_atteint(Variable):
         value_type = float
@@ -275,18 +403,24 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 )
 
     class duree_assurance_validee(Variable):
-        value_type = int
+        value_type = float
         entity = Person
         definition_period = YEAR
         label = "Durée d'assurance (trimestres validés dans la fonction publique)"
 
         def formula(individu, period, parameters):
             duree_assurance_annuelle = individu("regime_name_duree_assurance_annuelle", period)
-            duree_assurance_annee_precedente = individu("regime_name_duree_assurance", period.last_year)
-            # TODO: hack to avoid infinite recursion depth loop
+            duree_assurance_annee_precedente = individu("regime_name_duree_assurance_validee", period.last_year)
+            # hack to avoid infinite recursion depth loop
             if all((duree_assurance_annuelle == 0.0) & (duree_assurance_annee_precedente == 0.0)):
                 return individu.empty_array()
-            return duree_assurance_annee_precedente + duree_assurance_annuelle
+
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            return where(
+                annee_de_liquidation == period.start.year,
+                round_(duree_assurance_annee_precedente + duree_assurance_annuelle),  # On arrondi l'année de la liquidation
+                duree_assurance_annee_precedente + duree_assurance_annuelle,
+                )
 
     class duree_de_service(Variable):
         value_type = float
@@ -297,7 +431,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
         def formula(individu, period, parameters):
             duree_de_service_annuelle = individu("regime_name_duree_de_service_annuelle", period)
             duree_de_service_annee_precedente = individu("regime_name_duree_de_service", period.last_year)
-            # TODO: hack to avoid infinite recursion depth loop
+            # hack to avoid infinite recursion depth loop
             if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
                 return individu.empty_array()
 
@@ -493,7 +627,13 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
                 )
             sexe = individu('sexe', period)
-            return where(sexe, bonification_cpcm, 0)
+
+            est_a_la_fonction_publique = (
+                individu('fonction_publique_liquidation_date', period)
+                < individu('regime_general_cnav_liquidation_date', period)
+                )
+
+            return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
 
         def formula_1949(individu, period, parameters):
             bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
@@ -505,7 +645,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     class majoration_duree_de_service(Variable):
         value_type = float
         entity = Person
-        definition_period = YEAR
+        definition_period = ETERNITY
         label = "Majoration de durée de service"
 
     class minimum_garanti(Variable):
@@ -661,6 +801,7 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
                 aod_sedentaire_annee = aod_sedentaire[date_de_naissance].annee
                 aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
 
+            # TODO passer pr des dates
             age_en_mois_a_la_liquidation = (
                 individu('regime_name_liquidation_date', period)
                 - individu('date_de_naissance', period)
@@ -740,3 +881,15 @@ class RegimeFonctionPublique(AbstractRegimeDeBase):
     #     return {'sal': cot_sal_by_year, 'pat': cot_pat_by_year}
 
     # TODO majoration et bonification
+
+
+class RegimeFonctionPublique(AbstractRegimeFonctionPublique):
+    name = "Régime de base de la fonction publique"
+    variable_prefix = "fonction_publique"
+    parameters_prefix = "secteur_public"
+
+
+class RegimeCnracl(AbstractRegimeFonctionPublique):
+    name = 'Régime de la Caisse nationale des agents des collectivités locales'
+    variable_prefix = 'cnracl'
+    parameters_prefix = 'secteur_public'

@@ -20,12 +20,13 @@ class TypesCategorieSalarie(Enum):
     non_pertinent = 'non_pertinent'  # Ou autre dont polycotisant
 
 class TypesRaisonDepartTauxPleinAnticipe(Enum):
-    __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant travailleur_manuel'
+    __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant famille travailleur_manuel'
     non_concerne = "Non concerné"
     handicape = "Handicapé"
     ancien_deporte = "Ancien déporté ou interné politique"
     inapte = "Inapte"
     ancien_combattant = "Ancien combattant"
+    famille = "Raison familiale"
     travailleur_manuel = "Travailleur manuel ou mère de famille ouvrière"
 
 class TypesStatutDuCotisant(Enum):
@@ -33,7 +34,7 @@ class TypesStatutDuCotisant(Enum):
     __order__ = 'emploi independant avpf chomage maladie accident_du_travail invalidite service_national periode_assimilee_autre inactif non_pertinent'
     emploi = "Emploi salarié"
     independant = "Indépendant"
-    avpf = "AVPF"   # CNAF seulement
+    avpf = "AVPV"   # CNAV seulement
     chomage = "Chômage, pré-retraite, reconversion et formation"
     maladie = "Maladie-maternité"  # TODO: sont séparés dans EIC donc peut-être qu'il faudrait les séparer ici également
     accident_du_travail = "Accident du travail"
@@ -53,13 +54,6 @@ class age_au_31_decembre(Variable):
         # https://stackoverflow.com/questions/13648774/get-year-month-or-day-from-numpy-datetime64
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         return period.start.year - annee_de_naissance
-
-class avpf(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = "Salaire porté au compte au titre de l'assurance vieillesse des parents au foyer"
-
 
 class categorie_salarie(Variable):
     value_type = Enum
@@ -93,9 +87,11 @@ class duree_assurance_cotisee_tous_regimes(Variable):
 
     def formula(individu, period):
         return (
-            individu('regime_general_cnav_duree_assurance_cotisee', period)
+            individu('regime_general_cnav_duree_assurance_personnellement_cotisee', period)
             + individu('fonction_publique_duree_de_service', period)
             )
+
+
 class duree_assurance_tous_regimes(Variable):
     value_type = int
     entity = Person
@@ -103,21 +99,12 @@ class duree_assurance_tous_regimes(Variable):
     label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
-        # TODO: hack to avoid infinite recursion depth loop
+        # hack to avoid infinite recursion depth loop
         duree_assurance_tous_regimes_annuelle = individu("duree_assurance_tous_regimes_annuelle", period)
         duree_assurance_tous_regimes_annee_precedente = individu("duree_assurance_tous_regimes", period.last_year)
         if all((duree_assurance_tous_regimes_annuelle == 0) & (duree_assurance_tous_regimes_annee_precedente == 0)):
             return individu.empty_array()
 
-        regimes = ['regime_general_cnav', 'fonction_publique']
-        majoration_duree_assurance = sum(
-            (
-                (individu(f'{regime}_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
-                == period.start.year
-                )
-            * individu(f'{regime}_majoration_duree_assurance', period)
-            for regime in regimes
-            )
         liquidation_cnav = (
                 (individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
                 == period.start.year
@@ -126,7 +113,7 @@ class duree_assurance_tous_regimes(Variable):
         return (
             duree_assurance_tous_regimes_annuelle
             + duree_assurance_tous_regimes_annee_precedente
-            + majoration_duree_assurance
+            # + majoration_duree_assurance
             + duree_assurance_etranger
             )
 
@@ -138,15 +125,24 @@ class duree_assurance_tous_regimes_annuelle(Variable):
     label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
-        regimes = ['regime_general_cnav', 'fonction_publique']
-        return np.clip(
+        regimes_de_base = ['regime_general_cnav', 'fonction_publique']
+        duree_assurance_hors_majoration =  np.clip(
             sum(
                 individu(f'{regime}_duree_assurance_annuelle', period)
-                for regime in regimes
+                for regime in regimes_de_base
                 ),
             0,
             4
             )
+        majoration_duree_assurance = sum(
+            (
+                (individu(f'{regime}_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970)
+                == period.start.year
+                )
+            * individu(f'{regime}_majoration_duree_assurance', period)
+            for regime in regimes_de_base
+            )
+        return duree_assurance_hors_majoration + majoration_duree_assurance
 
 
 

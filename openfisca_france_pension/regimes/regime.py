@@ -21,8 +21,8 @@ class AbstractRegime(object):
         definition_period = YEAR
         label = "cotisation retraite employeur"
 
-        def formula(individu, period):
-            return individu("regime_name_cotisation_employeur", period) + individu("regime_name_cotisation_salarie", period)
+        def formula(individu, period, parameters):
+            NotImplementedError
 
     class liquidation_date(Variable):
         value_type = date
@@ -30,24 +30,6 @@ class AbstractRegime(object):
         definition_period = ETERNITY
         label = 'Date de liquidation'
         default_value = date(2250, 12, 31)
-
-    class cotisation_employeur(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "cotisation retraite employeur"
-
-        def formula(individu, period, parameters):
-            NotImplementedError
-
-    class cotisation_salarie(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "cotisation retraite employeur"
-
-        def formula(individu, period, parameters):
-            NotImplementedError
 
     class majoration_pension(Variable):
         value_type = int
@@ -448,6 +430,23 @@ class AbstractRegimeComplementaire(AbstractRegime):
             pension = individu('regime_name_pension', period)
             return revalorise(pension, pension, annee_de_liquidation, 1, period)
 
+    class points_annuels(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points"
+
+        def formula(individu, period, parameters):
+            # TOOD: fix this hack by changing the time definition of the variable
+            from openfisca_core.errors import ParameterNotFound
+            try:
+                salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
+                taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            except ParameterNotFound:
+                return individu.empty_array()
+            cotisation = individu("regime_name_cotisation", period)
+            return cotisation / salaire_de_reference / taux_appel
+
     class points(Variable):
         value_type = float
         entity = Person
@@ -457,18 +456,10 @@ class AbstractRegimeComplementaire(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             last_year = period.start.period('year').offset(-1)
-            # TOOD: fix this hack by changing the time definition of the variable
-            from openfisca_core.errors import ParameterNotFound
-            try:
-                salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
-                taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
-            except ParameterNotFound:
-                return individu.empty_array()
-            cotisation = individu("regime_name_cotisation", period)
-            points_annee_courante = cotisation / salaire_de_reference / taux_appel
+            points_annuels_annee_courante = individu('regime_name_points_annuels', period)
             points_annee_precedente = individu('regime_name_points', last_year)
             if all(points_annee_precedente == 0):
-                return points_annee_courante
+                return points_annuels_annee_courante
 
             points = select(
                 [
@@ -477,7 +468,7 @@ class AbstractRegimeComplementaire(AbstractRegime):
                     ],
                 [
                     points_annee_precedente,
-                    points_annee_precedente + points_annee_courante,
+                    points_annee_precedente + points_annuels_annee_courante,
                     ]
                 )
 
