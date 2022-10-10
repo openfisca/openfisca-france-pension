@@ -2,7 +2,7 @@
   absolute_error_margin: .001
   period: 2005
   input:
-    nombre_enfants_a_charge: 4
+    nombre_enfants: 4
     fonction_publique_duree_de_service: 140
     date_de_naissance: 1951-04-11
     fonction_publique_liquidation_date: 2012-01-01
@@ -15,7 +15,7 @@
   absolute_error_margin: .001
   period: 2005
   input:
-    nombre_enfants_a_charge: 4
+    nombre_enfants: 4
     fonction_publique_duree_de_service: 140
     date_de_naissance: 1951-04-11
     fonction_publique_liquidation_date: 2010-01-01

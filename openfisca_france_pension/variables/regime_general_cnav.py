@@ -149,7 +149,7 @@ class regime_general_cnav_coefficient_de_proratisation(Variable):
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         age_en_mois_a_la_liquidation = (liquidation_date - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_apres_aad = max_(0, np.floor((age_en_mois_a_la_liquidation - aad * 12) / 3))
-        trimestres = individu('regime_general_cnav_duree_assurance', period)
+        trimestres = individu('regime_general_cnav_duree_de_service', period)
         duree_assurance_corrigee = min_(duree_de_proratisation, trimestres * (1 + trimestres_apres_aad * coefficient_minoration_par_trimestre))
         coefficient = min_(1, duree_assurance_corrigee / duree_de_proratisation)
         return coefficient
@@ -451,6 +451,19 @@ class regime_general_cnav_duree_assurance_validee(Variable):
         if all((duree_assurance_annuelle == 0) & (duree_assurance_annee_precedente == 0)):
             return individu.empty_array()
         return duree_assurance_annee_precedente + duree_assurance_annuelle
+
+class regime_general_cnav_duree_de_service(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service'
+
+    def formula(individu, period):
+        duree_assurance_validee = individu('regime_general_cnav_duree_assurance_validee', period)
+        annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        liquidation = annee_de_liquidation == period.start.year
+        majoration_duree_assurance = individu('regime_general_cnav_majoration_duree_assurance', period)
+        return duree_assurance_validee + majoration_duree_assurance * liquidation
 
 class regime_general_cnav_liquidation_date(Variable):
     value_type = date

@@ -99,7 +99,7 @@ class duree_assurance_tous_regimes(Variable):
     label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
-        # TODO: hack to avoid infinite recursion depth loop
+        # hack to avoid infinite recursion depth loop
         duree_assurance_tous_regimes_annuelle = individu("duree_assurance_tous_regimes_annuelle", period)
         duree_assurance_tous_regimes_annee_precedente = individu("duree_assurance_tous_regimes", period.last_year)
         if all((duree_assurance_tous_regimes_annuelle == 0) & (duree_assurance_tous_regimes_annee_precedente == 0)):

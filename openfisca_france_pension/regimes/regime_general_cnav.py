@@ -221,7 +221,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     (age_en_mois_a_la_liquidation - aad * 12) / 3
                     )
                 )
-            trimestres = individu("regime_name_duree_assurance", period)
+            trimestres = individu("regime_name_duree_de_service", period)
             duree_assurance_corrigee = min_(
                 duree_de_proratisation,
                 trimestres * (
@@ -498,7 +498,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         # Il faut peut-être des trimestes en emploi à un niveau plus bas
 
         def formula(individu, period, parameters):
-            # TODO: hack to avoid infinite recursion depth loop
+            # hack to avoid infinite recursion depth loop
             duree_assurance_cotisee_annuelle = individu("regime_name_duree_assurance_cotisee_annuelle", period)
             duree_assurance_cotisee_annee_precedente = individu("regime_name_duree_assurance_cotisee", period.last_year)
             if all((duree_assurance_cotisee_annuelle == 0) & (duree_assurance_cotisee_annee_precedente == 0)):
@@ -540,7 +540,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         # Il faut peut-être des trimestes en emploi à un niveau plus bas
 
         def formula(individu, period, parameters):
-            # TODO: hack to avoid infinite recursion depth loop
+            # hack to avoid infinite recursion depth loop
             duree_assurance_personnellement_cotisee_annuelle = individu("regime_name_duree_assurance_personnellement_cotisee_annuelle", period)
             duree_assurance_personnellement_cotisee_annee_precedente = individu("regime_name_duree_assurance_personnellement_cotisee", period.last_year)
             if all((duree_assurance_personnellement_cotisee_annuelle == 0) & (duree_assurance_personnellement_cotisee_annee_precedente == 0)):
@@ -615,18 +615,30 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Durée d'assurance validée cummulée (trimestres validés au régime général depuis l'entrée dans le régme hors majoration et bonification)"
 
-        # de duree_assurance_cotisee des régimes
-        # regime_genral_cnav et fonction_publique avec EIC
-        # Il faut peut-être des trimestes en emploi à un niveau plus bas
-
         def formula(individu, period, parameters):
-            # TODO: hack to avoid infinite recursion depth loop
+            # hack to avoid infinite recursion depth loop
             duree_assurance_annuelle = individu("regime_name_duree_assurance_annuelle", period)
             duree_assurance_annee_precedente = individu("regime_name_duree_assurance_validee", period.last_year)
             if all((duree_assurance_annuelle == 0) & (duree_assurance_annee_precedente == 0)):
                 return individu.empty_array()
 
             return duree_assurance_annee_precedente + duree_assurance_annuelle
+
+    class duree_de_service(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Durée de service"
+
+        def formula(individu, period):
+            duree_assurance_validee = individu("regime_name_duree_assurance_validee", period)
+            annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+            liquidation = (annee_de_liquidation == period.start.year)
+            majoration_duree_assurance = individu("regime_name_majoration_duree_assurance", period)
+            return (
+                duree_assurance_validee
+                + majoration_duree_assurance * liquidation
+                )
 
     class majoration_duree_assurance_enfant(Variable):
         value_type = float
