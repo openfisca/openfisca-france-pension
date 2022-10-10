@@ -29,9 +29,9 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Est considéré comme actif à la liquiation (a atteint des quinze ans de service sur un emploi de civil actif"
 
         def formula(individu, period, parameters):
-            date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-            duree_service_minimale_considere_comme_actif = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
-            actif = individu('fonction_publique_nombre_annees_actif', period) >= duree_service_minimale_considere_comme_actif
+            date_quinze_ans_actif = individu('regime_name_date_quinze_ans_actif', period)
+            actif_annee = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+            actif = individu('regime_name_nombre_annees_actif', period) >= actif_annee
             return actif
 
     class annee_age_ouverture_droits(Variable):
@@ -754,11 +754,12 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
         label = "Est considéré comme super actif à la liquiation (a atteint la durée de service requise sur un emploi de civil actif insalubre ou roulant"
 
-        def formula(individu, period, parameters):
-            date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-            actif_annee = parameters(period).regime_name.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
-            actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
-            return actif
+        # TODO: missing variables date_vingt_cinq_ans_actif nombre_annees_super_actif
+        # def formula(individu, period, parameters):
+        #     date_vingt_cinq_ans_actif = individu('regime_name_date_vingt_cinq_ans_actif', period)
+        #     super_actif_duree_requise = parameters(period).regime_name.duree_seuil_super_actif.duree_service_minimale_considere_comme_super_actif[date_vingt_cinq_ans_actif]
+        #     super_actif = individu('regime_name_nombre_annees_super_actif', period) >= super_actif_duree_requise
+        #     return actif
 
     class surcote(Variable):
         value_type = float
