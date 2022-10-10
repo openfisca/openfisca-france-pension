@@ -39,10 +39,33 @@ class cnracl_annee_age_ouverture_droits(Variable):
     label = 'Annee_age_ouverture_droits'
 
     def formula_2006(individu, period):
+        annee_age_ouverture_droits_normale = individu('cnracl_annee_age_ouverture_droits_normale', period)
         date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('cnracl_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
         depart_anticipe_trois_enfants = individu('cnracl_depart_anticipe_trois_enfants', period)
-        annee_age_ouverture_droits_normale = individu('cnracl_annee_age_ouverture_droits_normale', period)
-        return where(depart_anticipe_trois_enfants, min_(annee_age_ouverture_droits_normale, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970), annee_age_ouverture_droits_normale)
+        annee_age_ouverture_droits_depart_anticipe_trois_enfants = min_(annee_age_ouverture_droits_normale, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970)
+        annee_age_ouverture_droits_carriere_longue = min_(annee_age_ouverture_droits_normale, individu('cnracl_annee_age_ouverture_droits_carriere_longue', period))
+        carriere_longue = individu('cnracl_carriere_longue', period)
+        return select([depart_anticipe_trois_enfants, carriere_longue], [annee_age_ouverture_droits_depart_anticipe_trois_enfants, annee_age_ouverture_droits_carriere_longue], default=annee_age_ouverture_droits_normale)
+
+class cnracl_annee_age_ouverture_droits_carriere_longue(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Année de l'âge d'ouverture des droits pour les départs anticipés pour carrière longue"
+
+    def formula_2006(individu, period, parameters):
+        carriere_longue_seuil_determine_aod = individu('cnracl_carriere_longue_seuil_determine_aod', period)
+        date_de_naissance = individu('date_de_naissance', period)
+        aod_carriere_longue_2_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].annee
+        aod_carriere_longue_15_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].annee
+        aod_carriere_longue_1_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].annee
+        aod_carriere_longue_2_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].mois
+        aod_carriere_longue_15_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].mois
+        aod_carriere_longue_1_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].mois
+        aod_carriere_longue_annee = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_annee, aod_carriere_longue_15_annee, aod_carriere_longue_2_annee])
+        aod_carriere_longue_mois = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_mois, aod_carriere_longue_15_mois, aod_carriere_longue_2_mois])
+        annee_age_ouverture_droits_carriere_longue = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_carriere_longue_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_carriere_longue_mois) / 12).astype(int)
+        return annee_age_ouverture_droits_carriere_longue
 
 class cnracl_annee_age_ouverture_droits_normale(Variable):
     value_type = int
@@ -52,17 +75,8 @@ class cnracl_annee_age_ouverture_droits_normale(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        carriere_longue_seuil_determine_aod = individu('cnracl_carriere_longue_seuil_determine_aod', period)
         aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
-        aod_carriere_longue_2_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].annee
-        aod_carriere_longue_15_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].annee
-        aod_carriere_longue_1_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].annee
-        aod_carriere_longue_2_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].mois
-        aod_carriere_longue_15_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].mois
-        aod_carriere_longue_1_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].mois
-        aod_carriere_longue_annee = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_annee, aod_carriere_longue_15_annee, aod_carriere_longue_2_annee])
-        aod_carriere_longue_mois = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_mois, aod_carriere_longue_15_mois, aod_carriere_longue_2_mois])
         if period.start.year <= 2011:
             aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
@@ -73,10 +87,9 @@ class cnracl_annee_age_ouverture_droits_normale(Variable):
             aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
             aod_active_annee = aod_active[date_de_naissance].annee
             aod_active_mois = aod_active[date_de_naissance].mois
-        carriere_longue = individu('cnracl_carriere_longue', period)
         actif_a_la_liquidation = individu('cnracl_actif_a_la_liquidation', period)
-        aod_annee = select([carriere_longue, actif_a_la_liquidation], [aod_carriere_longue_annee, aod_active_annee], default=aod_sedentaire_annee)
-        aod_mois = select([carriere_longue, actif_a_la_liquidation], [aod_carriere_longue_mois, aod_active_mois], default=aod_sedentaire_mois)
+        aod_annee = select([actif_a_la_liquidation], [aod_active_annee], default=aod_sedentaire_annee)
+        aod_mois = select([actif_a_la_liquidation], [aod_active_mois], default=aod_sedentaire_mois)
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
         return annee_age_ouverture_droits
 
@@ -151,7 +164,7 @@ class cnracl_carriere_longue(Variable):
     value_type = bool
     entity = Person
     definition_period = YEAR
-    label = 'Depart anticipé possible pour motif: carriere longue'
+    label = 'Départ anticipé possible pour motif de carriere longue'
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
@@ -169,7 +182,7 @@ class cnracl_carriere_longue_seuil_determine_aod(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Les personnes pouvant beneficier du dispositif RACL sont soumises à un aod different selon l'age de debut de cotisation"
+    label = "L'âge d'ouverture des droit des personnes pouvant bénéficier du dispositif RACL dépend de l'âge de début de cotisation"
 
     def formula(individu, period, parameters):
         carriere_longue = parameters(period).secteur_public.carriere_longue
@@ -880,10 +893,33 @@ class fonction_publique_annee_age_ouverture_droits(Variable):
     label = 'Annee_age_ouverture_droits'
 
     def formula_2006(individu, period):
+        annee_age_ouverture_droits_normale = individu('fonction_publique_annee_age_ouverture_droits_normale', period)
         date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
         depart_anticipe_trois_enfants = individu('fonction_publique_depart_anticipe_trois_enfants', period)
-        annee_age_ouverture_droits_normale = individu('fonction_publique_annee_age_ouverture_droits_normale', period)
-        return where(depart_anticipe_trois_enfants, min_(annee_age_ouverture_droits_normale, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970), annee_age_ouverture_droits_normale)
+        annee_age_ouverture_droits_depart_anticipe_trois_enfants = min_(annee_age_ouverture_droits_normale, date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970)
+        annee_age_ouverture_droits_carriere_longue = min_(annee_age_ouverture_droits_normale, individu('fonction_publique_annee_age_ouverture_droits_carriere_longue', period))
+        carriere_longue = individu('fonction_publique_carriere_longue', period)
+        return select([depart_anticipe_trois_enfants, carriere_longue], [annee_age_ouverture_droits_depart_anticipe_trois_enfants, annee_age_ouverture_droits_carriere_longue], default=annee_age_ouverture_droits_normale)
+
+class fonction_publique_annee_age_ouverture_droits_carriere_longue(Variable):
+    value_type = int
+    entity = Person
+    definition_period = YEAR
+    label = "Année de l'âge d'ouverture des droits pour les départs anticipés pour carrière longue"
+
+    def formula_2006(individu, period, parameters):
+        carriere_longue_seuil_determine_aod = individu('fonction_publique_carriere_longue_seuil_determine_aod', period)
+        date_de_naissance = individu('date_de_naissance', period)
+        aod_carriere_longue_2_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].annee
+        aod_carriere_longue_15_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].annee
+        aod_carriere_longue_1_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].annee
+        aod_carriere_longue_2_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].mois
+        aod_carriere_longue_15_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].mois
+        aod_carriere_longue_1_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].mois
+        aod_carriere_longue_annee = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_annee, aod_carriere_longue_15_annee, aod_carriere_longue_2_annee])
+        aod_carriere_longue_mois = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_mois, aod_carriere_longue_15_mois, aod_carriere_longue_2_mois])
+        annee_age_ouverture_droits_carriere_longue = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_carriere_longue_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_carriere_longue_mois) / 12).astype(int)
+        return annee_age_ouverture_droits_carriere_longue
 
 class fonction_publique_annee_age_ouverture_droits_normale(Variable):
     value_type = int
@@ -893,17 +929,8 @@ class fonction_publique_annee_age_ouverture_droits_normale(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        carriere_longue_seuil_determine_aod = individu('fonction_publique_carriere_longue_seuil_determine_aod', period)
         aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
-        aod_carriere_longue_2_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].annee
-        aod_carriere_longue_15_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].annee
-        aod_carriere_longue_1_annee = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].annee
-        aod_carriere_longue_2_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_2.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_2[date_de_naissance].mois
-        aod_carriere_longue_15_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_15.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_15[date_de_naissance].mois
-        aod_carriere_longue_1_mois = parameters(period).secteur_public.carriere_longue.aod_cl_seuil_1.age_ouverture_droits_fonction_publique_carriere_longue_selon_annee_naissance_seuil_1[date_de_naissance].mois
-        aod_carriere_longue_annee = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_annee, aod_carriere_longue_15_annee, aod_carriere_longue_2_annee])
-        aod_carriere_longue_mois = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_mois, aod_carriere_longue_15_mois, aod_carriere_longue_2_mois])
         if period.start.year <= 2011:
             aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
@@ -914,10 +941,9 @@ class fonction_publique_annee_age_ouverture_droits_normale(Variable):
             aod_sedentaire_mois = aod_sedentaire[date_de_naissance].mois
             aod_active_annee = aod_active[date_de_naissance].annee
             aod_active_mois = aod_active[date_de_naissance].mois
-        carriere_longue = individu('fonction_publique_carriere_longue', period)
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
-        aod_annee = select([carriere_longue, actif_a_la_liquidation], [aod_carriere_longue_annee, aod_active_annee], default=aod_sedentaire_annee)
-        aod_mois = select([carriere_longue, actif_a_la_liquidation], [aod_carriere_longue_mois, aod_active_mois], default=aod_sedentaire_mois)
+        aod_annee = select([actif_a_la_liquidation], [aod_active_annee], default=aod_sedentaire_annee)
+        aod_mois = select([actif_a_la_liquidation], [aod_active_mois], default=aod_sedentaire_mois)
         annee_age_ouverture_droits = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_mois) / 12).astype(int)
         return annee_age_ouverture_droits
 
@@ -992,7 +1018,7 @@ class fonction_publique_carriere_longue(Variable):
     value_type = bool
     entity = Person
     definition_period = YEAR
-    label = 'Depart anticipé possible pour motif: carriere longue'
+    label = 'Départ anticipé possible pour motif de carriere longue'
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
@@ -1010,7 +1036,7 @@ class fonction_publique_carriere_longue_seuil_determine_aod(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Les personnes pouvant beneficier du dispositif RACL sont soumises à un aod different selon l'age de debut de cotisation"
+    label = "L'âge d'ouverture des droit des personnes pouvant bénéficier du dispositif RACL dépend de l'âge de début de cotisation"
 
     def formula(individu, period, parameters):
         carriere_longue = parameters(period).secteur_public.carriere_longue

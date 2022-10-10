@@ -28,6 +28,7 @@ class TypesRaisonDepartTauxPleinAnticipe(Enum):
     ancien_combattant = "Ancien combattant"
     famille = "Raison familiale"
     travailleur_manuel = "Travailleur manuel ou mère de famille ouvrière"
+    carriere_longue = "Carrière longue"
 
 class TypesStatutDuCotisant(Enum):
     # Guide EIC 2013 section 3.4.1 page 28
