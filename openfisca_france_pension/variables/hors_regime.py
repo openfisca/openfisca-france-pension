@@ -88,7 +88,7 @@ class duree_assurance_cotisee_tous_regimes(Variable):
     def formula(individu, period):
         return (
             individu('regime_general_cnav_duree_assurance_personnellement_cotisee', period)
-            + individu('fonction_publique_duree_de_service', period)
+            + individu('fonction_publique_duree_de_service_effective', period)
             )
 
 

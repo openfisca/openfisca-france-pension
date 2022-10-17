@@ -96,7 +96,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             aod_active = parameters(period).regime_name.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
             aod_sedentaire = parameters(period).regime_name.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
-            actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+            actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
     class aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
@@ -108,7 +108,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period):
             nombre_enfants = individu('nombre_enfants', period)
-            duree_de_service_effective = individu("regime_name_duree_de_service", period)
+            duree_de_service_effective = individu("regime_name_duree_de_service_effective", period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
             condition_enfant = nombre_enfants >= 3
@@ -125,11 +125,8 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
-            duree_de_service_effective = (
-                individu("fonction_publique_duree_de_service", period)
-                - majoration_duree_de_service
-                )
+            bonification_cpcm = individu('regime_name_bonification_cpcm', period)
+            duree_de_service_effective = individu("regime_name_duree_de_service_effective", period)
             super_actif = False  # individu('regime_name_super_actif', period)
             bonification_du_cinquieme = (
                 super_actif * min_(
@@ -141,12 +138,12 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
             coefficient_de_proratisation = max_(
                 min_(
                     1,
-                    (duree_de_service_effective + majoration_duree_de_service + bonification_du_cinquieme)
+                    (duree_de_service_effective + bonification_du_cinquieme)
                     / duree_de_service_requise
                     ),
                 min_(
                     80 / 75,
-                    (min_(duree_de_service_effective, duree_de_service_requise) + majoration_duree_de_service)
+                    (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm)
                     / duree_de_service_requise
                     )
                 )
@@ -196,8 +193,8 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period):
             last_year = period.start.period('year').offset(-1)
-            nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
-            date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
+            nombre_annees_service_annee_courante = individu('regime_name_duree_de_service_effective', period)
+            date_service_annee_precedente = individu('regime_name_date_quinze_ans_service', last_year)
             date = select(
                 [
                     date_service_annee_precedente < np.datetime64("2250-12-31"),
@@ -241,7 +238,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period):
             nombre_enfants = individu('nombre_enfants', period)
-            duree_de_service_effective = individu("regime_name_duree_de_service", period)
+            duree_de_service_effective = individu("regime_name_duree_de_service_effective", period)
             annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
@@ -423,27 +420,25 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
                 duree_assurance_annee_precedente + duree_assurance_annuelle,
                 )
 
-    class duree_de_service(Variable):
+    class duree_de_service_effective(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification cummulée"
+        label = "Durée de service (trimestres cotisés dans la fonction publique) hors bonification obtenue à la liquidation"
 
         def formula(individu, period, parameters):
             duree_de_service_annuelle = individu("regime_name_duree_de_service_annuelle", period)
-            duree_de_service_annee_precedente = individu("regime_name_duree_de_service", period.last_year)
+            duree_de_service_annee_precedente = individu("regime_name_duree_de_service_effective", period.last_year)
             # hack to avoid infinite recursion depth loop
             if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
                 return individu.empty_array()
 
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-            majoration_duree_de_service = individu('regime_name_majoration_duree_de_service', period)
             return where(
                 annee_de_liquidation == period.start.year,
                 round_(
                     duree_de_service_annee_precedente
                     + duree_de_service_annuelle
-                    + majoration_duree_de_service
                     ),  # On arrondi l'année de la liquidation
                 duree_de_service_annee_precedente + duree_de_service_annuelle
                 )
@@ -481,7 +476,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Durée de service dans la fonction publique hors rachat et bonification dans l'année"
+        label = "Durée de service annuelle dans la fonction publique hors rachat et bonification non attribuable à une année"
 
         def formula(individu, period, parameters):
             return np.clip(
@@ -587,22 +582,54 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         definition_period = YEAR
 
         def formula_2004(individu, period, parameters):
-            bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
             nombre_enfants_nes_avant_2004 = individu('regime_name_nombre_enfants_nes_avant_2004', period)
-            bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
-            bonification_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+            majoration_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
             nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
-            bonification_cpcm = (
-                bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
-                + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
-                )
+            majoration = majoration_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
             sexe = individu('sexe', period)
-
             est_a_la_fonction_publique = (
                 individu('fonction_publique_liquidation_date', period)
                 < individu('regime_general_cnav_liquidation_date', period)
                 )
+            return where(sexe * est_a_la_fonction_publique, majoration, 0)
 
+    class majoration_duree_assurance(Variable):
+        value_type = float
+        entity = Person
+        definition_period = ETERNITY
+        label = "Majration de duree d'assurance"
+        definition_period = YEAR
+
+        def formula(individu, period):
+            return (
+                individu('regime_name_majoration_duree_assurance_enfant', period)
+                + individu('regime_name_majoration_duree_assurance_autre', period)
+                + individu('regime_name_bonification_cpcm', period)
+                )
+
+    class bonification_cpcm_depaysement(Variable):
+        value_type = float
+        entity = Person
+        definition_period = ETERNITY
+        label = "Bonification du code des pensions civiles et militaires liée au dépaysement (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+    class bonification_cpcm_enfant(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Bonification du code des pensions civiles et militaires liée aux enfants (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+        def formula_2004(individu, period, parameters):
+            bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+            nombre_enfants_nes_avant_2004 = individu('regime_name_nombre_enfants_nes_avant_2004', period)
+            bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
+            sexe = individu('sexe', period)
+
+            est_a_la_fonction_publique = (
+                individu('regime_name_liquidation_date', period)
+                < individu('regime_general_cnav_liquidation_date', period)
+                )
+            # TODO; père qui s'arrête au moins 2 mois
             return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
 
         def formula_1949(individu, period, parameters):
@@ -612,11 +639,14 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
             sexe = individu('sexe', period)
             return where(sexe, bonification_cpcm, 0)
 
-    class majoration_duree_de_service(Variable):
+    class bonification_cpcm(Variable):
         value_type = float
         entity = Person
-        definition_period = ETERNITY
-        label = "Majoration de durée de service"
+        definition_period = YEAR
+        label = "Bonification du code des pensions civiles et militaires (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+        def formula_2004(individu, period):
+            return individu('regime_name_bonification_cpcm_enfant', period) + individu('regime_name_bonification_cpcm_depaysement', period)
 
     class minimum_garanti(Variable):
         value_type = float
@@ -629,7 +659,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
             date_de_naissance = individu('date_de_naissance', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-            duree_de_service_effective = individu("fonction_publique_duree_de_service", period)
+            duree_de_service_effective = individu("fonction_publique_duree_de_service_effective", period)
             annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
             decote = individu("regime_name_decote", period)
 

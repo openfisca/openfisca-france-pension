@@ -3,7 +3,7 @@
   period: 2005
   input:
     nombre_enfants: 4
-    fonction_publique_duree_de_service: 140
+    fonction_publique_duree_de_service_effective: 140
     date_de_naissance: 1951-04-11
     fonction_publique_liquidation_date: 2012-01-01
     fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants: 2003-01-01
@@ -16,7 +16,7 @@
   period: 2005
   input:
     nombre_enfants: 4
-    fonction_publique_duree_de_service: 140
+    fonction_publique_duree_de_service_effective: 140
     date_de_naissance: 1951-04-11
     fonction_publique_liquidation_date: 2010-01-01
     fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants: 2003-01-01

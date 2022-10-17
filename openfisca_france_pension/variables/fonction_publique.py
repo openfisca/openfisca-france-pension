@@ -24,12 +24,12 @@ class cnracl_actif_a_la_liquidation(Variable):
     value_type = bool
     entity = Person
     definition_period = YEAR
-    label = "Atteinte des quinze ans d'activité"
+    label = 'Est considéré comme actif à la liquiation (a atteint des quinze ans de service sur un emploi de civil actif'
 
     def formula(individu, period, parameters):
-        date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-        duree_service_minimale_considere_comme_actif = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
-        actif = individu('fonction_publique_nombre_annees_actif', period) >= duree_service_minimale_considere_comme_actif
+        date_quinze_ans_actif = individu('cnracl_date_quinze_ans_actif', period)
+        actif_annee = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+        actif = individu('cnracl_nombre_annees_actif', period) >= actif_annee
         return actif
 
 class cnracl_annee_age_ouverture_droits(Variable):
@@ -80,7 +80,7 @@ class cnracl_aod(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         aod_active = parameters(period).secteur_public.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
         aod_sedentaire = parameters(period).secteur_public.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
-        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        actif_a_la_liquidation = individu('cnracl_actif_a_la_liquidation', period)
         return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
 class cnracl_aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
@@ -92,7 +92,7 @@ class cnracl_aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
 
     def formula(individu, period):
         nombre_enfants = individu('nombre_enfants', period)
-        duree_de_service_effective = individu('cnracl_duree_de_service', period)
+        duree_de_service_effective = individu('cnracl_duree_de_service_effective', period)
         liquidation_date = individu('cnracl_liquidation_date', period)
         annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('cnracl_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
         condition_enfant = nombre_enfants >= 3
@@ -100,6 +100,42 @@ class cnracl_aod_egal_date_depart_anticipe_parent_trois_enfants(Variable):
         condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
         condition_date_liquidation = liquidation_date < np.datetime64('2011-07-01')
         return condition_enfant * condition_service * condition_date_liquidation * condition_date
+
+class cnracl_bonification_cpcm(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Bonification du code des pensions civiles et militaires (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+    def formula_2004(individu, period):
+        return individu('cnracl_bonification_cpcm_enfant', period) + individu('cnracl_bonification_cpcm_depaysement', period)
+
+class cnracl_bonification_cpcm_depaysement(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = "Bonification du code des pensions civiles et militaires liée au dépaysement (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+class cnracl_bonification_cpcm_enfant(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Bonification du code des pensions civiles et militaires liée aux enfants (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+    def formula_2004(individu, period, parameters):
+        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        nombre_enfants_nes_avant_2004 = individu('cnracl_nombre_enfants_nes_avant_2004', period)
+        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
+        sexe = individu('sexe', period)
+        est_a_la_fonction_publique = individu('cnracl_liquidation_date', period) < individu('regime_general_cnav_liquidation_date', period)
+        return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
+
+    def formula_1949(individu, period, parameters):
+        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        nombre_enfants = individu('nombre_enfants', period)
+        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
+        sexe = individu('sexe', period)
+        return where(sexe, bonification_cpcm, 0)
 
 class cnracl_categorie_activite(Variable):
     value_type = Enum
@@ -118,12 +154,12 @@ class cnracl_coefficient_de_proratisation(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
-        duree_de_service_effective = individu('fonction_publique_duree_de_service', period) - majoration_duree_de_service
+        bonification_cpcm = individu('cnracl_bonification_cpcm', period)
+        duree_de_service_effective = individu('cnracl_duree_de_service_effective', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
         duree_de_service_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + majoration_duree_de_service + bonification_du_cinquieme) / duree_de_service_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_de_service_requise) + majoration_duree_de_service) / duree_de_service_requise))
+        coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + bonification_du_cinquieme) / duree_de_service_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm) / duree_de_service_requise))
         return coefficient_de_proratisation
 
 class cnracl_cotisation(Variable):
@@ -158,8 +194,8 @@ class cnracl_date_quinze_ans_service(Variable):
 
     def formula(individu, period):
         last_year = period.start.period('year').offset(-1)
-        nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
-        date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
+        nombre_annees_service_annee_courante = individu('cnracl_duree_de_service_effective', period)
+        date_service_annee_precedente = individu('cnracl_date_quinze_ans_service', last_year)
         date = select([date_service_annee_precedente < np.datetime64('2250-12-31'), (nombre_annees_service_annee_courante >= 60) * (date_service_annee_precedente == np.datetime64('2250-12-31')), (nombre_annees_service_annee_courante < 60) * (date_service_annee_precedente == np.datetime64('2250-12-31'))], [date_service_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
         return date
 
@@ -199,7 +235,7 @@ class cnracl_decote_a_date_depart_anticipe_parent_trois_enfants(Variable):
 
     def formula(individu, period):
         nombre_enfants = individu('nombre_enfants', period)
-        duree_de_service_effective = individu('cnracl_duree_de_service', period)
+        duree_de_service_effective = individu('cnracl_duree_de_service_effective', period)
         annee_age_ouverture_droits = individu('cnracl_annee_age_ouverture_droits', period)
         liquidation_date = individu('cnracl_liquidation_date', period)
         annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('cnracl_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
@@ -352,26 +388,31 @@ class cnracl_duree_assurance_validee(Variable):
         annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         return where(annee_de_liquidation == period.start.year, round_(duree_assurance_annee_precedente + duree_assurance_annuelle), duree_assurance_annee_precedente + duree_assurance_annuelle)
 
-class cnracl_duree_de_service(Variable):
+class cnracl_duree_de_service_actif(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification cummulée'
+    label = 'Durée de service en catégorie active (trimestres cotisés dans la fonction publique active)'
 
     def formula(individu, period, parameters):
-        duree_de_service_annuelle = individu('cnracl_duree_de_service_annuelle', period)
-        duree_de_service_annee_precedente = individu('cnracl_duree_de_service', period.last_year)
-        if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
+        duree_de_service_actif_annuelle = individu('cnracl_duree_de_service_actif_annuelle', period)
+        duree_de_service_actif_annee_precedente = individu('cnracl_duree_de_service_actif', period.last_year)
+        if all((duree_de_service_actif_annuelle == 0.0) & (duree_de_service_actif_annee_precedente == 0.0)):
             return individu.empty_array()
         annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        majoration_duree_de_service = individu('cnracl_majoration_duree_de_service', period)
-        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle + majoration_duree_de_service), duree_de_service_annee_precedente + duree_de_service_annuelle)
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_actif_annee_precedente + duree_de_service_actif_annuelle), duree_de_service_actif_annee_precedente + duree_de_service_actif_annuelle)
+
+class cnracl_duree_de_service_actif_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service dans la fonction publique au service actif'
 
 class cnracl_duree_de_service_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service dans la fonction publique hors rachst et bonification dans l'année"
+    label = 'Durée de service annuelle dans la fonction publique hors rachat et bonification non attribuable à une année'
 
     def formula(individu, period, parameters):
         return np.clip(individu('cnracl_duree_de_service_cotisee_annuelle', period) + individu('cnracl_duree_de_service_rachetee_annuelle', period) + individu('cnracl_duree_assurance_service_national_annuelle', period), 0, 4)
@@ -380,13 +421,47 @@ class cnracl_duree_de_service_cotisee_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service cotisée dans la fonction publique hors rachst et bonification dans l'année"
+    label = "Durée de service cotisée dans la fonction publique hors rachat et bonification dans l'année"
+
+class cnracl_duree_de_service_effective(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification obtenue à la liquidation'
+
+    def formula(individu, period, parameters):
+        duree_de_service_annuelle = individu('cnracl_duree_de_service_annuelle', period)
+        duree_de_service_annee_precedente = individu('cnracl_duree_de_service_effective', period.last_year)
+        if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
+            return individu.empty_array()
+        annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle), duree_de_service_annee_precedente + duree_de_service_annuelle)
 
 class cnracl_duree_de_service_rachetee_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachst et bonification dans l'année"
+    label = "Durée de service rachetée (années d'études) dans la fonction publique hors rachat et bonification dans l'année"
+
+class cnracl_duree_de_service_super_actif(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service en catégorie super active (trimestres cotisés dans la fonction publique active)'
+
+    def formula(individu, period, parameters):
+        duree_de_service_super_actif_annuelle = individu('cnracl_duree_de_service_super_actif_annuelle', period)
+        duree_de_service_super_actif_annee_precedente = individu('cnracl_duree_de_service_super_actif', period.last_year)
+        if all((duree_de_service_super_actif_annuelle == 0.0) & (duree_de_service_super_actif_annee_precedente == 0.0)):
+            return individu.empty_array()
+        annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_super_actif_annee_precedente + duree_de_service_super_actif_annuelle), duree_de_service_super_actif_annee_precedente + duree_de_service_super_actif_annuelle)
+
+class cnracl_duree_de_service_super_actif_annuelle(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service dans la fonction publique en catégorie super actif'
 
 class cnracl_limite_d_age(Variable):
     value_type = float
@@ -424,10 +499,11 @@ class cnracl_majoration_duree_assurance(Variable):
     value_type = float
     entity = Person
     definition_period = ETERNITY
-    label = "Majoration de durée d'assurance"
+    label = "Majration de duree d'assurance"
+    definition_period = YEAR
 
     def formula(individu, period):
-        return individu('cnracl_majoration_duree_assurance_enfant', period) + individu('cnracl_majoration_duree_assurance_autre', period)
+        return individu('cnracl_majoration_duree_assurance_enfant', period) + individu('cnracl_majoration_duree_assurance_autre', period) + individu('cnracl_bonification_cpcm', period)
 
 class cnracl_majoration_duree_assurance_autre(Variable):
     value_type = float
@@ -443,28 +519,13 @@ class cnracl_majoration_duree_assurance_enfant(Variable):
     definition_period = YEAR
 
     def formula_2004(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
         nombre_enfants_nes_avant_2004 = individu('cnracl_nombre_enfants_nes_avant_2004', period)
-        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
-        bonification_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+        majoration_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
         nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
-        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
+        majoration = majoration_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
         sexe = individu('sexe', period)
         est_a_la_fonction_publique = individu('fonction_publique_liquidation_date', period) < individu('regime_general_cnav_liquidation_date', period)
-        return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
-
-    def formula_1949(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
-        nombre_enfants = individu('nombre_enfants', period)
-        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
-        sexe = individu('sexe', period)
-        return where(sexe, bonification_cpcm, 0)
-
-class cnracl_majoration_duree_de_service(Variable):
-    value_type = float
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Majoration de durée de service'
+        return where(sexe * est_a_la_fonction_publique, majoration, 0)
 
 class cnracl_majoration_pension(Variable):
     value_type = float
@@ -505,7 +566,7 @@ class cnracl_minimum_garanti(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('cnracl_liquidation_date', period)
         annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         annee_age_ouverture_droits = individu('cnracl_annee_age_ouverture_droits', period)
         decote = individu('cnracl_decote', period)
         service_public = parameters(period).secteur_public
@@ -654,6 +715,12 @@ class cnracl_salaire_de_reference(Variable):
             valeur_point_indice = 0
         return dernier_indice_atteint * valeur_point_indice
 
+class cnracl_super_actif_a_la_liquidation(Variable):
+    value_type = bool
+    entity = Person
+    definition_period = YEAR
+    label = 'Est considéré comme super actif à la liquiation (a atteint la durée de service requise sur un emploi de civil actif insalubre ou roulant'
+
 class cnracl_surcote(Variable):
     value_type = float
     entity = Person
@@ -720,8 +787,8 @@ class fonction_publique_actif_a_la_liquidation(Variable):
 
     def formula(individu, period, parameters):
         date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-        duree_service_minimale_considere_comme_actif = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
-        actif = individu('fonction_publique_nombre_annees_actif', period) >= duree_service_minimale_considere_comme_actif
+        actif_annee = parameters(period).secteur_public.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+        actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
         return actif
 
 class fonction_publique_annee_age_ouverture_droits(Variable):
@@ -784,7 +851,7 @@ class fonction_publique_aod_egal_date_depart_anticipe_parent_trois_enfants(Varia
 
     def formula(individu, period):
         nombre_enfants = individu('nombre_enfants', period)
-        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
         condition_enfant = nombre_enfants >= 3
@@ -792,6 +859,42 @@ class fonction_publique_aod_egal_date_depart_anticipe_parent_trois_enfants(Varia
         condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
         condition_date_liquidation = liquidation_date < np.datetime64('2011-07-01')
         return condition_enfant * condition_service * condition_date_liquidation * condition_date
+
+class fonction_publique_bonification_cpcm(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Bonification du code des pensions civiles et militaires (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+    def formula_2004(individu, period):
+        return individu('fonction_publique_bonification_cpcm_enfant', period) + individu('fonction_publique_bonification_cpcm_depaysement', period)
+
+class fonction_publique_bonification_cpcm_depaysement(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = "Bonification du code des pensions civiles et militaires liée au dépaysement (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+class fonction_publique_bonification_cpcm_enfant(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = "Bonification du code des pensions civiles et militaires liée aux enfants (compte pour la durée d'assurance et la durée de service/durée liquidable)"
+
+    def formula_2004(individu, period, parameters):
+        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        nombre_enfants_nes_avant_2004 = individu('fonction_publique_nombre_enfants_nes_avant_2004', period)
+        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
+        sexe = individu('sexe', period)
+        est_a_la_fonction_publique = individu('fonction_publique_liquidation_date', period) < individu('regime_general_cnav_liquidation_date', period)
+        return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
+
+    def formula_1949(individu, period, parameters):
+        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        nombre_enfants = individu('nombre_enfants', period)
+        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
+        sexe = individu('sexe', period)
+        return where(sexe, bonification_cpcm, 0)
 
 class fonction_publique_categorie_activite(Variable):
     value_type = Enum
@@ -810,12 +913,12 @@ class fonction_publique_coefficient_de_proratisation(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
-        duree_de_service_effective = individu('fonction_publique_duree_de_service', period) - majoration_duree_de_service
+        bonification_cpcm = individu('fonction_publique_bonification_cpcm', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
         duree_de_service_requise = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + majoration_duree_de_service + bonification_du_cinquieme) / duree_de_service_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_de_service_requise) + majoration_duree_de_service) / duree_de_service_requise))
+        coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + bonification_du_cinquieme) / duree_de_service_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm) / duree_de_service_requise))
         return coefficient_de_proratisation
 
 class fonction_publique_cotisation(Variable):
@@ -850,7 +953,7 @@ class fonction_publique_date_quinze_ans_service(Variable):
 
     def formula(individu, period):
         last_year = period.start.period('year').offset(-1)
-        nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service', period)
+        nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service_effective', period)
         date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
         date = select([date_service_annee_precedente < np.datetime64('2250-12-31'), (nombre_annees_service_annee_courante >= 60) * (date_service_annee_precedente == np.datetime64('2250-12-31')), (nombre_annees_service_annee_courante < 60) * (date_service_annee_precedente == np.datetime64('2250-12-31'))], [date_service_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
         return date
@@ -891,7 +994,7 @@ class fonction_publique_decote_a_date_depart_anticipe_parent_trois_enfants(Varia
 
     def formula(individu, period):
         nombre_enfants = individu('nombre_enfants', period)
-        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('fonction_publique_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
@@ -1044,21 +1147,6 @@ class fonction_publique_duree_assurance_validee(Variable):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         return where(annee_de_liquidation == period.start.year, round_(duree_assurance_annee_precedente + duree_assurance_annuelle), duree_assurance_annee_precedente + duree_assurance_annuelle)
 
-class fonction_publique_duree_de_service(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification cummulée'
-
-    def formula(individu, period, parameters):
-        duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
-        duree_de_service_annee_precedente = individu('fonction_publique_duree_de_service', period.last_year)
-        if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
-            return individu.empty_array()
-        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        majoration_duree_de_service = individu('fonction_publique_majoration_duree_de_service', period)
-        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle + majoration_duree_de_service), duree_de_service_annee_precedente + duree_de_service_annuelle)
-
 class fonction_publique_duree_de_service_actif(Variable):
     value_type = float
     entity = Person
@@ -1083,7 +1171,7 @@ class fonction_publique_duree_de_service_annuelle(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = "Durée de service dans la fonction publique hors rachat et bonification dans l'année"
+    label = 'Durée de service annuelle dans la fonction publique hors rachat et bonification non attribuable à une année'
 
     def formula(individu, period, parameters):
         return np.clip(individu('fonction_publique_duree_de_service_cotisee_annuelle', period) + individu('fonction_publique_duree_de_service_rachetee_annuelle', period) + individu('fonction_publique_duree_assurance_service_national_annuelle', period), 0, 4)
@@ -1093,6 +1181,20 @@ class fonction_publique_duree_de_service_cotisee_annuelle(Variable):
     entity = Person
     definition_period = YEAR
     label = "Durée de service cotisée dans la fonction publique hors rachat et bonification dans l'année"
+
+class fonction_publique_duree_de_service_effective(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Durée de service (trimestres cotisés dans la fonction publique) hors bonification obtenue à la liquidation'
+
+    def formula(individu, period, parameters):
+        duree_de_service_annuelle = individu('fonction_publique_duree_de_service_annuelle', period)
+        duree_de_service_annee_precedente = individu('fonction_publique_duree_de_service_effective', period.last_year)
+        if all((duree_de_service_annuelle == 0.0) & (duree_de_service_annee_precedente == 0.0)):
+            return individu.empty_array()
+        annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
+        return where(annee_de_liquidation == period.start.year, round_(duree_de_service_annee_precedente + duree_de_service_annuelle), duree_de_service_annee_precedente + duree_de_service_annuelle)
 
 class fonction_publique_duree_de_service_rachetee_annuelle(Variable):
     value_type = float
@@ -1156,10 +1258,11 @@ class fonction_publique_majoration_duree_assurance(Variable):
     value_type = float
     entity = Person
     definition_period = ETERNITY
-    label = "Majoration de durée d'assurance"
+    label = "Majration de duree d'assurance"
+    definition_period = YEAR
 
     def formula(individu, period):
-        return individu('fonction_publique_majoration_duree_assurance_enfant', period) + individu('fonction_publique_majoration_duree_assurance_autre', period)
+        return individu('fonction_publique_majoration_duree_assurance_enfant', period) + individu('fonction_publique_majoration_duree_assurance_autre', period) + individu('fonction_publique_bonification_cpcm', period)
 
 class fonction_publique_majoration_duree_assurance_autre(Variable):
     value_type = float
@@ -1175,28 +1278,13 @@ class fonction_publique_majoration_duree_assurance_enfant(Variable):
     definition_period = YEAR
 
     def formula_2004(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
         nombre_enfants_nes_avant_2004 = individu('fonction_publique_nombre_enfants_nes_avant_2004', period)
-        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
-        bonification_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+        majoration_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
         nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
-        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004 + bonification_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
+        majoration = majoration_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
         sexe = individu('sexe', period)
         est_a_la_fonction_publique = individu('fonction_publique_liquidation_date', period) < individu('regime_general_cnav_liquidation_date', period)
-        return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
-
-    def formula_1949(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
-        nombre_enfants = individu('nombre_enfants', period)
-        bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
-        sexe = individu('sexe', period)
-        return where(sexe, bonification_cpcm, 0)
-
-class fonction_publique_majoration_duree_de_service(Variable):
-    value_type = float
-    entity = Person
-    definition_period = ETERNITY
-    label = 'Majoration de durée de service'
+        return where(sexe * est_a_la_fonction_publique, majoration, 0)
 
 class fonction_publique_majoration_pension(Variable):
     value_type = float
@@ -1237,7 +1325,7 @@ class fonction_publique_minimum_garanti(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        duree_de_service_effective = individu('fonction_publique_duree_de_service', period)
+        duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         decote = individu('fonction_publique_decote', period)
         service_public = parameters(period).secteur_public
