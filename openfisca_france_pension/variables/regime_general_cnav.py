@@ -604,7 +604,11 @@ class regime_general_cnav_pension_brute(Variable):
         pension_apres_minimum = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
         pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), min_(max_(minimum_contributif_plafond_annuel - autres_pensions, 0), pension_apres_minimum), pension_apres_minimum)
-        return pension_brute
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
+        pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
+        surcote = individu('regime_general_cnav_surcote', period)
+        pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
+        return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
     def formula_2004_01_01(individu, period, parameters):
         pension_avant_minimum_et_plafonnement = individu('regime_general_cnav_pension_avant_minimum_et_plafonnement', period)
@@ -616,7 +620,11 @@ class regime_general_cnav_pension_brute(Variable):
         pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
         a_atteint_taux_plein = taux_de_liquidation >= taux_plein
         pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein, max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
-        return pension_brute
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
+        pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
+        surcote = individu('regime_general_cnav_surcote', period)
+        pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
+        return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
     def formula_1984(individu, period, parameters):
         pension_avant_minimum_et_plafonnement = individu('regime_general_cnav_pension_avant_minimum_et_plafonnement', period)
@@ -628,7 +636,11 @@ class regime_general_cnav_pension_brute(Variable):
         pension_avant_minimum_et_plafonnement_a_taux_plein = where(taux_de_liquidation > 0, taux_plein * pension_avant_minimum_et_plafonnement / (taux_de_liquidation + (taux_de_liquidation <= 0)), 0)
         pension_avant_minimum = min_(taux_plein * plafond_securite_sociale, pension_avant_minimum_et_plafonnement_a_taux_plein) + (pension_avant_minimum_et_plafonnement - pension_avant_minimum_et_plafonnement_a_taux_plein)
         pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein, max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
-        return pension_brute
+        plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
+        pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
+        surcote = individu('regime_general_cnav_surcote', period)
+        pension_surcote = pension_brute / taux_de_liquidation * taux_plein * surcote
+        return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
 class regime_general_cnav_pension_brute_au_31_decembre(Variable):
     value_type = float

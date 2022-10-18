@@ -768,7 +768,13 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     ),
                 pension_apres_minimum
                 )
-            return pension_brute
+
+            # Application du maximum
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
+            pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
+            surcote = individu('regime_name_surcote', period)
+            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
+            return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
         # 2009_04_01: Surcote appliquée au minimum; voir pension_minimale
 
@@ -797,8 +803,12 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 max_(minimum_contributif, pension_avant_minimum),
                 pension_avant_minimum
                 )
-
-            return pension_brute
+            # Application du maximum
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
+            pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
+            surcote = individu('regime_name_surcote', period)
+            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
+            return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
         def formula_1984(individu, period, parameters):
             pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
@@ -824,7 +834,13 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 max_(minimum_contributif, pension_avant_minimum),
                 pension_avant_minimum
                 )
-            return pension_brute
+
+            # Application du maximum
+            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
+            pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
+            surcote = individu('regime_name_surcote', period)
+            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
+            return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
 
     class pension_minimale(Variable):
         value_type = float
