@@ -769,12 +769,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 pension_apres_minimum
                 )
 
-            # Application du maximum
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
-            surcote = individu('regime_name_surcote', period)
-            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
-            return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
+            return pension_brute
 
         # 2009_04_01: Surcote appliquée au minimum; voir pension_minimale
 
@@ -803,12 +798,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 max_(minimum_contributif, pension_avant_minimum),
                 pension_avant_minimum
                 )
-            # Application du maximum
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
-            surcote = individu('regime_name_surcote', period)
-            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
-            return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
+            return pension_brute
 
         def formula_1984(individu, period, parameters):
             pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
@@ -835,12 +825,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 pension_avant_minimum
                 )
 
-            # Application du maximum
-            plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale
-            surcote = individu('regime_name_surcote', period)
-            pension_surcote = (pension_brute / taux_de_liquidation) * taux_plein * surcote
-            return min_(pension_brute - pension_surcote, pension_plafond_hors_surcote) + pension_surcote
+            return pension_brute
 
     class pension_minimale(Variable):
         value_type = float
@@ -1261,12 +1246,11 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 np.clip(duree_assurance_cotisee_annuelle, 0, surcote_trimestres_max),
                 0
                 )
-
             trimestres_apres_aod = surcote_trimestres_periode_precedente + surcote_trimestres_periode_actuelle
 
             regimes_de_base = ['regime_general_cnav', 'fonction_publique']
             majoration_duree_assurance_avant_liquidation = sum(
-                (liquidation_date > np.datetime64(period.offset(1, 'year').start))
+                (liquidation_date >= np.datetime64(period.offset(1, 'year').start))
                 * individu(f'{regime}_majoration_duree_assurance', period)
                 for regime in regimes_de_base
                 )  # Pour allonger la durée d'assurance de sa majoration qui n'est effective qu'à l'année de liquidation
@@ -1274,7 +1258,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 individu('duree_assurance_tous_regimes', period)
                 + majoration_duree_assurance_avant_liquidation
                 )
-
             date_de_naissance = individu('date_de_naissance', period)
             duree_assurance_cible_taux_plein = (
                 parameters(period).regime_name.trimtp.nombre_trimestres_cibles_par_generation[date_de_naissance]
@@ -1306,3 +1289,41 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 )
             return surcote_trimestres
+
+    class surcote_trimestres_effectifs(Variable):
+        value_type = int
+        entity = Person
+        definition_period = YEAR
+        label = "Trimestres de surcote effectifs"
+
+        def formula_2009(individu, period):
+            return individu('regime_name_surcote_trimestres', period)
+
+        def formula_2004(individu, period):
+            return (
+                individu('regime_name_surcote_trimestres', period)
+                * (
+                    individu('regime_name_pension_brute', period)
+                    > individu('regime_name_pension_minimale', period)
+                    )
+                )
+
+        def formula_1945(individu, period):
+            return individu('regime_name_surcote_trimestres', period)
+
+    class taux_de_liquidation_effectif(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Taux de liquidation de la pension"
+
+        def formula(individu, period, parameters):
+            decote = individu('regime_name_decote', period)
+            surcote = (
+                individu('regime_name_surcote', period)
+                * (
+                    individu('regime_name_surcote_trimestres_effectifs', period) > 0
+                    )
+                )
+            taux_plein = parameters(period).regime_name.taux_plein.taux_plein
+            return taux_plein * (1 - decote + surcote)
