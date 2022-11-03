@@ -530,6 +530,18 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 trimestres_validables,
                 )
 
+    class duree_assurance_etranger(Variable):
+        value_type = int
+        entity = Person
+        definition_period = ETERNITY
+        label = "Durée d'assurance acquise à l'étranger"
+
+    class duree_assurance_equivalente(Variable):
+        value_type = int
+        entity = Person
+        definition_period = ETERNITY
+        label = "Durée d'assurance considérée équivalente tous régimes"
+
     class duree_assurance_personnellement_cotisee(Variable):
         value_type = int
         entity = Person
@@ -571,12 +583,6 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 0,
                 trimestres_validables,
                 )
-
-    class duree_assurance_etranger(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Durée d'assurance acquise à l'étranger"
 
     class duree_assurance_periode_assimilee_annuelle(Variable):
         value_type = int

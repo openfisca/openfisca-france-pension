@@ -364,10 +364,16 @@ class regime_general_cnav_duree_assurance_emploi_annuelle(Variable):
             salaire_validant_un_trimestre = parameters(periods.period(1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre[salaire_validant_trimestre]
         return np.clip((salaire_de_base * conversion_en_monnaie_courante(period) / salaire_validant_un_trimestre).astype(int), 0, 4)
 
+class regime_general_cnav_duree_assurance_equivalente(Variable):
+    value_type = int
+    entity = Person
+    definition_period = ETERNITY
+    label = "Durée d'assurance considérée équivalente tous régimes"
+
 class regime_general_cnav_duree_assurance_etranger(Variable):
     value_type = int
     entity = Person
-    definition_period = YEAR
+    definition_period = ETERNITY
     label = "Durée d'assurance acquise à l'étranger"
 
 class regime_general_cnav_duree_assurance_invalidite_annuelle(Variable):
