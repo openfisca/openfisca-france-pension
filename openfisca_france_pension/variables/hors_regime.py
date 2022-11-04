@@ -20,7 +20,7 @@ class TypesCategorieSalarie(Enum):
     non_pertinent = 'non_pertinent'  # Ou autre dont polycotisant
 
 class TypesRaisonDepartTauxPleinAnticipe(Enum):
-    __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant famille travailleur_manuel'
+    __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant famille travailleur_manuel carriere_longue'
     non_concerne = "Non concerné"
     handicape = "Handicapé"
     ancien_deporte = "Ancien déporté ou interné politique"
@@ -191,5 +191,5 @@ class raison_depart_taux_plein_anticipe(Variable):
     possible_values = TypesRaisonDepartTauxPleinAnticipe
     default_value = TypesRaisonDepartTauxPleinAnticipe.non_concerne
     entity = Person
-    label = "Raison du départ anticipé au taux plein "
+    label = "Raison du départ anticipé au taux plein"
     definition_period = ETERNITY

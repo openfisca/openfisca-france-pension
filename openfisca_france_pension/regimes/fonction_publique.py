@@ -1041,6 +1041,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
             duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15.duree_assurance_minimale_seuil_15[date_de_naissance]
             duree_assurance_seuil_2 = carriere_longue.duree_assurance_seuil_2.duree_assurance_minimale_seuil_2[date_de_naissance]
             carriere_longue_seuil_determine_aod = individu('regime_name_carriere_longue_seuil_determine_aod', period)
+            raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
             condition_duree_minimale = select(
                 [
                     carriere_longue_seuil_determine_aod == 2,

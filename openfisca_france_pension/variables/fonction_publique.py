@@ -174,9 +174,10 @@ class cnracl_carriere_longue(Variable):
         duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15.duree_assurance_minimale_seuil_15[date_de_naissance]
         duree_assurance_seuil_2 = carriere_longue.duree_assurance_seuil_2.duree_assurance_minimale_seuil_2[date_de_naissance]
         carriere_longue_seuil_determine_aod = individu('cnracl_carriere_longue_seuil_determine_aod', period)
+        raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
         condition_duree_minimale = select([carriere_longue_seuil_determine_aod == 2, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 1], [duree_assurance_seuil_2, duree_assurance_seuil_15, duree_assurance_seuil_1], default=1000)
         condition_assurance_total = duree_assurance_cotisee_tous_regimes > condition_duree_minimale
-        return condition_assurance_total
+        return condition_assurance_total + (raison_depart_taux_plein_anticipe == TypesRaisonDepartTauxPleinAnticipe.carriere_longue)
 
 class cnracl_carriere_longue_seuil_determine_aod(Variable):
     value_type = float
@@ -1028,9 +1029,10 @@ class fonction_publique_carriere_longue(Variable):
         duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15.duree_assurance_minimale_seuil_15[date_de_naissance]
         duree_assurance_seuil_2 = carriere_longue.duree_assurance_seuil_2.duree_assurance_minimale_seuil_2[date_de_naissance]
         carriere_longue_seuil_determine_aod = individu('fonction_publique_carriere_longue_seuil_determine_aod', period)
+        raison_depart_taux_plein_anticipe = individu('raison_depart_taux_plein_anticipe', period)
         condition_duree_minimale = select([carriere_longue_seuil_determine_aod == 2, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 1], [duree_assurance_seuil_2, duree_assurance_seuil_15, duree_assurance_seuil_1], default=1000)
         condition_assurance_total = duree_assurance_cotisee_tous_regimes > condition_duree_minimale
-        return condition_assurance_total
+        return condition_assurance_total + (raison_depart_taux_plein_anticipe == TypesRaisonDepartTauxPleinAnticipe.carriere_longue)
 
 class fonction_publique_carriere_longue_seuil_determine_aod(Variable):
     value_type = float
