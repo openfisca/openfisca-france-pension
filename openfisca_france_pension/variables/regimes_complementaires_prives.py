@@ -45,20 +45,17 @@ class agirc_cotisation(Variable):
         salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.agirc_arrco.salarie
         return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * (employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale))
 
-    def formula(individu, period, parameters):
+    def formula_1948(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.employeur.agirc
-        salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.salarie.agirc
-        agirc = employeur.copy()
+        employeur = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.employeur.agirc.copy()
+        salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.salarie.agirc.copy()
+        agirc = employeur
         agirc.add_tax_scale(salarie)
         points_gmp = parameters(period).secteur_prive.regimes_complementaires.agirc.gmp.garantie_minimale_points
-        try:
-            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
-        except ParameterNotFound:
-            return individu.empty_array()
+        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         cotisation_gmp_annuelle = points_gmp * salaire_de_reference * taux_appel
         base_gmp_annuelle = cotisation_gmp_annuelle / agirc.rates[1]
         salaire_charniere_annuel = plafond_securite_sociale + base_gmp_annuelle
@@ -214,13 +211,9 @@ class agirc_points_annuels(Variable):
     definition_period = YEAR
     label = 'Points'
 
-    def formula(individu, period, parameters):
-        from openfisca_core.errors import ParameterNotFound
-        try:
-            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
-        except ParameterNotFound:
-            return individu.empty_array()
+    def formula_1947(individu, period, parameters):
+        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         cotisation = individu('agirc_cotisation', period)
         return cotisation / salaire_de_reference / taux_appel
 
@@ -305,7 +298,7 @@ class arrco_cotisation(Variable):
         salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.salarie
         return (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) * (employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale))
 
-    def formula(individu, period, parameters):
+    def formula_1962(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
@@ -315,7 +308,7 @@ class arrco_cotisation(Variable):
         salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.salarie
         salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, categorie_salarie == TypesCategorieSalarie.prive_cadre], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre])
+        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, (categorie_salarie == TypesCategorieSalarie.prive_cadre) + period.start.year >= 1974], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre], default=0)
 
 class arrco_liquidation_date(Variable):
     value_type = date
@@ -461,13 +454,9 @@ class arrco_points_annuels(Variable):
     definition_period = YEAR
     label = 'Points'
 
-    def formula(individu, period, parameters):
-        from openfisca_core.errors import ParameterNotFound
-        try:
-            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
-        except ParameterNotFound:
-            return individu.empty_array()
+    def formula_1962(individu, period, parameters):
+        salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
         cotisation = individu('arrco_cotisation', period)
         return cotisation / salaire_de_reference / taux_appel
 
