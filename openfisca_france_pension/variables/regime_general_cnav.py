@@ -609,6 +609,7 @@ class regime_general_cnav_pension_brute(Variable):
         pension_tous_regime_avant_minimum = pension_avant_minimum + autres_pensions
         pension_apres_minimum = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_avant_minimum < minimum_contributif_plafond_annuel), max_(minimum_contributif, pension_avant_minimum), pension_avant_minimum)
         pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
+        print(f'minimum_contributif_plafond_annuel: {minimum_contributif_plafond_annuel}')
         pension_brute = where((pension_avant_minimum > 0) * a_atteint_taux_plein * (pension_tous_regime_apres_minimum > minimum_contributif_plafond_annuel) * (pension_apres_minimum <= minimum_contributif), min_(max_(minimum_contributif_plafond_annuel - autres_pensions, 0), pension_apres_minimum), pension_apres_minimum)
         return pension_brute
 

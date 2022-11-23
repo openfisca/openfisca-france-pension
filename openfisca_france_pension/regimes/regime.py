@@ -439,8 +439,12 @@ class AbstractRegimeComplementaire(AbstractRegime):
         def formula(individu, period, parameters):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             last_year = period.start.period('year').offset(-1)
-            points_annuels_annee_courante = individu('regime_name_points_annuels', period)
             points_annee_precedente = individu('regime_name_points', last_year)
+            points_annuels_annee_courante = (
+                individu('regime_name_points_annuels', period)
+                + individu('regime_name_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
+                )
+
             if all(points_annee_precedente == 0):
                 return points_annuels_annee_courante
 
@@ -451,11 +455,17 @@ class AbstractRegimeComplementaire(AbstractRegime):
                     ],
                 [
                     points_annee_precedente,
-                    points_annee_precedente + points_annuels_annee_courante,
+                    points_annee_precedente + points_annuels_annee_courante
                     ]
                 )
 
             return points
+
+    class points_a_la_liquidation(Variable):
+        value_type = float
+        entity = Person
+        definition_period = ETERNITY
+        label = "Points à la liquidation"
 
     class points_enfants_a_charge(Variable):
         value_type = float

@@ -21,11 +21,13 @@ script_ast.main(verbose = False)
 
 
 def build_regimes_prelevements_sociaux(parameters):
+    # Cnav
     regime_general_cnav = parameters.prelevements_sociaux.cotisations_securite_sociale_regime_general.cnav
     parameters.secteur_prive.regime_general_cnav.add_child(
         "prelevements_sociaux",
         regime_general_cnav,
         )
+    # Agric-Arrco pré 2019
     arrco = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.arrco
     parameters.secteur_prive.regimes_complementaires.arrco.add_child(
         "prelevements_sociaux",
@@ -36,7 +38,7 @@ def build_regimes_prelevements_sociaux(parameters):
         "prelevements_sociaux",
         agirc,
         )
-    # Régime unifié depuis 2019
+    # Régime unifié Agric-Arrco depuis 2019
     agirc_arrco = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.agirc_arrco
     parameters.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.add_child(
         "agirc_arrco",
@@ -45,6 +47,12 @@ def build_regimes_prelevements_sociaux(parameters):
     parameters.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.add_child(
         "agirc_arrco",
         agirc_arrco,
+        )
+    # Ircantec
+    ircantec = parameters.prelevements_sociaux.cotisations_secteur_public.ircantec
+    parameters.secteur_public.regimes_complementaires.ircantec.prelevements_sociaux.add_child(
+        "ircantec",
+        ircantec
         )
 
 

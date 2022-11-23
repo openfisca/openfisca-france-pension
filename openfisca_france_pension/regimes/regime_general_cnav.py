@@ -722,7 +722,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
         label = "Pension"
 
         def formula_2012_01_01(individu, period, parameters):
-            # 2012_01_01: Application de l'écrêtement de la durée d'assurance tous régimes; voir pension_minimale
+            # 2012_01_01: Application de l'écrêtement de la durée d'assurance tous régimes; voir aussi pension_minimale
             pension_avant_minimum_et_plafonnement = individu('regime_name_pension_avant_minimum_et_plafonnement', period)
             minimum_contributif = individu('regime_name_pension_minimale', period)
             taux_de_liquidation = individu('regime_name_taux_de_liquidation', period)
@@ -761,6 +761,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                 )
 
             pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
+            print(f"minimum_contributif_plafond_annuel: {minimum_contributif_plafond_annuel}")
             pension_brute = where(
                 (
                     (pension_avant_minimum > 0)

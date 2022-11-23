@@ -198,12 +198,18 @@ class agirc_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        points_annuels_annee_courante = individu('agirc_points_annuels', period)
         points_annee_precedente = individu('agirc_points', last_year)
+        points_annuels_annee_courante = individu('agirc_points_annuels', period) + individu('agirc_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
         if all(points_annee_precedente == 0):
             return points_annuels_annee_courante
         points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annuels_annee_courante])
         return points
+
+class agirc_points_a_la_liquidation(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Points à la liquidation'
 
 class agirc_points_annuels(Variable):
     value_type = float
@@ -308,7 +314,7 @@ class arrco_cotisation(Variable):
         salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.salarie
         salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, (categorie_salarie == TypesCategorieSalarie.prive_cadre) + period.start.year >= 1974], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre], default=0)
+        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, (categorie_salarie == TypesCategorieSalarie.prive_cadre) * (period.start.year >= 1976)], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre], default=0)
 
 class arrco_liquidation_date(Variable):
     value_type = date
@@ -441,12 +447,18 @@ class arrco_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        points_annuels_annee_courante = individu('arrco_points_annuels', period)
         points_annee_precedente = individu('arrco_points', last_year)
+        points_annuels_annee_courante = individu('arrco_points_annuels', period) + individu('arrco_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
         if all(points_annee_precedente == 0):
             return points_annuels_annee_courante
         points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annuels_annee_courante])
         return points
+
+class arrco_points_a_la_liquidation(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Points à la liquidation'
 
 class arrco_points_annuels(Variable):
     value_type = float

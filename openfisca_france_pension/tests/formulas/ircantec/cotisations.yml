@@ -1,0 +1,78 @@
+- name: ircantec_sous_plafond
+  description: Cotisations IRCANTEC lorsque l'assiette est < 1 PSS
+  period: 2021
+  absolute_error_margin: 0.03
+  input:
+    categorie_salarie: public_non_titulaire
+    regime_general_cnav_salaire_de_base: 3000 * 12
+  output:
+    ircantec_cotisation: 1.25 * (0.0224 + 0.0336) * 3000 * 12
+
+# - name: ircantec_2
+#   description: Cotisations IRCANTEC lorsque l'assiette est entre 1 et 8 PSS
+#   period: 2021-01
+#   absolute_error_margin: 0.03
+#   input:
+#     categorie_salarie: public_non_titulaire
+#     assiette_cotisations_sociales: 5000
+#   output:
+#     plafond_securite_sociale: 3428
+#     ircantec_salarie: -(1.25*0.0224*3428 + 1.25*0.0556*(5000-3428))
+#     ircantec_employeur: -(1.25*0.0336*3428 + 1.25*0.1004*(5000-3428))
+
+# - name: ircantec_3
+#   description: Cotisations IRCANTEC lorsque l'assiette est > 8 PSS
+#   period: 2021-01
+#   absolute_error_margin: 0.03
+#   input:
+#     categorie_salarie: public_non_titulaire
+#     assiette_cotisations_sociales: 30000
+#   output:
+#     ircantec_salarie: -(1.25*0.0224*3428 + 1.25*0.0556*(27424-3428))
+#     ircantec_employeur: -(1.25*0.0336*3428 + 1.25*0.1004*(27424-3428))
+
+# - name: ircantec_4
+#   description: Cotisations IRCANTEC pour un salarié du privé (donc, zéro)
+#   period: 2021-01
+#   absolute_error_margin: 0.03
+#   input:
+#     categorie_salarie: prive_non_cadre
+#     assiette_cotisations_sociales: 30000
+#   output:
+#     ircantec_salarie: 0
+#     ircantec_employeur: 0
+
+
+
+# - name: cotisation Ircantec sous plafond
+#   description: test
+#   period: 2010
+#   input:
+#     categorie_salarie:
+#       year:2010:10: public_non_titulaire
+#     regime_general_cnav_salaire_de_base:
+#       2010: 10000
+#       2015: 10000
+#       2019: 10000
+#   output:
+#     ircantec_cotisation:
+#       # Employeur + salarié
+#       2010: .045 * 10000  + .03 * 10000
+#       2015: .0465 * 10000 + .031 * 10000
+
+
+# - name: cotisation Arrco cadre au dessus du plafond
+#   description: test
+#   period: 2010
+#   input:
+#     categorie_salarie:
+#       year:2010:10: prive_cadre
+#     regime_general_cnav_salaire_de_base:
+#       2010: 2 * 12 * 2885
+#       2015: 2 * 12 * 3170
+#       2019: 2 * 12 * 3377
+#   output:
+#     ircantec_cotisation:
+#       2010: (.045 + .03) * 12 * 2885
+#       2015: (.0465 + .031) * 12 * 3170
+#       2019: 0

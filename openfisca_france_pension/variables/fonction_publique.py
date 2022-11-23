@@ -319,18 +319,20 @@ class cnracl_decote_trimestres(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         carriere_longue = individu('cnracl_carriere_longue', period)
         actif_a_la_liquidation = individu('cnracl_actif_a_la_liquidation', period)
+        super_actif_a_la_liquidation = individu('cnracl_super_actif_a_la_liquidation', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         conditions_depart_anticipe_parent_trois_enfants = individu('cnracl_decote_a_date_depart_anticipe_parent_trois_enfants', period)
         aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
         reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
         aad_en_mois_general = individu('cnracl_limite_d_age', period) * 12 + reduction_add_en_mois
         aad_en_mois_parents_trois_enfants = 65 * 12 + reduction_add_en_mois
-        aad_en_mois = where(conditions_depart_anticipe_parent_trois_enfants, aad_en_mois_parents_trois_enfants, aad_en_mois_general)
+        aad_en_mois = where(conditions_depart_anticipe_parent_trois_enfants, min_(aad_en_mois_parents_trois_enfants, aad_en_mois_general), aad_en_mois_general)
         age_en_mois_a_la_liquidation = (individu('cnracl_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = max_(0, np.ceil((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
         duree_assurance_requise_sedentaires = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         duree_assurance_requise_actifs = parameters(period).secteur_public.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
-        duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
+        duree_assurance_requise_super_actifs = duree_assurance_requise_actifs - 4 * 5
+        duree_assurance_requise = select([super_actif_a_la_liquidation, actif_a_la_liquidation & not_(super_actif_a_la_liquidation)], [duree_assurance_requise_super_actifs, duree_assurance_requise_actifs], default=duree_assurance_requise_sedentaires)
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
         return select([carriere_longue, annee_age_ouverture_droits >= 2006], [0, min_(decote_trimestres, 20)], default=0)
@@ -421,7 +423,7 @@ class cnracl_duree_assurance_cotisee_seuil_bas(Variable):
         duree_assurance_cotisee_16 = individu.empty_array()
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
             filter = annee_de_naissance == _annee_de_naissance
-            duree_assurance_cotisee_16 = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
+            duree_assurance_cotisee_16[filter] = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
         return duree_assurance_cotisee_16
 
 class cnracl_duree_assurance_cotisee_seuil_haut(Variable):
@@ -437,7 +439,7 @@ class cnracl_duree_assurance_cotisee_seuil_haut(Variable):
         duree_assurance_cotisee_20 = individu.empty_array()
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
             filter = annee_de_naissance == _annee_de_naissance
-            duree_assurance_cotisee_20 = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
+            duree_assurance_cotisee_20[filter] = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
         return duree_assurance_cotisee_20
 
 class cnracl_duree_assurance_invalidite_annuelle(Variable):
@@ -567,7 +569,8 @@ class cnracl_limite_d_age(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        actif_a_la_liquidation = individu('cnracl_actif_a_la_liquidation', period)
+        super_actif_a_la_liquidation = individu('cnracl_super_actif_a_la_liquidation', period)
         limite_age_active = parameters(period).secteur_public.la_a.age_limite_fonction_publique_active_selon_annee_naissance
         limite_age_sedentaire = parameters(period).secteur_public.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
@@ -582,7 +585,7 @@ class cnracl_limite_d_age(Variable):
             limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
         limite_age_actif = limite_age_active_annee + limite_age_active_mois / 12
         limite_age_sedentaire = limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
-        return where(actif_a_la_liquidation, limite_age_actif, limite_age_sedentaire)
+        return where(actif_a_la_liquidation | super_actif_a_la_liquidation, limite_age_actif - 5 * super_actif_a_la_liquidation, limite_age_sedentaire)
 
 class cnracl_liquidation_date(Variable):
     value_type = date
@@ -1174,18 +1177,20 @@ class fonction_publique_decote_trimestres(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         carriere_longue = individu('fonction_publique_carriere_longue', period)
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        super_actif_a_la_liquidation = individu('fonction_publique_super_actif_a_la_liquidation', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         conditions_depart_anticipe_parent_trois_enfants = individu('fonction_publique_decote_a_date_depart_anticipe_parent_trois_enfants', period)
         aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
         reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
         aad_en_mois_general = individu('fonction_publique_limite_d_age', period) * 12 + reduction_add_en_mois
         aad_en_mois_parents_trois_enfants = 65 * 12 + reduction_add_en_mois
-        aad_en_mois = where(conditions_depart_anticipe_parent_trois_enfants, aad_en_mois_parents_trois_enfants, aad_en_mois_general)
+        aad_en_mois = where(conditions_depart_anticipe_parent_trois_enfants, min_(aad_en_mois_parents_trois_enfants, aad_en_mois_general), aad_en_mois_general)
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = max_(0, np.ceil((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
         duree_assurance_requise_sedentaires = parameters(period).secteur_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         duree_assurance_requise_actifs = parameters(period).secteur_public.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
-        duree_assurance_requise = where(actif_a_la_liquidation, duree_assurance_requise_actifs, duree_assurance_requise_sedentaires)
+        duree_assurance_requise_super_actifs = duree_assurance_requise_actifs - 4 * 5
+        duree_assurance_requise = select([super_actif_a_la_liquidation, actif_a_la_liquidation & not_(super_actif_a_la_liquidation)], [duree_assurance_requise_super_actifs, duree_assurance_requise_actifs], default=duree_assurance_requise_sedentaires)
         trimestres = individu('duree_assurance_tous_regimes', period)
         decote_trimestres = min_(max_(0, min_(trimestres_avant_aad, duree_assurance_requise - trimestres)), 20)
         return select([carriere_longue, annee_age_ouverture_droits >= 2006], [0, min_(decote_trimestres, 20)], default=0)
@@ -1276,7 +1281,7 @@ class fonction_publique_duree_assurance_cotisee_seuil_bas(Variable):
         duree_assurance_cotisee_16 = individu.empty_array()
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
             filter = annee_de_naissance == _annee_de_naissance
-            duree_assurance_cotisee_16 = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
+            duree_assurance_cotisee_16[filter] = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
         return duree_assurance_cotisee_16
 
 class fonction_publique_duree_assurance_cotisee_seuil_haut(Variable):
@@ -1292,7 +1297,7 @@ class fonction_publique_duree_assurance_cotisee_seuil_haut(Variable):
         duree_assurance_cotisee_20 = individu.empty_array()
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
             filter = annee_de_naissance == _annee_de_naissance
-            duree_assurance_cotisee_20 = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
+            duree_assurance_cotisee_20[filter] = individu('fonction_publique_duree_de_service_effective', str(_annee_de_naissance + 16))[filter]
         return duree_assurance_cotisee_20
 
 class fonction_publique_duree_assurance_invalidite_annuelle(Variable):
@@ -1423,6 +1428,7 @@ class fonction_publique_limite_d_age(Variable):
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
+        super_actif_a_la_liquidation = individu('fonction_publique_super_actif_a_la_liquidation', period)
         limite_age_active = parameters(period).secteur_public.la_a.age_limite_fonction_publique_active_selon_annee_naissance
         limite_age_sedentaire = parameters(period).secteur_public.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
@@ -1437,7 +1443,7 @@ class fonction_publique_limite_d_age(Variable):
             limite_age_sedentaire_mois = limite_age_sedentaire[date_de_naissance].mois
         limite_age_actif = limite_age_active_annee + limite_age_active_mois / 12
         limite_age_sedentaire = limite_age_sedentaire_annee + limite_age_sedentaire_mois / 12
-        return where(actif_a_la_liquidation, limite_age_actif, limite_age_sedentaire)
+        return where(actif_a_la_liquidation | super_actif_a_la_liquidation, limite_age_actif - 5 * super_actif_a_la_liquidation, limite_age_sedentaire)
 
 class fonction_publique_liquidation_date(Variable):
     value_type = date

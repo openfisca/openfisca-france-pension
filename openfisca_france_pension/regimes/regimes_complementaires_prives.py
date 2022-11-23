@@ -76,7 +76,8 @@ class RegimeArrco(AbstractRegimeComplementaire):
             return select(
                 [
                     categorie_salarie == TypesCategorieSalarie.prive_non_cadre,
-                    (categorie_salarie == TypesCategorieSalarie.prive_cadre) + period.start.year >= 1974,  # TODO: check
+                    (categorie_salarie == TypesCategorieSalarie.prive_cadre) * (period.start.year >= 1976),
+                    # D'après guide EIC pas obligatoire avant 1976 TODO: check
                     ],
                 [
                     employeur_non_cadre + salarie_non_cadre,
