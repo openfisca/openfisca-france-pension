@@ -52,7 +52,7 @@ def build_regimes_prelevements_sociaux(parameters):
     ircantec = parameters.prelevements_sociaux.cotisations_secteur_public.ircantec
     parameters.secteur_public.regimes_complementaires.ircantec.add_child(
         "prelevements_sociaux",
-        ircantec
+        ircantec.taux_cotisations_appeles
         )
 
 
@@ -75,7 +75,7 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
                     }
                 }
             )
-        self.parameters.secteur_public.add_child("taux_plein", taux_plein)
+        self.parameters.secteur_public.pension_civile.add_child("taux_plein", taux_plein)
         build_regimes_prelevements_sociaux(self.parameters)
 
         arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros

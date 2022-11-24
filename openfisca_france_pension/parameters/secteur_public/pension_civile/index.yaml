@@ -1,0 +1,17 @@
+description: Pension civile
+metadata:
+  description_en: Civil pension
+  order:
+  - la_s
+  - la_a
+  - aod_s
+  - aod_a
+  - aad
+  - decote
+  - surcote
+  - prorat
+  - trimtp
+  - duree_seuil_actif
+  - minimum_garanti
+  - carriere_longue
+  - bonification_enfant

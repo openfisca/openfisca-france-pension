@@ -1,19 +1,6 @@
 description: Taux de cotisation appelés des cotisations salarié à la Retraite complémentaire des agents non titulaires de la Fonction publique et des élus locaux (IRCANTEC)
 brackets:
-- base:
-    1971-01-01:
-      value: 0.6
-    1983-01-01:
-      value: 0.8
-    1988-01-01:
-      value: 1.0
-    1989-01-01:
-      value: 1.09
-    1991-04-01:
-      value: 1.2
-    1992-01-01:
-      value: 1.25
-  rate:
+- rate:
     2017-01-01:
       value: 0.028
     2016-01-01:
@@ -43,20 +30,7 @@ brackets:
   threshold:
     1971-01-01:
       value: 0.0
-- base:
-    1971-01-01:
-      value: 0.6
-    1983-01-01:
-      value: 0.8
-    1988-01-01:
-      value: 1.0
-    1989-01-01:
-      value: 1.09
-    1991-04-01:
-      value: 1.2
-    1992-01-01:
-      value: 1.25
-  rate:
+- rate:
     2017-01-01:
       value: 0.0695
     2016-01-01:
@@ -171,4 +145,3 @@ documentation: |
 
   Les taux de cotisation appelés sont utilisés pour le calcul des cotisations. Les taux de cotisation théoriques sont utilisés pour le calcul des points.
   Les taux de cotisation appelés se calculent en appliquant le taux d'appel aux taux de cotisation théoriques.
-

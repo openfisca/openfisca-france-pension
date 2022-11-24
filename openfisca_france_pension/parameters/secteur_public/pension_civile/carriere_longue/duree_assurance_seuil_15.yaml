@@ -1,0 +1,61 @@
+description: Durée d'assurance minimale cotisée pour les personnes ayant commencées à travailler avant le seuil 2
+before_1953_01_01:
+  description: Avant 1953-01-01
+  values:
+    2003-01-01:
+      value: 169
+after_1953_01_01:
+  description: "1953-01-01"
+  values:
+    2003-01-01:
+      value: 169
+after_1954_01_01:
+  description: "1954-01-01"
+  values:
+    2003-01-01:
+      value: 169
+after_1955_01_01:
+  description: "1955-01-01"
+  values:
+    2003-01-01:
+      value: 170
+after_1956_01_01:
+  description: "1956-01-01"
+  values:
+    2003-01-01:
+      value: 170
+after_1957_01_01:
+  description: "1957-01-01"
+  values:
+    2003-01-01:
+      value: 166
+after_1958_01_01:
+  description: "1958-01-01"
+  values:
+    2003-01-01:
+      value: 175
+after_1961_01_01:
+  description: "1961-01-01"
+  values:
+    2003-01-01:
+      value: 176
+after_1964_01_01:
+  description: "1964-01-01"
+  values:
+    2003-01-01:
+      value: 177
+after_1967_01_01:
+  description: "1967-01-01"
+  values:
+    2003-01-01:
+      value: 178
+after_1970_01_01:
+  description: "1970-01-01"
+  values:
+    2003-01-01:
+      value: 179
+after_1973_01_01:
+  description: "1973-01-01"
+  values:
+    2003-01-01:
+      value: 180

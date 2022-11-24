@@ -2,15 +2,5 @@ description: Secteur public
 metadata:
   description_en: Public sector
   order:
-  - la_s
-  - la_a
-  - aod_s
-  - aod_a
-  - aad
-  - decote
-  - surcote
-  - prorat
-  - trimtp
-  - duree_seuil_actif
-  - bonification_enfant
-  - regimes_complementaires 
+  - pension_civile
+  - regimes_complementaires
