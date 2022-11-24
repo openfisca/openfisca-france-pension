@@ -20,7 +20,7 @@ class TypesCategorieActivite(Enum):
 class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
-    parameters_prefix = "secteur_public"
+    parameters_prefix = "secteur_public.pension_civile"
 
     class actif_a_la_liquidation(Variable):
         value_type = bool
@@ -728,7 +728,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula_2004(individu, period, parameters):
             nombre_enfants_nes_avant_2004 = individu('regime_name_nombre_enfants_nes_avant_2004', period)
-            majoration_par_enfant_pr_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+            majoration_par_enfant_pr_2004 = parameters(period).regime_name.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
             nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
             majoration = majoration_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
             sexe = individu('sexe', period)
@@ -765,7 +765,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         label = "Bonification du code des pensions civiles et militaires liée aux enfants (compte pour la durée d'assurance et la durée de service/durée liquidable)"
 
         def formula_2004(individu, period, parameters):
-            bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+            bonification_par_enfant_av_2004 = parameters(period).regime_name.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
             nombre_enfants_nes_avant_2004 = individu('regime_name_nombre_enfants_nes_avant_2004', period)
             bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
             sexe = individu('sexe', period)
@@ -778,7 +778,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
             return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
 
         def formula_1949(individu, period, parameters):
-            bonification_par_enfant_av_2004 = parameters(period).secteur_public.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+            bonification_par_enfant_av_2004 = parameters(period).regime_name.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
             nombre_enfants = individu('nombre_enfants', period)
             bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
             sexe = individu('sexe', period)
@@ -1013,7 +1013,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
         label = "L'âge d'ouverture des droit des personnes pouvant bénéficier du dispositif RACL dépend de l'âge de début de cotisation"
 
         def formula(individu, period, parameters):
-            carriere_longue = parameters(period).secteur_public.carriere_longue
+            carriere_longue = parameters(period).regime_name.carriere_longue
             date_de_naissance = individu('date_de_naissance', period)
             naissance_mois = date_de_naissance.astype('datetime64[M]').astype(int) % 12 + 1
             duree_assurance_cotisee_avant_16_ans = individu('regime_name_duree_assurance_cotisee_seuil_bas', period)
@@ -1051,7 +1051,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
-            carriere_longue = parameters(period).secteur_public.carriere_longue
+            carriere_longue = parameters(period).regime_name.carriere_longue
             duree_assurance_cotisee_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
             duree_assurance_seuil_1 = carriere_longue.duree_assurance_seuil_1[date_de_naissance]
             duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15[date_de_naissance]
@@ -1113,10 +1113,10 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 class RegimeFonctionPublique(AbstractRegimeFonctionPublique):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
-    parameters_prefix = "secteur_public"
+    parameters_prefix = "secteur_public.pension_civile"
 
 
 class RegimeCnracl(AbstractRegimeFonctionPublique):
     name = 'Régime de la Caisse nationale des agents des collectivités locales'
     variable_prefix = 'cnracl'
-    parameters_prefix = 'secteur_public'
+    parameters_prefix = 'secteur_public.pension_civile'

@@ -1,8 +1,0 @@
-description: Nombre minimum de trimestres d'assurance retraite en début de carrière pour les personnes ayant commencées à travailler en début d'année (né entre janvier et septembre)
-before_1944_01_01:
-  description: Avant 1944
-  values:
-    1948-01-01:
-      value: null
-    2003-01-01:
-      value: 5

@@ -10,10 +10,10 @@ from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 from openfisca_france_pension.regimes.regime_general_cnav import conversion_parametre_en_euros
 
 
-class Ircantec(AbstractRegimeComplementaire):
+class RegimeIrcantec(AbstractRegimeComplementaire):
     name = "Régime complémentaire public Ircantec"
     variable_prefix = "ircantec"
-    parameters_prefix = "secteur_public.ircantec"
+    parameters_prefix = "secteur_public.regimes_complementaires.ircantec"
 
     class cotisation(Variable):
         value_type = float
@@ -22,14 +22,14 @@ class Ircantec(AbstractRegimeComplementaire):
         definition_period = YEAR
         label = "Cotisation"
 
-        def formula_2019(individu, period, parameters):
+        def formula(individu, period, parameters):
             categorie_salarie = individu("categorie_salarie", period)
             salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            employeur = parameters(period).regime_name.prelevements_sociaux.ircantec.taux_cotisations_appeles.employeur
-            salarie = parameters(period).regime_name.prelevements_sociaux.ircantec.taux_cotisations_appeles.salarie
+            employeur = parameters(period).regime_name.prelevements_sociaux.employeur
+            salarie = parameters(period).regime_name.prelevements_sociaux.salarie
             return (
-                (categorie_salarie == TypesCategorieSalarie.prive_non_titulaire)
+                (categorie_salarie == TypesCategorieSalarie.public_non_titulaire)
                 * (
                     employeur.ircantec.calc(salaire_de_base, factor = plafond_securite_sociale)
                     + salarie.ircantec.calc(salaire_de_base, factor = plafond_securite_sociale)
@@ -42,7 +42,7 @@ class Ircantec(AbstractRegimeComplementaire):
         definition_period = YEAR
         label = "Points"
 
-        def formula_1962(individu, period, parameters):
+        def formula(individu, period, parameters):
             salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
             taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
             cotisation = individu("regime_name_cotisation", period)
