@@ -3,11 +3,11 @@ valeur_annuelle_acquisition_point_rsi:
   description: Valeur annuelle d'acquisition du point RSI
   values:
     2021-01-01:
-      value: 17.765 
+      value: 17.765
     2020-01-01:
-      value: 17.691 
+      value: 17.691
     2019-01-01:
-      value: 17.515 
+      value: 17.515
     2017-10-01:
       value: 17.456
     2015-10-01:
@@ -16,7 +16,7 @@ valeur_annuelle_acquisition_point_rsi:
       value: 17.309
   metadata:
     ipp_csv_id: sal_ref_ircantec
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - valeur_annuelle_acquisition_point_rsi

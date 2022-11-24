@@ -149,8 +149,8 @@ salaire_reference_en_nominal:
   metadata:
     ipp_csv_id: sal_ref_agirc_nominal
     unit:
-      2002-01-01: currency-EUR
-      1960-01-01: currency-FRF
+      2002-01-01: currency
+      1960-01-01: currency
       1947-04-01: currency-AFRF
 salaire_reference_en_euros:
   description: Salaire de référence AGIRC (prix d'achat) en euros
@@ -299,7 +299,7 @@ salaire_reference_en_euros:
       value: 0.0396
   metadata:
     ipp_csv_id: sal_ref_agirc_euros
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - salaire_reference_en_nominal

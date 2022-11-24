@@ -90,8 +90,8 @@ valeur_points_acquis:
       value: 0.728
   metadata:
     unit:
-      2001-01-01: currency-EUR
-      1980-01-01: currency-FRF
+      2001-01-01: currency
+      1980-01-01: currency
 valeur_points_acquis_avant_1979:
   description: Valeur des points acquis avant 1979
   values:
@@ -108,7 +108,7 @@ valeur_points_acquis_avant_1979:
     1980-01-01:
       value: null
   metadata:
-    unit: currency-EUR
+    unit: currency
 valeur_points_acquis_entre_1979_1996:
   description: Valeur des points acquis entre 1979 et 1996
   values:
@@ -125,7 +125,7 @@ valeur_points_acquis_entre_1979_1996:
     1980-01-01:
       value: null
   metadata:
-    unit: currency-EUR
+    unit: currency
 valeur_points_acquis_entre_1997_2012:
   description: Valeur des points acquis entre 1997 et 2012
   values:
@@ -142,7 +142,7 @@ valeur_points_acquis_entre_1997_2012:
     1980-01-01:
       value: null
   metadata:
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - valeur_points_acquis

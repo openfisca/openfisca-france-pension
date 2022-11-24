@@ -1,5 +1,6 @@
 description: Secteur public
 metadata:
+  description_en: Public sector
   order:
   - la_s
   - la_a
@@ -11,8 +12,5 @@ metadata:
   - prorat
   - trimtp
   - duree_seuil_actif
-  - pt_ircantec
-  - salref_ircantec
-  - ra
   - bonification_enfant
-  description_en: Public sector
+  - regimes_complementaires 

@@ -50,8 +50,8 @@ def build_regimes_prelevements_sociaux(parameters):
         )
     # Ircantec
     ircantec = parameters.prelevements_sociaux.cotisations_secteur_public.ircantec
-    parameters.secteur_public.regimes_complementaires.ircantec.prelevements_sociaux.add_child(
-        "ircantec",
+    parameters.secteur_public.regimes_complementaires.ircantec.add_child(
+        "prelevements_sociaux",
         ircantec
         )
 

@@ -1,5 +1,21 @@
 description: Nombre d'année en dessous de quanrante ans de service et au dessus de trente ans pris en compte dans le calcul du minimum garanti
+metadata:
+  order:
+  - annee_supplementaire_moins_40_ans
 annee_supplementaire_moins_40_ans:
+  metadata:
+    order:
+    - before_2004_01_01
+    - after_2004_01_01
+    - after_2005_01_01
+    - after_2006_01_01
+    - after_2007_01_01
+    - after_2008_01_01
+    - after_2009_01_01
+    - after_2010_01_01
+    - after_2011_01_01
+    - after_2012_01_01
+    - after_2013_01_01
   before_2004_01_01:
     description: Pension liquidée avant le premier janvier 2004
     values:
@@ -55,19 +71,3 @@ annee_supplementaire_moins_40_ans:
     values:
       2013-01-01:
         value: 120
-  metadata:
-    order:
-    - before_2004_01_01
-    - after_2004_01_01
-    - after_2005_01_01
-    - after_2006_01_01
-    - after_2007_01_01
-    - after_2008_01_01
-    - after_2009_01_01
-    - after_2010_01_01
-    - after_2011_01_01
-    - after_2012_01_01
-    - after_2013_01_01
-metadata:
-  order:
-  - annee_supplementaire_moins_40_ans

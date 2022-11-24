@@ -236,7 +236,7 @@ point_indice_en_euros:
       value: 8.6576
   metadata:
     ipp_csv_id: pt_indice_euro
-    unit: currency-EUR
+    unit: currency
 point_indice_en_nominal:
   description: Valeur nominale annuelle du point d'indice
   values:
@@ -475,8 +475,8 @@ point_indice_en_nominal:
   metadata:
     ipp_csv_id: pt_indice_nominal
     unit:
-      2002-03-01: currency-EUR
-      1970-01-01: currency-FRF
+      2002-03-01: currency
+      1970-01-01: currency
 metadata:
   order:
   - point_indice_en_euros

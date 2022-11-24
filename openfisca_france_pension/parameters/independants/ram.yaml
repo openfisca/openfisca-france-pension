@@ -9,7 +9,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_base
   after_1934_01_01:
-    description: '1934'
+    description: Après 1934
     values:
       1994-01-01:
         value: 11.0
@@ -18,7 +18,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0134
   after_1936_01_01:
-    description: '1936'
+    description: Après 1936
     values:
       1994-01-01:
         value: 12.0
@@ -27,7 +27,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0136
   after_1938_01_01:
-    description: '1938'
+    description: Après 1938
     values:
       1994-01-01:
         value: 13.0
@@ -36,7 +36,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0138
   after_1940_01_01:
-    description: '1940'
+    description: Après 1940
     values:
       1994-01-01:
         value: 14.0
@@ -45,7 +45,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0140
   after_1942_01_01:
-    description: '1942'
+    description: Après 1942
     values:
       1994-01-01:
         value: 15.0
@@ -54,7 +54,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0142
   after_1944_01_01:
-    description: '1944'
+    description: Après 1944
     values:
       1994-01-01:
         value: 16.0
@@ -63,7 +63,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0144
   after_1945_01_01:
-    description: '1945'
+    description: Après 1945
     values:
       1994-01-01:
         value: 17.0
@@ -72,7 +72,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0145
   after_1946_01_01:
-    description: '1946'
+    description: Après 1946
     values:
       1994-01-01:
         value: 18.0
@@ -81,7 +81,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0146
   after_1947_01_01:
-    description: '1947'
+    description: Après 1947
     values:
       1994-01-01:
         value: 19.0
@@ -90,7 +90,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0147
   after_1948_01_01:
-    description: '1948'
+    description: Après 1948
     values:
       1994-01-01:
         value: 20.0
@@ -99,7 +99,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0148
   after_1949_01_01:
-    description: '1949'
+    description: Après 1949
     values:
       1994-01-01:
         value: 21.0
@@ -108,7 +108,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0149
   after_1950_01_01:
-    description: '1950'
+    description: Après 1950
     values:
       1994-01-01:
         value: 22.0
@@ -117,7 +117,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0150
   after_1951_01_01:
-    description: '1951'
+    description: Après 1951
     values:
       1994-01-01:
         value: 23.0
@@ -126,7 +126,7 @@ nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
     metadata:
       ipp_csv_id: nbsam_0151
   after_1952_01_01:
-    description: '1952'
+    description: Après 1952
     values:
       1994-01-01:
         value: 24.0

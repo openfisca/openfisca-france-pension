@@ -4,14 +4,12 @@ age_seuil_1:
   before_1960_01_01:
     description: Before 1944
     values:
-      2003-01-01:
-        value: null
       1948-01-01:
         value: null
   after_1960_01_01:
     description: Apres 1944
     values:
-      2003-01-01:
-        value: 16
       1948-01-01:
         value: null
+      2003-01-01:
+        value: 16

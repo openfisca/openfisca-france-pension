@@ -147,8 +147,8 @@ salaire_validant_trimestre:
     metadata:
       ipp_csv_id: saltrim_metro
       unit:
-        2002-01-01: currency-EUR
-        1936-01-01: currency-FRF
+        2002-01-01: currency
+        1936-01-01: currency
   guadeloupe_guyane_martinique:
     description: Guadeloupe Guyane Martinique
     values:
@@ -291,8 +291,8 @@ salaire_validant_trimestre:
     metadata:
       ipp_csv_id: saltrim_ggm
       unit:
-        2002-01-01: currency-EUR
-        1948-01-01: currency-FRF
+        2002-01-01: currency
+        1948-01-01: currency
   reunion:
     description: Réunion
     values:
@@ -435,8 +435,8 @@ salaire_validant_trimestre:
     metadata:
       ipp_csv_id: saltrim_reu
       unit:
-        2002-01-01: currency-EUR
-        1949-01-01: currency-FRF
+        2002-01-01: currency
+        1949-01-01: currency
         1948-01-01: currency-XOF
   metadata:
     order:

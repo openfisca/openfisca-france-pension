@@ -45,8 +45,8 @@ salaire_reference_en_nominal:
   metadata:
     ipp_csv_id: sal_ref_arrco_nom
     unit:
-      2001-01-01: currency-EUR
-      1999-01-01: currency-FRF
+      2001-01-01: currency
+      1999-01-01: currency
 salaire_reference_en_euros:
   description: Salaire de référence (en euros)
   values:
@@ -92,7 +92,7 @@ salaire_reference_en_euros:
       value: 10.9540
   metadata:
     ipp_csv_id: sal_ref_arrco_euros
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - salaire_reference_en_nominal

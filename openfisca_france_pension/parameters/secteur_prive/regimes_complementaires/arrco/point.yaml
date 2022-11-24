@@ -81,7 +81,7 @@ valeur_point_en_euros:
       value: 1.0
   metadata:
     ipp_csv_id: val_point_eur
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - valeur_point_en_nominal

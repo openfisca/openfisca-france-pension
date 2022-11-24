@@ -163,8 +163,8 @@ valeur_point_retraite_organic_regime_base_droits_acquis_avant_1973:
     metadata:
       ipp_csv_id: organic_base
       unit:
-        2002-01-01: currency-EUR
-        1949-10-01: currency-FRF
+        2002-01-01: currency
+        1949-10-01: currency
   valeur_point_acquis_par_rachat_global:
     description: Valeur du point acquis par rachat global
     values:
@@ -311,8 +311,8 @@ valeur_point_retraite_organic_regime_base_droits_acquis_avant_1973:
     metadata:
       ipp_csv_id: organic_rachat
       unit:
-        2002-01-01: currency-EUR
-        1949-10-01: currency-FRF
+        2002-01-01: currency
+        1949-10-01: currency
   metadata:
     order:
     - valeur_point_acquis_par_cotisations

@@ -23,7 +23,7 @@ valeur_points_acquis_depuis_1973:
     2004-01-01:
       value: 1.0
   metadata:
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - valeur_points_acquis_depuis_1973

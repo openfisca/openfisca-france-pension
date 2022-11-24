@@ -1,10 +1,34 @@
 description: Part de la valeur de l'indice majoré au moment de la législation pris en compte dans le calcul du minimum garanti
+metadata:
+  description_en: Index point of public sector (1970-2017)
+  order:
+  - part_indice_majore_en_euros
+documentation: |-
+  Notes :
+  Le point d'indice (ou la valeur de l'indice majoré 100) permet de déterminer la rémunération fixe des fonctionnaires
+  La valeur du traitement mensuel brut correspondant à l'indice majoré détenu par un
+  agent est égale à :
+  (Valeur de l'indice majoré 100 X indice majoré de l'agent) / (100 x 12)
+  Référence générale : Décret 85-1148 du 24 octobre 1985 - Article 3
+  NB : Pour trouver les décrets aux années précédentes XXXX, il suffit de rechercher sur internet "Décret XXX portant majoration de la rémunération des personnels civils et militaires de l'Etat"
 part_indice_majore_en_euros:
+  metadata:
+    order:
+    - before_2004_01_01
+    - after_2004_01_01
+    - after_2005_01_01
+    - after_2006_01_01
+    - after_2007_01_01
+    - after_2008_01_01
+    - after_2009_01_01
+    - after_2010_01_01
+    - after_2011_01_01
+    - after_2012_01_01
   before_2004_01_01:
     description: Pension liquidée avant le premier janvier 2004
     values:
       1976-01-01:
-        value: 0.600
+        value: 0.6
   after_2004_01_01:
     description: Pension liquidée apres le premier janvier 2004
     values:
@@ -50,30 +74,3 @@ part_indice_majore_en_euros:
     values:
       2012-01-01:
         value: 0.575
-  metadata:
-    order:
-    - before_2004_01_01
-    - after_2004_01_01
-    - after_2005_01_01
-    - after_2006_01_01
-    - after_2007_01_01
-    - after_2008_01_01
-    - after_2009_01_01
-    - after_2010_01_01
-    - after_2011_01_01
-    - after_2012_01_01
-metadata:
-  order:
-  - part_indice_majore_en_euros
-  reference:
-  official_journal_date:
-  notes:
-  description_en: Index point of public sector (1970-2017)
-documentation: |
-  Notes :
-  Le point d'indice (ou la valeur de l'indice majoré 100) permet de déterminer la rémunération fixe des fonctionnaires
-  La valeur du traitement mensuel brut correspondant à l'indice majoré détenu par un
-  agent est égale à :
-  (Valeur de l'indice majoré 100 X indice majoré de l'agent) / (100 x 12)
-  Référence générale : Décret 85-1148 du 24 octobre 1985 - Article 3
-  NB : Pour trouver les décrets aux années précédentes XXXX, il suffit de rechercher sur internet "Décret XXX portant majoration de la rémunération des personnels civils et militaires de l'Etat"

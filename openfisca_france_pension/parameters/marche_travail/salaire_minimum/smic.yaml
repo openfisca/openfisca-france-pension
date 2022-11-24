@@ -233,8 +233,8 @@ smic_brut_horaire:
   metadata:
     ipp_csv_id: smic_h
     unit:
-      2002-01-01: currency-EUR
-      1970-01-01: currency-FRF
+      2002-01-01: currency
+      1970-01-01: currency
 heures_temps_plein:
   description: Heures temps plein
   values:
@@ -480,8 +480,8 @@ smic_brut_mensuel:
   metadata:
     ipp_csv_id: smic_m
     unit:
-      2002-01-01: currency-EUR
-      1970-01-01: currency-FRF
+      2002-01-01: currency
+      1970-01-01: currency
 metadata:
   order:
   - smic_brut_horaire

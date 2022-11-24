@@ -180,8 +180,8 @@ valeur_point_en_nominal:
       value: 4.0
   metadata:
     unit:
-      2002-04-01: currency-EUR
-      1960-01-01: currency-FRF
+      2002-04-01: currency
+      1960-01-01: currency
       1947-04-01: currency-AFRF
 valeur_point_en_euros:
   description: Valeur du point AGIRC (en euros)
@@ -362,7 +362,7 @@ valeur_point_en_euros:
       value: 0.00609796068949642
   metadata:
     ipp_csv_id: val_point_agirc
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - valeur_point_en_nominal

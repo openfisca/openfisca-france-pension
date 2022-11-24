@@ -96,7 +96,7 @@ valeur_point_cnro_en_nominal:
       value: 0.1824
   metadata:
     ipp_csv_id: val_point_arcco_nom
-    unit: currency-FRF
+    unit: currency
 valeur_point_cnro_en_euros:
   description: Valeur du point CNRO (en euros)
   values:
@@ -194,7 +194,7 @@ valeur_point_cnro_en_euros:
       value: 0.027806700744103654
   metadata:
     ipp_csv_id: val_point_arrco
-    unit: currency-FRF
+    unit: currency
 metadata:
   order:
   - valeur_point_cnro_en_nominal
@@ -206,4 +206,3 @@ documentation: |+
   Au 1er janvier 1999, l'unification des régimes ARRCO donne lieu à une évolution des valeurs des paramètres.
   Pour BTP RETRAITE, section CBTPR, le coefficient de transformation est de 0,245625.
   Pour BTP RETRAITE, section CNRO, le coefficient de transformation est de 0,411245.
-

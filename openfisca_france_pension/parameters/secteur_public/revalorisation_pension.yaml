@@ -1,7 +1,7 @@
 description: Coefficient de revalorisation des pensions civiles
 values:
   1960-01-01:
-    value: 1.0
+    value: 1
   1961-01-01:
     value: 1.26985598952651
   1962-01-01:
@@ -63,7 +63,7 @@ values:
   1991-01-01:
     value: 1.03297491039427
   1992-01-01:
-    value: 1.0
+    value: 1
   1993-01-01:
     value: 1.01824817518248
   1994-01-01:
@@ -105,15 +105,15 @@ values:
   2013-04-01:
     value: 1.013
   2014-10-01:
-    value: 1.0
+    value: 1
   2015-10-01:
     value: 1.001
   2016-10-01:
-    value: 1.0
+    value: 1
   2017-10-01:
     value: 1.008
   2018-01-01:
-    value: 1.0
+    value: 1
   2019-01-01:
     value: 1.003
   2020-01-01:
@@ -124,10 +124,14 @@ values:
     value: 1.011
 metadata:
   notes:
-    2020-01-01: "Les retraités ayant individuellement un total de retraites supérieur à 2000 € n’ont eu que 0,3%."
-    2019-01-01: "Revalorisation reportée du 1er octobre au 1er janvier, inférieure à l’indice des prix de 1,6% (PLFSS 2019)."
-    2018-01-01: "Inflation négative"
-    2014-10-01: "Versement exceptionnel de 40 euros attribué aux titulaires de pensions de retraite d’un montant total inférieur ou égal à 1200 euros brut par mois."
-documentation: |
+    2014-10-01:
+    - title: Versement exceptionnel de 40 euros attribué aux titulaires de pensions de retraite d’un montant total inférieur ou égal à 1200 euros brut par mois.
+    2018-01-01:
+    - title: Inflation négative
+    2019-01-01:
+    - title: Revalorisation reportée du 1er octobre au 1er janvier, inférieure à l’indice des prix de 1,6% (PLFSS 2019).
+    2020-01-01:
+    - title: Les retraités ayant individuellement un total de retraites supérieur à 2000 € n’ont eu que 0,3%.
+documentation: |-
   Valeurs de 1960 à 2003 issus du calculateur de la DREES (https://gitlab.com/DREES_code/public/outils/calcul_pension).
   Valeurs depuis 2004 retrouvées sur le site des retaites de l"Etat (https://retraitesdeletat.gouv.fr/retraite/le-paiement-de-ma-retraite/la-revalorisation)

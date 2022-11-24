@@ -71,8 +71,8 @@ salaire_reference_rsi_artisans:
   metadata:
     ipp_csv_id: sal_ref_ircantec
     unit:
-      2002-01-01: currency-EUR
-      1979-01-01: currency-FRF
+      2002-01-01: currency
+      1979-01-01: currency
 metadata:
   order:
   - salaire_reference_rsi_artisans

@@ -28,7 +28,7 @@ minimum_contributif_plafond_mensuel:
       value: 1005.0
   metadata:
     ipp_csv_id: min_cont
-    unit: currency-EUR
+    unit: currency
     reference:
       2021-01-01:
         title: Circulaire CNAV 2020/40 du 22/12/2020

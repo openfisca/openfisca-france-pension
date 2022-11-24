@@ -104,7 +104,7 @@ salaire_reference_en_nominal:
       value: 0.415
   metadata:
     ipp_csv_id: sal_ref_unirs_nom
-    unit: currency-FRF
+    unit: currency
 salaire_reference_en_euros:
   description: Salaire de référence (en euros)
   values:
@@ -208,7 +208,7 @@ salaire_reference_en_euros:
       value: 0.45
   metadata:
     ipp_csv_id: sal_ref_arrco_euros
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - salaire_reference_en_nominal

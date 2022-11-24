@@ -17,7 +17,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 9.1234
       metadata:
-        unit: currency-EUR
+        unit: currency
     commercants:
       description: Commerçants
       values:
@@ -32,7 +32,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 12.58032
       metadata:
-        unit: currency-EUR
+        unit: currency
     metadata:
       order:
       - artisans
@@ -54,7 +54,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 9.1234
       metadata:
-        unit: currency-EUR
+        unit: currency
     commercants:
       description: Commerçants
       values:
@@ -69,7 +69,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 12.58032
       metadata:
-        unit: currency-EUR
+        unit: currency
     metadata:
       order:
       - artisans
@@ -91,7 +91,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 9.1234
       metadata:
-        unit: currency-EUR
+        unit: currency
     commercants:
       description: Commerçants
       values:
@@ -106,7 +106,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 12.58032
       metadata:
-        unit: currency-EUR
+        unit: currency
     metadata:
       order:
       - artisans
@@ -128,7 +128,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 9.1234
       metadata:
-        unit: currency-EUR
+        unit: currency
     commercants:
       description: Commerçants
       values:
@@ -143,7 +143,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 12.58032
       metadata:
-        unit: currency-EUR
+        unit: currency
     metadata:
       order:
       - artisans
@@ -165,7 +165,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 9.1234
       metadata:
-        unit: currency-EUR
+        unit: currency
     commercants:
       description: Commerçants
       values:
@@ -180,7 +180,7 @@ valeur_annuelle_point_retraite:
         2015-10-01:
           value: 12.58032
       metadata:
-        unit: currency-EUR
+        unit: currency
     metadata:
       order:
       - artisans
@@ -192,7 +192,7 @@ valeur_annuelle_point_retraite:
     - retraite_sup_2008_inf_egale_2012
     - retraite_sup_2012_inf_egale_2014
     - retraite_superieure_a_2014
-    description_en: Usage value of points accrued by independant workers within their main pension scheme. 
+    description_en: Usage value of points accrued by independant workers within their main pension scheme.
 documentation: |
   Sources:
   https://www.legislation.cnav.fr/Pages/bareme.aspx?Nom=ti_prestation_valeur_point_retraite_commercant_bar

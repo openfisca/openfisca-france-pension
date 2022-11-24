@@ -21,7 +21,7 @@ indice_1:
     2008-01-01:
       value: 52.4933
   metadata:
-    unit: currency-EUR
+    unit: currency
 indice_2:
   description: Indice 2
   values:
@@ -42,7 +42,7 @@ indice_2:
     2008-01-01:
       value: 54.3753
   metadata:
-    unit: currency-EUR
+    unit: currency
 inflation:
   description: Inflation
   values:

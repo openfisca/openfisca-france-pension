@@ -99,8 +99,8 @@ minimum_contributif:
     metadata:
       ipp_csv_id: min_cont
       unit:
-        2002-01-01: currency-EUR
-        1984-01-01: currency-FRF
+        2002-01-01: currency
+        1984-01-01: currency
   mensuel:
     description: Mensuel
     values:
@@ -199,8 +199,8 @@ minimum_contributif:
     metadata:
       ipp_csv_id: min_cont_mensuel
       unit:
-        2002-01-01: currency-EUR
-        1984-01-01: currency-FRF
+        2002-01-01: currency
+        1984-01-01: currency
   metadata:
     order:
     - annuel
@@ -246,7 +246,7 @@ minimum_contributif_majore:
         value: null
     metadata:
       ipp_csv_id: min_cont_maj
-      unit: currency-EUR
+      unit: currency
   mensuel:
     description: Mensuel
     values:
@@ -286,7 +286,7 @@ minimum_contributif_majore:
         value: null
     metadata:
       ipp_csv_id: min_cont_maj_mensuel
-      unit: currency-EUR
+      unit: currency
   metadata:
     order:
     - annuel

@@ -8,7 +8,7 @@ valeur_point_rci_date:
       value: 1.208
     2020-01-01:
       value: 1.203
-    2019-01-01: 
+    2019-01-01:
       value: 1.191
     2017-10-01:
       value: 1.187
@@ -17,7 +17,7 @@ valeur_point_rci_date:
     2013-04-01:
       value: 1.177
   metadata:
-    unit: currency-EUR
+    unit: currency
 regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013:
   description: Régime complémentaire des artisans(points acquis avant création du RCI en 2013)
   valeur_points_acquis_avant_1979:
@@ -29,14 +29,14 @@ regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013:
         value: 1.117
       2020-01-01:
         value: 1.116
-      2019-01-01: 
+      2019-01-01:
         value: 1.112
       2017-10-01:
         value: 1.111
       2013-04-01:
         value: 1.107
     metadata:
-      unit: currency-EUR
+      unit: currency
   valeur_points_acquis_entre_1979_1996:
     description: Valeur des points acquis entre 1979 et 1996
     values:
@@ -46,14 +46,14 @@ regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013:
         value: 1.140
       2020-01-01:
         value: 1.138
-      2019-01-01: 
+      2019-01-01:
         value: 1.132
       2017-10-01:
         value: 1.13
       2013-04-01:
         value: 1.124
     metadata:
-      unit: currency-EUR
+      unit: currency
   valeur_points_acquis_entre_1997_2012:
     description: Valeur des points acquis entre 1997 et 2012
     values:
@@ -61,16 +61,16 @@ regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013:
         value: 1.221
       2021-01-01:
         value: 1.208
-      2020-01-01: 
+      2020-01-01:
         value: 1.203
-      2019-01-01: 
+      2019-01-01:
         value: 1.191
       2017-10-01:
         value: 1.187
       2013-04-01:
         value: 1.177
     metadata:
-      unit: currency-EUR
+      unit: currency
   metadata:
     order:
     - valeur_points_acquis_avant_1979
@@ -81,14 +81,14 @@ regime_complementaire_commercants_points_acquis_avant_creation_rci_en_2013:
   valeur_points_acquis_entre_1973_2003:
     description: Valeur des points acquis entre 1973 et 2003
     values:
-      2019-01-01: 
+      2019-01-01:
         value: 1.191
       2017-10-01:
         value: 1.187
       2013-04-01:
         value: 1.177
     metadata:
-      unit: currency-EUR
+      unit: currency
   valeur_points_acquis_entre_2004_2012:
     description: Valeur des points acquis entre 2004 et 2012
     values:
@@ -98,7 +98,7 @@ regime_complementaire_commercants_points_acquis_avant_creation_rci_en_2013:
         value: 1.208
       2020-01-01:
         value: 1.203
-      2019-01-01: 
+      2019-01-01:
         value: 1.191
       2017-10-01:
         value: 1.187
@@ -106,7 +106,7 @@ regime_complementaire_commercants_points_acquis_avant_creation_rci_en_2013:
         value: 1.177
     metadata:
       unit:
-        2015-10-01: currency-EUR
+        2015-10-01: currency
         2013-04-01: null
   metadata:
     order:

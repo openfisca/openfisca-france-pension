@@ -1,13 +1,8 @@
 description: Nombre minimum de trimestres d'assurance retraite en début de carrière pour les personnes ayant commencées à travailler en fin d'année
-trims_assurance_debut_retraite_fin_annee:
-  description: Si vous êtes né entre janvier et septembre
-  before_1944_01_01:
-    description: Avant 1944
-    values:
-      2003-01-01:
-        value: 4.0
-      1948-01-01:
-        value: null
-metadata:
-  order:
-  - trims_assurance_debut_retraite_fin_annee
+before_1944_01_01:
+  description: Avant 1944
+  values:
+    1948-01-01:
+      value: null
+    2003-01-01:
+      value: 4

@@ -165,8 +165,8 @@ minimum_reversion:
   metadata:
     ipp_csv_id: min_rev_RG
     unit:
-      2001-01-01: currency-EUR
-      1964-01-01: currency-FRF
+      2001-01-01: currency
+      1964-01-01: currency
 metadata:
   order:
   - minimum_reversion

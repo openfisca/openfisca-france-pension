@@ -131,8 +131,8 @@ valeur_point_retraite_cancava_regime_base_droits_acquis_avant_1973:
     metadata:
       ipp_csv_id: point_cancava_base
       unit:
-        2002-01-01: currency-EUR
-        1973-01-01: currency-FRF
+        2002-01-01: currency
+        1973-01-01: currency
   valeur_trimestrielle:
     description: Valeur trimestrielle
     values:
@@ -263,8 +263,8 @@ valeur_point_retraite_cancava_regime_base_droits_acquis_avant_1973:
     metadata:
       ipp_csv_id: point_cancava_base_trim
       unit:
-        2002-01-01: currency-EUR
-        1973-01-01: currency-FRF
+        2002-01-01: currency
+        1973-01-01: currency
   valeur_mensuelle:
     description: Valeur mensuelle
     values:
@@ -394,8 +394,8 @@ valeur_point_retraite_cancava_regime_base_droits_acquis_avant_1973:
         value: 0.5941666666666666
     metadata:
       unit:
-        2002-01-01: currency-EUR
-        1973-01-01: currency-FRF
+        2002-01-01: currency
+        1973-01-01: currency
   metadata:
     order:
     - valeur_annuelle

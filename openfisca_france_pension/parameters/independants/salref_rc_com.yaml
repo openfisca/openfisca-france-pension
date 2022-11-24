@@ -24,7 +24,7 @@ salaire_reference_rsi_commercants:
       value: 13.89
   metadata:
     ipp_csv_id: sal_ref_igrante
-    unit: currency-EUR
+    unit: currency
 metadata:
   order:
   - salaire_reference_rsi_commercants
