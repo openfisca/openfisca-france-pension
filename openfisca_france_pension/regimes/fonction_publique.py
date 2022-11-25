@@ -810,11 +810,11 @@ class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
 
             service_public = parameters(period).regime_name
             minimum_garanti = service_public.minimum_garanti
-            points_moins_40_ans = minimum_garanti.points_moins_40_ans.point_annee_supplementaire_moins_40_ans[liquidation_date]
-            points_plus_15_ans = minimum_garanti.points_plus_15_ans.point_annee_supplementaire_plus_15_ans[liquidation_date]
-            annee_moins_40_ans = minimum_garanti.annee_moins_40_ans.annee_supplementaire_moins_40_ans[liquidation_date]
-            part_fixe = service_public.minimum_garanti.part_valeur_indice_majore.part_indice_majore_en_euros[liquidation_date]
-            indice_majore = service_public.minimum_garanti.valeur_indice_maj.indice_majore_en_euros[liquidation_date]
+            points_moins_40_ans = minimum_garanti.points_moins_40_ans[liquidation_date]
+            points_plus_15_ans = minimum_garanti.points_plus_15_ans[liquidation_date]
+            annee_moins_40_ans = minimum_garanti.annee_moins_40_ans[liquidation_date]
+            part_fixe = service_public.minimum_garanti.part_valeur_indice_majore[liquidation_date]
+            indice_majore = service_public.minimum_garanti.valeur_indice_maj[liquidation_date]
             pt_indice = parameters(period).marche_travail.remuneration_dans_fonction_publique.indicefp.point_indice_en_euros
             duree_assurance_requise = service_public.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
 

@@ -4,15 +4,11 @@ before_1954_07_01:
   annee:
     description: Année
     values:
-      1976-01-01:
-        value: null
       2003-01-01:
         value: 60
   mois:
     description: Mois
     values:
-      1976-01-01:
-        value: null
       2003-01-01:
         value: 0
 after_1954_07_01:
@@ -20,14 +16,10 @@ after_1954_07_01:
   annee:
     description: Année
     values:
-      1976-01-01:
-        value: null
       2003-01-01:
         value: 60
   mois:
     description: Mois
     values:
-      1976-01-01:
-        value: null
       2003-01-01:
         value: 0
