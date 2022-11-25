@@ -1,4 +1,4 @@
-description: Age d'annulation de la décote FP
+description: Âge d'annulation de la décote FP
 metadata:
   description_en: Full rate age
   reference:
@@ -14,7 +14,7 @@ documentation: |-
   Lecture : Ce tableau renseigne, pour une date de légilsation donnée (la date d'effet, en ligne), le paramètre en fonction de l'année d'ouverture des droits (en ordonnée).
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
 age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age:
-  description: Age d'annulation de la décôte selon l'année d'ouverture des droits (en nombre de trimestres par rapport à la limite d'âge)
+  description: Âge d'annulation de la décôte selon l'année d'ouverture des droits (en nombre de trimestres par rapport à la limite d'âge)
   metadata:
     order:
     - "2006"

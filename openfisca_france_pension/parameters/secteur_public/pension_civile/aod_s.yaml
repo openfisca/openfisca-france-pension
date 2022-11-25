@@ -1,4 +1,4 @@
-description: Age légal de départ en retraite FP sédentaire
+description: Âge légal de départ en retraite FP sédentaire
 metadata:
   description_en: Minimum pension age ("Age légal") - "sédentaire"
   reference:
@@ -25,7 +25,7 @@ documentation: |-
   (1) L'âge d'ouverture des droits peut être inférieur à 55 ans pour certains grades des actifs (les "super actifs", par exemple les fonctionnaires de polices), et pour les militaires,pour qui la condition d'ouverture des droits
   n'est pas une condition d'âge mais de durée de service : 25 ans pour les officiers et non officiers, 15 pour les militaires du rangs (respectivement 27 et 17 après la réforme de 2010).
 age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance:
-  description: Age d'ouverture des droits pour la fonction publique sédentaire, selon l'année de naissance
+  description: Âge d'ouverture des droits pour la fonction publique sédentaire, selon l'année de naissance
   metadata:
     order:
     - before_1951_07_01

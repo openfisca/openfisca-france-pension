@@ -41,7 +41,7 @@ documentation: |-
   (2) La distinction se fait selon les catégories (A et B dans le texte) et, au sein de ces catégories, selon les échelons. 67 ans s'applique au premier échelon de la catégorie B. 2ème = 65 ans (Police = 59 ans), 3ème= 62 ans (Police = 56 ans), 4ème = 60 ans (Police = 55 ans). Voir également la Loi 46-195 1946-02-15 art. 1 (JORF 16 février 1946), le Décret 53-711 du 9 août 1953 - art. 1 JORF 10 août 1953), le Décret 54-597 1954-06-09 art. 1 ( JORF 12 juin 1954).
   (3) Pas de modification entre 2012 et 2019.
 age_limite_fonction_publique_active_selon_annee_naissance:
-  description: Age limite fonction publique active selon l'année de naissance
+  description: Âge limite fonction publique active selon l'année de naissance
   metadata:
     order:
     - before_1956_07_01

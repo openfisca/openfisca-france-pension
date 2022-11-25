@@ -1,6 +1,6 @@
 description: Âge le plus restrictif avant lequel il faut avoir cotisé un nombre défini de trimestres
 age_seuil_15:
-  description: Le nombre de trimestres doit être cotisé avant le passage à l'age supérieur
+  description: Le nombre de trimestres doit être cotisé avant le passage à l'âge supérieur
   before_1953_01_01:
     description: Before 1953
     values:

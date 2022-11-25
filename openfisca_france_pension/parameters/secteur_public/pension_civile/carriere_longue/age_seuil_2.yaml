@@ -1,9 +1,9 @@
-description: Age le moins restrictif avant lequel il faut avoir cotisé un nombre défini de trimestres
+description: Âge le moins restrictif avant lequel il faut avoir cotisé un nombre défini de trimestres
 metadata:
   order:
   - age_seuil_2
 age_seuil_2:
-  description: Le nombre de trimestres doit être cotisé avant le passage à l'age superieur
+  description: Le nombre de trimestres doit être cotisé avant le passage à l'âge supérieur
   before_1960_01_01:
     description: Before 1944
     values:
