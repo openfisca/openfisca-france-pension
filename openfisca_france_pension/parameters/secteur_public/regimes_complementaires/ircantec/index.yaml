@@ -2,5 +2,5 @@ description: Ircantec
 metadata:
   description_en: Ircantec
   order:
-  - salref_ircantec
-  - pt_ircantec
+  - salaire_de_reference
+  - valeur_du_point

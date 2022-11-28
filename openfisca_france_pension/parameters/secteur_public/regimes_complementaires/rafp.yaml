@@ -1,6 +1,6 @@
-description: Valeur du point RAFP
+description: Retraite additionnelle de la fonction publique (RAFP)
 metadata:
-  description_en: Point value RAFP
+  description_en: Public servants complementary scheme (RAFP)
   order:
   - valeur_acquisition_point_rafp
   - valeur_service_point_rafp
