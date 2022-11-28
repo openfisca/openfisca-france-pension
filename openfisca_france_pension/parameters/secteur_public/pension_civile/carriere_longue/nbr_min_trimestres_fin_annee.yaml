@@ -1,4 +1,4 @@
-description: Nombre minimum de trimestres d'assurance retraite en début de carrière pour les personnes ayant commencées à travailler en fin d'année
+description: Nombre de trimestres d'assurance requis en début de carrière pour les personnes ayant commencées à travailler en fin d'année
 before_1944_01_01:
   description: Avant 1944
   values:
