@@ -43,8 +43,7 @@ class RegimeIrcantec(AbstractRegimeComplementaire):
         label = "Points"
 
         def formula(individu, period, parameters):
-            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).regime_name.prelevements_sociaux.taux_appel
+            salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_ircantec
+            taux_appel = parameters(period).prelevements_sociaux.cotisations_secteur_public.ircantec.taux_appel
             cotisation = individu("regime_name_cotisation", period)
-
-            return cotisation / salaire_de_reference / taux_appel
+            return cotisation / taux_appel / salaire_de_reference

@@ -187,10 +187,10 @@ class ircantec_points_annuels(Variable):
     label = 'Points'
 
     def formula(individu, period, parameters):
-        salaire_de_reference = parameters(period).secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_en_euros
-        taux_appel = parameters(period).secteur_public.regimes_complementaires.ircantec.prelevements_sociaux.taux_appel
+        salaire_de_reference = parameters(period).secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_ircantec
+        taux_appel = parameters(period).prelevements_sociaux.cotisations_secteur_public.ircantec.taux_appel
         cotisation = individu('ircantec_cotisation', period)
-        return cotisation / salaire_de_reference / taux_appel
+        return cotisation / taux_appel / salaire_de_reference
 
 class ircantec_points_enfants(Variable):
     value_type = float
