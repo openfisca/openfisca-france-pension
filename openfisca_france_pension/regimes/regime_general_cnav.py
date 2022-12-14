@@ -11,7 +11,7 @@ from openfisca_core.periods import YEAR
 from openfisca_core.variables import Variable
 
 from openfisca_france_pension.entities import Person
-from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.regimes.regime import AbstractRegimeEnAnnuites
 from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, count_calendar_quarters, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie  # , TypesStatutDuCotisant
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
@@ -57,7 +57,7 @@ class TypesSalaireValidantTrimestre(Enum):
     reunion = "Réunion"
 
 
-class RegimeGeneralCnav(AbstractRegimeDeBase):
+class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
     name = "Régime de base du secteur privé: régime général de la Cnav"
     variable_prefix = "regime_general_cnav"
     parameters_prefix = "secteur_prive.regime_general_cnav"
@@ -1070,6 +1070,8 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                     )
                 mean_over_largest = make_mean_over_largest(k)
                 filter = annee_de_naissance == _annee_de_naissance
+                # Avoid empty list when computing backward years.
+                first_year = min(_annee_de_naissance + OFFSET, period.start.year - 2)
                 arr = np.vstack([
                     min_(
                         (
@@ -1090,7 +1092,7 @@ class RegimeGeneralCnav(AbstractRegimeDeBase):
                         parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year),
                         )
                     * revalorisation.get(year, revalorisation[min(revalorisation.keys())])  # FIXME revalorisation before 1949
-                    for year in range(period.start.year - 1, _annee_de_naissance + OFFSET, -1)
+                    for year in range(period.start.year - 1, first_year, -1)
                     ])
 
                 compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)

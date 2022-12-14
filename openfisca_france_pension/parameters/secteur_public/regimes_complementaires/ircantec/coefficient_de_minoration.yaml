@@ -1,0 +1,72 @@
+description: Coefficients de minoration et de majoration
+decote_maximale:
+  description: Taux de décote maximal
+  values:
+    1971-01-01:
+      value: .43
+  metadata:
+    unit: /1
+    reference:
+      1971-01-01:
+        title: Arrêté du 30/09/1970
+        href: https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006381606/1971-02-09/#LEGIARTI000006381606
+decote_par_trimestre_avant_aod:
+  description: Taux de décote par trimestres avant l'âge d'ouverture des droits
+  values:
+    1971-01-01:
+      value: .0175
+  metadata:
+    unit: /1
+    reference:
+      1971-01-01:
+        title: Arrêté du 30/09/1970
+        href: https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006381606/1971-02-09/#LEGIARTI000006381606
+decote_par_trimestre_entre_aod_et_aod_plus_2_ans:
+  description: Taux de décote par trimestres courant pendant deux à partir de l'âge d'ouverture des droits
+  values:
+    1971-01-01:
+      value: .0125
+  metadata:
+    unit: /1
+    reference:
+      1971-01-01:
+        title: Arrêté du 30/09/1970
+        href: https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006381606/1971-02-09/#LEGIARTI000006381606
+decote_par_trimestre_entre_aod_plus_2_ans_et_add:
+  description: Taux de décote par trimestres courant entre l'âge d'ouverture des droits plus deux ans et l'âge d'annulation de la décote
+  values:
+    1971-01-01:
+      value: .01
+  metadata:
+    unit: /1
+    reference:
+      1971-01-01:
+        title: Arrêté du 30/09/1970
+        href: https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006381606/1971-02-09/#LEGIARTI000006381606
+surcote_par_trimestre:
+  description: Taux de surcote par trimestres après l'âge d'annulation de la décote
+  values:
+    2010-01-01:
+      value: .075
+  metadata:
+    unit: /1
+    reference:
+      2010-01-01:
+        title: Arrêté du 23/09/2008
+        href: https://www.legifrance.gouv.fr/eli/arrete/2008/9/23/BCFZ0821432A/jo/texte
+      1971-01-01:
+        title: Arrêté du 30/09/1970
+        href: https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006381606/1971-02-09/#LEGIARTI000006381606
+    official_journal_date:
+      2010-01-01: 24-09-2008
+metadata:
+  order:
+  - decote_maximale
+  - decote_par_trimestre_avant_aod
+  - decote_par_trimestre_entre_aod_et_aod_plus_2_ans
+  - decote_par_trimestre_entre_aod_plus_2_ans_et_add
+  - surcote_par_trimestre
+  description_en: Penalty or increase related to retirement age
+documentation: |
+  Note : Le coefficient d'abattement (ou de majoration après 2010) constitue une multiplication des droits de pension à l'Ircantec.
+  Note : Le coefficient de minoration est linéaire par morceaux en nombre de trimestres entre les âges charnières que sont l'AOD, l'AOD + 2 ans et l'ADD.

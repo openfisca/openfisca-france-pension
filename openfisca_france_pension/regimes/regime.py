@@ -1,8 +1,6 @@
 """Abstract regimes definition."""
 
 
-import numpy as np
-
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 
@@ -68,10 +66,10 @@ class AbstractRegime(object):
             NotImplementedError
 
 
-class AbstractRegimeDeBase(AbstractRegime):
-    name = "Régime de base"
-    variable_prefix = "regime_de_base"
-    parameters = "regime_de_base"
+class AbstractRegimeEnAnnuites(AbstractRegime):
+    name = "Régime en annuités"
+    variable_prefix = "regime_en_annuites"
+    parameters = "regime_en_annuites"
 
     class decote(Variable):
         value_type = float
@@ -286,7 +284,7 @@ class AbstractRegimeDeBase(AbstractRegime):
             return taux_plein * (1 - decote + surcote)
 
 
-class AbstractRegimeComplementaire(AbstractRegime):
+class AbstractRegimeEnPoints(AbstractRegime):
 
     class coefficient_de_minoration(Variable):
         value_type = float
@@ -300,36 +298,6 @@ class AbstractRegimeComplementaire(AbstractRegime):
         entity = Person
         definition_period = YEAR
         label = "Majoration de pension"
-
-        def formula_2019(individu, period, parameters):
-            points_enfants = individu('regime_name_points_enfants', period)
-            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
-            # Plafond fixé à 1000 € en 2012 et évoluant comme le point
-            plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
-            return where(
-                individu('date_de_naissance', period) >= np.datetime64("1951-08-02"),
-                min_(points_enfants * valeur_du_point, plafond),
-                points_enfants * valeur_du_point
-                )
-
-        def formula_2012(individu, period, parameters):
-            points_enfants = individu('regime_name_points_enfants', period)
-            valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
-            # Plafond fixé à 1000 € en 2012 et évoluant comme le point
-            plafond = 1000 * valeur_du_point / parameters(2012).regime_name.point.valeur_point_en_euros
-            return where(
-                individu('date_de_naissance', period) >= np.datetime64("1951-08-02"),
-                min_(points_enfants * valeur_du_point, plafond),
-                points_enfants * valeur_du_point
-                )
-
-        def formula_1999(individu, period, parameters):
-            points_enfants = individu('regime_name_points_enfants', period)
-            valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
-            return points_enfants * valeur_du_point
-
-        def formula(individu, period, parameters):
-            return individu.empty_array()
 
     class majoration_pension_au_31_decembre(Variable):
         value_type = float
@@ -365,26 +333,6 @@ class AbstractRegimeComplementaire(AbstractRegime):
                 * coefficient_de_minoration
                 )
             return pension
-
-    class pension_brute(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Pension brute"
-
-        def formula_2019(individu, period, parameters):
-            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
-            points = individu("regime_name_points", period)
-            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
-            pension_brute = (points + points_minimum_garantis) * valeur_du_point
-            return pension_brute
-
-        def formula(individu, period, parameters):
-            valeur_du_point = parameters(period).regime_name.point.valeur_point_en_euros
-            points = individu("regime_name_points", period)
-            points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
-            pension_brute = (points + points_minimum_garantis) * valeur_du_point
-            return pension_brute
 
     class pension_brute_au_31_decembre(Variable):
         value_type = float
@@ -466,35 +414,6 @@ class AbstractRegimeComplementaire(AbstractRegime):
         entity = Person
         definition_period = ETERNITY
         label = "Points à la liquidation"
-
-    class points_enfants_a_charge(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points enfants à charge"
-
-    class points_enfants_nes_et_eleves(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points enfants nés et élevés"
-
-    class points_enfants(Variable):
-        value_type = float
-        entity = Person
-        definition_period = YEAR
-        label = "Points enfants"
-
-        def formula(individu, period, parameters):
-            """
-            Deux types de majorations pour enfants peuvent s'appliquer :
-                - pour enfant à charge au moment du départ en retraite
-                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
-                C'est la plus avantageuse qui s'applique.
-            """
-            points_enfants_a_charge = individu('regime_name_points_enfants_a_charge', period)
-            points_enfants_nes_et_eleves = individu('regime_name_points_enfants_nes_et_eleves', period)
-            return max_(points_enfants_a_charge, points_enfants_nes_et_eleves)
 
     class points_minimum_garantis(Variable):
         value_type = float

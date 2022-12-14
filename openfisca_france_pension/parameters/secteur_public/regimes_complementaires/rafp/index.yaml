@@ -1,0 +1,7 @@
+description: Retraite additionnelle de la fonction publique (RAFP)
+documentation: 'Source: Site internet du RAFP, voir https://www.rafp.fr/sites/rafp_fr/files/file/evolution_valeurs_du_point_6.pdf'
+metadata:
+  description_en: Public servants complementary scheme (RAFP)
+  order:
+  - valeur_acquisition_point_rafp
+  - valeur_service_point_rafp

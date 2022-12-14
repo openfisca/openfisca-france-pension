@@ -4,3 +4,4 @@ metadata:
   order:
   - salaire_de_reference
   - valeur_du_point
+  - coefficient_de_minoration

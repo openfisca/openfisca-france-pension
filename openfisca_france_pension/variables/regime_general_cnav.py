@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
@@ -14,7 +13,7 @@ from openfisca_core.parameters import ParameterNotFound
 from openfisca_core.periods import YEAR
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Person
-from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.regimes.regime import AbstractRegimeEnAnnuites
 from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, count_calendar_quarters, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
@@ -779,7 +778,8 @@ class regime_general_cnav_salaire_de_reference(Variable):
             k = int(parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[np.array(str(_annee_de_naissance), dtype='datetime64[Y]')])
             mean_over_largest = make_mean_over_largest(k)
             filter = annee_de_naissance == _annee_de_naissance
-            arr = np.vstack([min_(((individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year)) * ((period.start.year < 2004) | (individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year) >= parameters(max(year, 1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre[individu('regime_general_cnav_salaire_validant_trimestre', year)] * conversion_parametre_en_euros(year))))[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year - 1, _annee_de_naissance + OFFSET, -1)])
+            first_year = min(_annee_de_naissance + OFFSET, period.start.year - 2)
+            arr = np.vstack([min_(((individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year)) * ((period.start.year < 2004) | (individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year) >= parameters(max(year, 1930)).secteur_prive.regime_general_cnav.salval.salaire_validant_trimestre[individu('regime_general_cnav_salaire_validant_trimestre', year)] * conversion_parametre_en_euros(year))))[filter], parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year - 1, first_year, -1)])
             compute_salaire_de_reference(mean_over_largest, arr, salaire_de_reference, filter)
         return salaire_de_reference
 

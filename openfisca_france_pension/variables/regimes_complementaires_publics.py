@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
@@ -7,10 +6,12 @@ from openfisca_france_pension.entities import Person
 def revalorise(variable_31_decembre_annee_precedente, variable_originale, annee_de_liquidation, revalorisation, period):
     return select([annee_de_liquidation > period.start.year, annee_de_liquidation == period.start.year, annee_de_liquidation < period.start.year], [0, variable_originale, variable_31_decembre_annee_precedente * revalorisation])
 'Régimes complémentaires du secteur privé.'
+import numpy as np
 from openfisca_core.model_api import *
+from openfisca_core.parameters import ParameterNotFound
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Person
-from openfisca_france_pension.regimes.regime import AbstractRegimeComplementaire
+from openfisca_france_pension.regimes.regime import AbstractRegimeEnPoints
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 from openfisca_france_pension.regimes.regime_general_cnav import conversion_parametre_en_euros
 
@@ -20,6 +21,22 @@ class ircantec_coefficient_de_minoration(Variable):
     entity = Person
     definition_period = YEAR
     label = 'Coefficient de minoration'
+
+    def formula_2010(individu, period, parameters):
+        minoration = parameters(period).secteur_public.regimes_complementaires.ircantec.coefficient_de_minoration
+        trimestres_de_decote = min_(individu('regime_general_cnav_decote_trimestres', period), 10 * 4)
+        coefficient_de_minoration = np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans + +np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
+        trimestres_de_surcote = individu('regime_general_cnav_surcote_trimestres', period)
+        coefficient_de_majoration = trimestres_de_surcote * minoration.surcote_par_trimestre
+        print(coefficient_de_minoration)
+        print(coefficient_de_majoration)
+        return 1 - coefficient_de_minoration + coefficient_de_majoration
+
+    def formula_1971(individu, period, parameters):
+        minoration = parameters(period).secteur_public.regimes_complementaires.ircantec.coefficient_de_minoration
+        trimestres_de_decote = min_(individu('regime_general_cnav_decote_trimestres', period), 10 * 4)
+        coefficient_de_minoration = np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans + +np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
+        return 1 - coefficient_de_minoration
 
 class ircantec_cotisation(Variable):
     value_type = float
@@ -49,25 +66,11 @@ class ircantec_majoration_pension(Variable):
     definition_period = YEAR
     label = 'Majoration de pension'
 
-    def formula_2019(individu, period, parameters):
-        points_enfants = individu('ircantec_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
-        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
-        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
-
-    def formula_2012(individu, period, parameters):
-        points_enfants = individu('ircantec_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_public.regimes_complementaires.ircantec.point.valeur_point_en_euros
-        plafond = 1000 * valeur_du_point / parameters(2012).secteur_public.regimes_complementaires.ircantec.point.valeur_point_en_euros
-        return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
-
-    def formula_1999(individu, period, parameters):
-        points_enfants = individu('ircantec_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_public.regimes_complementaires.ircantec.point.valeur_point_en_euros
-        return points_enfants * valeur_du_point
-
     def formula(individu, period, parameters):
-        return individu.empty_array()
+        nombre_enfants = individu('nombre_enfants', period)
+        pension_brute = individu('ircantec_pension_brute', period)
+        coefficient_de_majoration = min_(0.1 * (nombre_enfants >= 3) + 0.05 * max_(nombre_enfants - 3, 0), 0.3)
+        return coefficient_de_majoration * pension_brute
 
 class ircantec_majoration_pension_au_31_decembre(Variable):
     value_type = float
@@ -118,18 +121,10 @@ class ircantec_pension_brute(Variable):
     definition_period = YEAR
     label = 'Pension brute'
 
-    def formula_2019(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
-        points = individu('ircantec_points', period)
-        points_minimum_garantis = individu('ircantec_points_minimum_garantis', period)
-        pension_brute = (points + points_minimum_garantis) * valeur_du_point
-        return pension_brute
-
     def formula(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_public.regimes_complementaires.ircantec.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).secteur_public.regimes_complementaires.ircantec.valeur_du_point
         points = individu('ircantec_points', period)
-        points_minimum_garantis = individu('ircantec_points_minimum_garantis', period)
-        pension_brute = (points + points_minimum_garantis) * valeur_du_point
+        pension_brute = points * valeur_du_point
         return pension_brute
 
 class ircantec_pension_brute_au_31_decembre(Variable):
@@ -187,39 +182,16 @@ class ircantec_points_annuels(Variable):
     label = 'Points'
 
     def formula(individu, period, parameters):
-        salaire_de_reference = parameters(period).secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_ircantec
-        taux_appel = parameters(period).prelevements_sociaux.cotisations_secteur_public.ircantec.taux_appel
+        try:
+            salaire_de_reference = parameters(period).secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_ircantec
+        except ParameterNotFound:
+            salaire_de_reference = parameters(period).secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_igrante
+        try:
+            taux_appel = parameters(period).prelevements_sociaux.cotisations_secteur_public.ircantec.taux_appel
+        except ParameterNotFound:
+            taux_appel = parameters(1971).prelevements_sociaux.cotisations_secteur_public.ircantec.taux_appel
         cotisation = individu('ircantec_cotisation', period)
         return cotisation / taux_appel / salaire_de_reference
-
-class ircantec_points_enfants(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Points enfants'
-
-    def formula(individu, period, parameters):
-        """
-            Deux types de majorations pour enfants peuvent s'appliquer :
-                - pour enfant à charge au moment du départ en retraite
-                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
-                C'est la plus avantageuse qui s'applique.
-            """
-        points_enfants_a_charge = individu('ircantec_points_enfants_a_charge', period)
-        points_enfants_nes_et_eleves = individu('ircantec_points_enfants_nes_et_eleves', period)
-        return max_(points_enfants_a_charge, points_enfants_nes_et_eleves)
-
-class ircantec_points_enfants_a_charge(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Points enfants à charge'
-
-class ircantec_points_enfants_nes_et_eleves(Variable):
-    value_type = float
-    entity = Person
-    definition_period = YEAR
-    label = 'Points enfants nés et élevés'
 
 class ircantec_points_minimum_garantis(Variable):
     value_type = float

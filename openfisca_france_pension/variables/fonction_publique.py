@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
@@ -11,7 +10,7 @@ import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.parameters import ParameterNotFound
 from openfisca_france_pension.entities import Person
-from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.regimes.regime import AbstractRegimeEnAnnuites
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 class TypesCategorieActivite(Enum):

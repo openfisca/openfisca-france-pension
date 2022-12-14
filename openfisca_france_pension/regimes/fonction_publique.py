@@ -6,7 +6,7 @@ from openfisca_core.model_api import *
 from openfisca_core.parameters import ParameterNotFound
 
 from openfisca_france_pension.entities import Person
-from openfisca_france_pension.regimes.regime import AbstractRegimeDeBase
+from openfisca_france_pension.regimes.regime import AbstractRegimeEnAnnuites
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 
@@ -17,7 +17,7 @@ class TypesCategorieActivite(Enum):
     super_actif = "Super actif"
 
 
-class AbstractRegimeFonctionPublique(AbstractRegimeDeBase):
+class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
     parameters_prefix = "secteur_public.pension_civile"
