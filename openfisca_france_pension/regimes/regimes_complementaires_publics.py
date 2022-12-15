@@ -15,7 +15,7 @@ from openfisca_france_pension.regimes.regime_general_cnav import conversion_para
 class RegimeIrcantec(AbstractRegimeEnPoints):
     name = "Régime complémentaire public Ircantec"
     variable_prefix = "ircantec"
-    parameters_prefix = "secteur_public.regimes_complementaires.ircantec"
+    parameters_prefix = "retraites.secteur_public.regimes_complementaires.ircantec"
 
     class coefficient_de_minoration(Variable):
         value_type = float

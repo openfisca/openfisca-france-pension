@@ -24,9 +24,9 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
 
         def formula_2019(individu, period, parameters):
             points_enfants = individu('regime_name_points_enfants', period)
-            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+            valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
             # Plafond fixé à 1000 € en 2012 et évoluant comme le point
-            plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+            plafond = 1000 * valeur_du_point / parameters(2012).retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
             return where(
                 individu('date_de_naissance', period) >= np.datetime64("1951-08-02"),
                 min_(points_enfants * valeur_du_point, plafond),
@@ -59,7 +59,7 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
         label = "Pension brute"
 
         def formula_2019(individu, period, parameters):
-            valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+            valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
             points = individu("regime_name_points", period)
             points_minimum_garantis = individu("regime_name_points_minimum_garantis", period)
             pension_brute = (points + points_minimum_garantis) * valeur_du_point
@@ -105,7 +105,7 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
 class RegimeArrco(AbstractRegimeAgircArrco):
     name = "Régime complémentaire Arrco"
     variable_prefix = "arrco"
-    parameters_prefix = "secteur_prive.regimes_complementaires.arrco"
+    parameters_prefix = "retraites.secteur_prive.regimes_complementaires.arrco"
 
     class coefficient_de_minoration(Variable):
         value_type = float
@@ -238,7 +238,7 @@ class RegimeArrco(AbstractRegimeAgircArrco):
 class RegimeAgirc(AbstractRegimeAgircArrco):
     name = "Régime complémentaire Agirc"
     variable_prefix = "agirc"
-    parameters_prefix = "secteur_prive.regimes_complementaires.agirc"
+    parameters_prefix = "retraites.secteur_prive.regimes_complementaires.agirc"
 
     class coefficient_de_minoration(Variable):
         value_type = float

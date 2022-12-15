@@ -10,6 +10,7 @@ directory_path = (
     Path(pkg_resources.get_distribution("openfisca-france-pension").location)
     / "openfisca_france_pension"
     / "parameters"
+    / "retraites"
     / "secteur_prive"
     / "regime_general_cnav"
     )

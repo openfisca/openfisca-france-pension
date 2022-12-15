@@ -23,7 +23,7 @@ class ircantec_coefficient_de_minoration(Variable):
     label = 'Coefficient de minoration'
 
     def formula_2010(individu, period, parameters):
-        minoration = parameters(period).secteur_public.regimes_complementaires.ircantec.coefficient_de_minoration
+        minoration = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.coefficient_de_minoration
         trimestres_de_decote = min_(individu('regime_general_cnav_decote_trimestres', period), 10 * 4)
         coefficient_de_minoration = np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans + +np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
         trimestres_de_surcote = individu('regime_general_cnav_surcote_trimestres', period)
@@ -33,7 +33,7 @@ class ircantec_coefficient_de_minoration(Variable):
         return 1 - coefficient_de_minoration + coefficient_de_majoration
 
     def formula_1971(individu, period, parameters):
-        minoration = parameters(period).secteur_public.regimes_complementaires.ircantec.coefficient_de_minoration
+        minoration = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.coefficient_de_minoration
         trimestres_de_decote = min_(individu('regime_general_cnav_decote_trimestres', period), 10 * 4)
         coefficient_de_minoration = np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans + +np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
         return 1 - coefficient_de_minoration
@@ -49,8 +49,8 @@ class ircantec_cotisation(Variable):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).secteur_public.regimes_complementaires.ircantec.prelevements_sociaux.employeur
-        salarie = parameters(period).secteur_public.regimes_complementaires.ircantec.prelevements_sociaux.salarie
+        employeur = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.prelevements_sociaux.employeur
+        salarie = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.prelevements_sociaux.salarie
         return (categorie_salarie == TypesCategorieSalarie.public_non_titulaire) * (employeur.ircantec.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.ircantec.calc(salaire_de_base, factor=plafond_securite_sociale))
 
 class ircantec_liquidation_date(Variable):
@@ -122,7 +122,7 @@ class ircantec_pension_brute(Variable):
     label = 'Pension brute'
 
     def formula(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_public.regimes_complementaires.ircantec.valeur_du_point
+        valeur_du_point = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.valeur_du_point
         points = individu('ircantec_points', period)
         pension_brute = points * valeur_du_point
         return pension_brute
@@ -183,9 +183,9 @@ class ircantec_points_annuels(Variable):
 
     def formula(individu, period, parameters):
         try:
-            salaire_de_reference = parameters(period).secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_ircantec
+            salaire_de_reference = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_ircantec
         except ParameterNotFound:
-            salaire_de_reference = parameters(period).secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_igrante
+            salaire_de_reference = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.salaire_de_reference.salaire_reference_igrante
         try:
             taux_appel = parameters(period).prelevements_sociaux.cotisations_secteur_public.ircantec.taux_appel
         except ParameterNotFound:

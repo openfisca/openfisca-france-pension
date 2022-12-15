@@ -27,7 +27,7 @@ class cnracl_actif_a_la_liquidation(Variable):
 
     def formula(individu, period, parameters):
         date_quinze_ans_actif = individu('cnracl_date_quinze_ans_actif', period)
-        actif_annee = parameters(period).secteur_public.pension_civile.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+        actif_annee = parameters(period).retraites.secteur_public.pension_civile.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
         actif = individu('cnracl_nombre_annees_actif', period) >= actif_annee
         return actif
 
@@ -55,12 +55,12 @@ class cnracl_annee_age_ouverture_droits_carriere_longue(Variable):
     def formula_2006(individu, period, parameters):
         carriere_longue_seuil_determine_aod = individu('cnracl_carriere_longue_seuil_determine_aod', period)
         date_de_naissance = individu('date_de_naissance', period)
-        aod_carriere_longue_2_annee = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].annee
-        aod_carriere_longue_15_annee = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].annee
-        aod_carriere_longue_1_annee = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].annee
-        aod_carriere_longue_2_mois = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].mois
-        aod_carriere_longue_15_mois = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].mois
-        aod_carriere_longue_1_mois = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].mois
+        aod_carriere_longue_2_annee = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].annee
+        aod_carriere_longue_15_annee = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].annee
+        aod_carriere_longue_1_annee = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].annee
+        aod_carriere_longue_2_mois = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].mois
+        aod_carriere_longue_15_mois = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].mois
+        aod_carriere_longue_1_mois = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].mois
         aod_carriere_longue_annee = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_annee, aod_carriere_longue_15_annee, aod_carriere_longue_2_annee])
         aod_carriere_longue_mois = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_mois, aod_carriere_longue_15_mois, aod_carriere_longue_2_mois])
         annee_age_ouverture_droits_carriere_longue = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_carriere_longue_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_carriere_longue_mois) / 12).astype(int)
@@ -74,8 +74,8 @@ class cnracl_annee_age_ouverture_droits_normale(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        aod_active = parameters(period).secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
-        aod_sedentaire = parameters(period).secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
+        aod_active = parameters(period).retraites.secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
+        aod_sedentaire = parameters(period).retraites.secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
             aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
@@ -100,8 +100,8 @@ class cnracl_aod(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        aod_active = parameters(period).secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
-        aod_sedentaire = parameters(period).secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
+        aod_active = parameters(period).retraites.secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
+        aod_sedentaire = parameters(period).retraites.secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
         actif_a_la_liquidation = individu('cnracl_actif_a_la_liquidation', period)
         return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
@@ -145,7 +145,7 @@ class cnracl_bonification_cpcm_enfant(Variable):
     label = "Bonification du code des pensions civiles et militaires liée aux enfants (compte pour la durée d'assurance et la durée de service/durée liquidable)"
 
     def formula_2004(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        bonification_par_enfant_av_2004 = parameters(period).retraites.secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
         nombre_enfants_nes_avant_2004 = individu('cnracl_nombre_enfants_nes_avant_2004', period)
         bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
         sexe = individu('sexe', period)
@@ -153,7 +153,7 @@ class cnracl_bonification_cpcm_enfant(Variable):
         return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
 
     def formula_1949(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        bonification_par_enfant_av_2004 = parameters(period).retraites.secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
         nombre_enfants = individu('nombre_enfants', period)
         bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
         sexe = individu('sexe', period)
@@ -167,7 +167,7 @@ class cnracl_carriere_longue(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        carriere_longue = parameters(period).secteur_public.pension_civile.carriere_longue
+        carriere_longue = parameters(period).retraites.secteur_public.pension_civile.carriere_longue
         duree_assurance_cotisee_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
         duree_assurance_seuil_1 = carriere_longue.duree_assurance_seuil_1[date_de_naissance]
         duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15[date_de_naissance]
@@ -185,7 +185,7 @@ class cnracl_carriere_longue_seuil_determine_aod(Variable):
     label = "L'âge d'ouverture des droit des personnes pouvant bénéficier du dispositif RACL dépend de l'âge de début de cotisation"
 
     def formula(individu, period, parameters):
-        carriere_longue = parameters(period).secteur_public.pension_civile.carriere_longue
+        carriere_longue = parameters(period).retraites.secteur_public.pension_civile.carriere_longue
         date_de_naissance = individu('date_de_naissance', period)
         naissance_mois = date_de_naissance.astype('datetime64[M]').astype(int) % 12 + 1
         duree_assurance_cotisee_avant_16_ans = individu('cnracl_duree_assurance_cotisee_seuil_bas', period)
@@ -220,7 +220,7 @@ class cnracl_coefficient_de_proratisation(Variable):
         duree_de_service_effective = individu('cnracl_duree_de_service_effective', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
-        duree_de_service_requise = parameters(period).secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+        duree_de_service_requise = parameters(period).retraites.secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + bonification_du_cinquieme) / duree_de_service_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm) / duree_de_service_requise))
         return coefficient_de_proratisation
 
@@ -285,7 +285,7 @@ class cnracl_decote(Variable):
     def formula_2006(individu, period, parameters):
         annee_age_ouverture_droits = individu('cnracl_annee_age_ouverture_droits', period)
         decote_trimestres = individu('cnracl_decote_trimestres', period)
-        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).secteur_public.pension_civile.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[np.clip(annee_age_ouverture_droits, 2006, 2015)]
+        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).retraites.secteur_public.pension_civile.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[np.clip(annee_age_ouverture_droits, 2006, 2015)]
         return taux_decote * decote_trimestres
 
 class cnracl_decote_a_date_depart_anticipe_parent_trois_enfants(Variable):
@@ -321,15 +321,15 @@ class cnracl_decote_trimestres(Variable):
         super_actif_a_la_liquidation = individu('cnracl_super_actif_a_la_liquidation', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         conditions_depart_anticipe_parent_trois_enfants = individu('cnracl_decote_a_date_depart_anticipe_parent_trois_enfants', period)
-        aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.pension_civile.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
+        aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).retraites.secteur_public.pension_civile.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
         reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
         aad_en_mois_general = individu('cnracl_limite_d_age', period) * 12 + reduction_add_en_mois
         aad_en_mois_parents_trois_enfants = 65 * 12 + reduction_add_en_mois
         aad_en_mois = where(conditions_depart_anticipe_parent_trois_enfants, min_(aad_en_mois_parents_trois_enfants, aad_en_mois_general), aad_en_mois_general)
         age_en_mois_a_la_liquidation = (individu('cnracl_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = max_(0, np.ceil((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
-        duree_assurance_requise_sedentaires = parameters(period).secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        duree_assurance_requise_actifs = parameters(period).secteur_public.pension_civile.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
+        duree_assurance_requise_sedentaires = parameters(period).retraites.secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+        duree_assurance_requise_actifs = parameters(period).retraites.secteur_public.pension_civile.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
         duree_assurance_requise_super_actifs = duree_assurance_requise_actifs - 4 * 5
         duree_assurance_requise = select([super_actif_a_la_liquidation, actif_a_la_liquidation & not_(super_actif_a_la_liquidation)], [duree_assurance_requise_super_actifs, duree_assurance_requise_actifs], default=duree_assurance_requise_sedentaires)
         trimestres = individu('duree_assurance_tous_regimes', period)
@@ -570,8 +570,8 @@ class cnracl_limite_d_age(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         actif_a_la_liquidation = individu('cnracl_actif_a_la_liquidation', period)
         super_actif_a_la_liquidation = individu('cnracl_super_actif_a_la_liquidation', period)
-        limite_age_active = parameters(period).secteur_public.pension_civile.la_a.age_limite_fonction_publique_active_selon_annee_naissance
-        limite_age_sedentaire = parameters(period).secteur_public.pension_civile.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
+        limite_age_active = parameters(period).retraites.secteur_public.pension_civile.la_a.age_limite_fonction_publique_active_selon_annee_naissance
+        limite_age_sedentaire = parameters(period).retraites.secteur_public.pension_civile.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
             limite_age_active_annee = limite_age_active.before_1956_07_01.annee
             limite_age_active_mois = 0
@@ -618,7 +618,7 @@ class cnracl_majoration_duree_assurance_enfant(Variable):
 
     def formula_2004(individu, period, parameters):
         nombre_enfants_nes_avant_2004 = individu('cnracl_nombre_enfants_nes_avant_2004', period)
-        majoration_par_enfant_pr_2004 = parameters(period).secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+        majoration_par_enfant_pr_2004 = parameters(period).retraites.secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
         nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
         majoration = majoration_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
         sexe = individu('sexe', period)
@@ -649,7 +649,7 @@ class cnracl_majoration_pension_au_31_decembre(Variable):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         majoration_pension_au_31_decembre_annee_precedente = individu('cnracl_majoration_pension_au_31_decembre', last_year)
-        revalorisation = parameters(period).secteur_public.pension_civile.revalorisation_pension_au_31_decembre
+        revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         majoration_pension = individu('cnracl_majoration_pension', period)
         return revalorise(majoration_pension_au_31_decembre_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
 
@@ -667,7 +667,7 @@ class cnracl_minimum_garanti(Variable):
         duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         annee_age_ouverture_droits = individu('cnracl_annee_age_ouverture_droits', period)
         decote = individu('cnracl_decote', period)
-        service_public = parameters(period).secteur_public.pension_civile
+        service_public = parameters(period).retraites.secteur_public.pension_civile
         minimum_garanti = service_public.minimum_garanti
         points_moins_40_ans = minimum_garanti.points_moins_40_ans[liquidation_date]
         points_plus_15_ans = minimum_garanti.points_plus_15_ans[liquidation_date]
@@ -765,7 +765,7 @@ class cnracl_pension_brute_au_31_decembre(Variable):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         pension_brute_au_31_decembre_annee_precedente = individu('cnracl_pension_brute_au_31_decembre', last_year)
-        revalorisation = parameters(period).secteur_public.pension_civile.revalorisation_pension_au_31_decembre
+        revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         pension_brute = individu('cnracl_pension_brute', period)
         return revalorise(pension_brute_au_31_decembre_annee_precedente, pension_brute, annee_de_liquidation, revalorisation, period)
 
@@ -781,7 +781,7 @@ class cnracl_pension_servie(Variable):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         pension_au_31_decembre_annee_precedente = individu('cnracl_pension_au_31_decembre', last_year)
-        revalorisation = parameters(period).secteur_public.pension_civile.revalarisation_pension_servie
+        revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalarisation_pension_servie
         pension = individu('cnracl_pension_au_31_decembre', period)
         return revalorise(pension_au_31_decembre_annee_precedente, pension, annee_de_liquidation, revalorisation, period)
 
@@ -828,7 +828,7 @@ class cnracl_surcote(Variable):
     def formula_2004(individu, period, parameters):
         surcote_trimestres = individu('cnracl_surcote_trimestres', period)
         actif_a_la_liquidation = individu('cnracl_actif_a_la_liquidation', period)
-        taux_surcote = parameters(period).secteur_public.pension_civile.surcote.taux_surcote_par_trimestre
+        taux_surcote = parameters(period).retraites.secteur_public.pension_civile.surcote.taux_surcote_par_trimestre
         return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
 
 class cnracl_surcote_trimestres(Variable):
@@ -840,7 +840,7 @@ class cnracl_surcote_trimestres(Variable):
     def formula_2004(individu, period, parameters):
         liquidation_date = individu('cnracl_liquidation_date', period)
         date_de_naissance = individu('date_de_naissance', period)
-        aod_sedentaire = parameters(period).secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
+        aod_sedentaire = parameters(period).retraites.secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
             aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
@@ -850,7 +850,7 @@ class cnracl_surcote_trimestres(Variable):
         age_en_mois_a_la_liquidation = (individu('cnracl_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         arrondi_trimestres_aod = np.ceil if period.start.year < 2009 else np.floor
         trimestres_apres_aod = max_(0, (age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3)
-        duree_assurance_requise = parameters(period).secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+        duree_assurance_requise = parameters(period).retraites.secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         trimestres_apres_instauration_surcote = (individu('cnracl_liquidation_date', period) - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3
         duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
         trimestres_surcote = max_(0, arrondi_trimestres_aod(min_(min_(trimestres_apres_instauration_surcote, trimestres_apres_aod), duree_assurance_excedentaire)))
@@ -865,7 +865,7 @@ class cnracl_taux_de_liquidation(Variable):
     def formula(individu, period, parameters):
         decote = individu('cnracl_decote', period)
         surcote = individu('cnracl_surcote', period)
-        taux_plein = parameters(period).secteur_public.pension_civile.taux_plein.taux_plein
+        taux_plein = parameters(period).retraites.secteur_public.pension_civile.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
 
 class cnracl_taux_de_liquidation_proratise(Variable):
@@ -885,7 +885,7 @@ class fonction_publique_actif_a_la_liquidation(Variable):
 
     def formula(individu, period, parameters):
         date_quinze_ans_actif = individu('fonction_publique_date_quinze_ans_actif', period)
-        actif_annee = parameters(period).secteur_public.pension_civile.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
+        actif_annee = parameters(period).retraites.secteur_public.pension_civile.duree_seuil_actif.duree_service_minimale_considere_comme_actif[date_quinze_ans_actif]
         actif = individu('fonction_publique_nombre_annees_actif', period) >= actif_annee
         return actif
 
@@ -913,12 +913,12 @@ class fonction_publique_annee_age_ouverture_droits_carriere_longue(Variable):
     def formula_2006(individu, period, parameters):
         carriere_longue_seuil_determine_aod = individu('fonction_publique_carriere_longue_seuil_determine_aod', period)
         date_de_naissance = individu('date_de_naissance', period)
-        aod_carriere_longue_2_annee = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].annee
-        aod_carriere_longue_15_annee = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].annee
-        aod_carriere_longue_1_annee = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].annee
-        aod_carriere_longue_2_mois = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].mois
-        aod_carriere_longue_15_mois = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].mois
-        aod_carriere_longue_1_mois = parameters(period).secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].mois
+        aod_carriere_longue_2_annee = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].annee
+        aod_carriere_longue_15_annee = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].annee
+        aod_carriere_longue_1_annee = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].annee
+        aod_carriere_longue_2_mois = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_2[date_de_naissance].mois
+        aod_carriere_longue_15_mois = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_15[date_de_naissance].mois
+        aod_carriere_longue_1_mois = parameters(period).retraites.secteur_public.pension_civile.carriere_longue.aod_seuil_1[date_de_naissance].mois
         aod_carriere_longue_annee = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_annee, aod_carriere_longue_15_annee, aod_carriere_longue_2_annee])
         aod_carriere_longue_mois = select([carriere_longue_seuil_determine_aod == 1, carriere_longue_seuil_determine_aod == 15, carriere_longue_seuil_determine_aod == 2], [aod_carriere_longue_1_mois, aod_carriere_longue_15_mois, aod_carriere_longue_2_mois])
         annee_age_ouverture_droits_carriere_longue = np.trunc(date_de_naissance.astype('datetime64[Y]').astype('int') + 1970 + aod_carriere_longue_annee + ((date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int') + aod_carriere_longue_mois) / 12).astype(int)
@@ -932,8 +932,8 @@ class fonction_publique_annee_age_ouverture_droits_normale(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        aod_active = parameters(period).secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
-        aod_sedentaire = parameters(period).secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
+        aod_active = parameters(period).retraites.secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance
+        aod_sedentaire = parameters(period).retraites.secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
             aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
@@ -958,8 +958,8 @@ class fonction_publique_aod(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        aod_active = parameters(period).secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
-        aod_sedentaire = parameters(period).secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
+        aod_active = parameters(period).retraites.secteur_public.pension_civile.aod_a.age_ouverture_droits_fonction_publique_active_selon_annee_naissance[date_de_naissance]
+        aod_sedentaire = parameters(period).retraites.secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance[date_de_naissance]
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
         return where(actif_a_la_liquidation, aod_active, aod_sedentaire)
 
@@ -1003,7 +1003,7 @@ class fonction_publique_bonification_cpcm_enfant(Variable):
     label = "Bonification du code des pensions civiles et militaires liée aux enfants (compte pour la durée d'assurance et la durée de service/durée liquidable)"
 
     def formula_2004(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        bonification_par_enfant_av_2004 = parameters(period).retraites.secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
         nombre_enfants_nes_avant_2004 = individu('fonction_publique_nombre_enfants_nes_avant_2004', period)
         bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants_nes_avant_2004
         sexe = individu('sexe', period)
@@ -1011,7 +1011,7 @@ class fonction_publique_bonification_cpcm_enfant(Variable):
         return where(sexe * est_a_la_fonction_publique, bonification_cpcm, 0)
 
     def formula_1949(individu, period, parameters):
-        bonification_par_enfant_av_2004 = parameters(period).secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
+        bonification_par_enfant_av_2004 = parameters(period).retraites.secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.before_2004_01_01
         nombre_enfants = individu('nombre_enfants', period)
         bonification_cpcm = bonification_par_enfant_av_2004 * nombre_enfants
         sexe = individu('sexe', period)
@@ -1025,7 +1025,7 @@ class fonction_publique_carriere_longue(Variable):
 
     def formula(individu, period, parameters):
         date_de_naissance = individu('date_de_naissance', period)
-        carriere_longue = parameters(period).secteur_public.pension_civile.carriere_longue
+        carriere_longue = parameters(period).retraites.secteur_public.pension_civile.carriere_longue
         duree_assurance_cotisee_tous_regimes = individu('duree_assurance_cotisee_tous_regimes', period)
         duree_assurance_seuil_1 = carriere_longue.duree_assurance_seuil_1[date_de_naissance]
         duree_assurance_seuil_15 = carriere_longue.duree_assurance_seuil_15[date_de_naissance]
@@ -1043,7 +1043,7 @@ class fonction_publique_carriere_longue_seuil_determine_aod(Variable):
     label = "L'âge d'ouverture des droit des personnes pouvant bénéficier du dispositif RACL dépend de l'âge de début de cotisation"
 
     def formula(individu, period, parameters):
-        carriere_longue = parameters(period).secteur_public.pension_civile.carriere_longue
+        carriere_longue = parameters(period).retraites.secteur_public.pension_civile.carriere_longue
         date_de_naissance = individu('date_de_naissance', period)
         naissance_mois = date_de_naissance.astype('datetime64[M]').astype(int) % 12 + 1
         duree_assurance_cotisee_avant_16_ans = individu('fonction_publique_duree_assurance_cotisee_seuil_bas', period)
@@ -1078,7 +1078,7 @@ class fonction_publique_coefficient_de_proratisation(Variable):
         duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         super_actif = False
         bonification_du_cinquieme = super_actif * min_(duree_de_service_effective / 5, 5)
-        duree_de_service_requise = parameters(period).secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+        duree_de_service_requise = parameters(period).retraites.secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         coefficient_de_proratisation = max_(min_(1, (duree_de_service_effective + bonification_du_cinquieme) / duree_de_service_requise), min_(80 / 75, (min_(duree_de_service_effective, duree_de_service_requise) + bonification_cpcm) / duree_de_service_requise))
         return coefficient_de_proratisation
 
@@ -1143,7 +1143,7 @@ class fonction_publique_decote(Variable):
     def formula_2006(individu, period, parameters):
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         decote_trimestres = individu('fonction_publique_decote_trimestres', period)
-        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).secteur_public.pension_civile.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[np.clip(annee_age_ouverture_droits, 2006, 2015)]
+        taux_decote = (annee_age_ouverture_droits >= 2006) * parameters(period).retraites.secteur_public.pension_civile.decote.taux_decote_selon_annee_age_ouverture_droits.taux_minore_taux_plein_1_decote_nombre_trimestres_manquants[np.clip(annee_age_ouverture_droits, 2006, 2015)]
         return taux_decote * decote_trimestres
 
 class fonction_publique_decote_a_date_depart_anticipe_parent_trois_enfants(Variable):
@@ -1179,15 +1179,15 @@ class fonction_publique_decote_trimestres(Variable):
         super_actif_a_la_liquidation = individu('fonction_publique_super_actif_a_la_liquidation', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         conditions_depart_anticipe_parent_trois_enfants = individu('fonction_publique_decote_a_date_depart_anticipe_parent_trois_enfants', period)
-        aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).secteur_public.pension_civile.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
+        aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).retraites.secteur_public.pension_civile.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
         reduction_add_en_mois = where((2019 >= annee_age_ouverture_droits) * (annee_age_ouverture_droits >= 2006), 3 * aad_en_nombre_trimestres_par_rapport_limite_age[np.clip(annee_age_ouverture_droits, 2006, 2019)], 0)
         aad_en_mois_general = individu('fonction_publique_limite_d_age', period) * 12 + reduction_add_en_mois
         aad_en_mois_parents_trois_enfants = 65 * 12 + reduction_add_en_mois
         aad_en_mois = where(conditions_depart_anticipe_parent_trois_enfants, min_(aad_en_mois_parents_trois_enfants, aad_en_mois_general), aad_en_mois_general)
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         trimestres_avant_aad = max_(0, np.ceil((aad_en_mois - age_en_mois_a_la_liquidation) / 3))
-        duree_assurance_requise_sedentaires = parameters(period).secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
-        duree_assurance_requise_actifs = parameters(period).secteur_public.pension_civile.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
+        duree_assurance_requise_sedentaires = parameters(period).retraites.secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+        duree_assurance_requise_actifs = parameters(period).retraites.secteur_public.pension_civile.trimtp_a.nombre_trimestres_cibles_taux_plein_par_generation_actifs[date_de_naissance]
         duree_assurance_requise_super_actifs = duree_assurance_requise_actifs - 4 * 5
         duree_assurance_requise = select([super_actif_a_la_liquidation, actif_a_la_liquidation & not_(super_actif_a_la_liquidation)], [duree_assurance_requise_super_actifs, duree_assurance_requise_actifs], default=duree_assurance_requise_sedentaires)
         trimestres = individu('duree_assurance_tous_regimes', period)
@@ -1428,8 +1428,8 @@ class fonction_publique_limite_d_age(Variable):
         date_de_naissance = individu('date_de_naissance', period)
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
         super_actif_a_la_liquidation = individu('fonction_publique_super_actif_a_la_liquidation', period)
-        limite_age_active = parameters(period).secteur_public.pension_civile.la_a.age_limite_fonction_publique_active_selon_annee_naissance
-        limite_age_sedentaire = parameters(period).secteur_public.pension_civile.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
+        limite_age_active = parameters(period).retraites.secteur_public.pension_civile.la_a.age_limite_fonction_publique_active_selon_annee_naissance
+        limite_age_sedentaire = parameters(period).retraites.secteur_public.pension_civile.la_s.age_limite_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
             limite_age_active_annee = limite_age_active.before_1956_07_01.annee
             limite_age_active_mois = 0
@@ -1476,7 +1476,7 @@ class fonction_publique_majoration_duree_assurance_enfant(Variable):
 
     def formula_2004(individu, period, parameters):
         nombre_enfants_nes_avant_2004 = individu('fonction_publique_nombre_enfants_nes_avant_2004', period)
-        majoration_par_enfant_pr_2004 = parameters(period).secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
+        majoration_par_enfant_pr_2004 = parameters(period).retraites.secteur_public.pension_civile.bonification_enfant.nombre_trimestres_par_enfant_bonification.after_2004_01_01
         nombre_enfants_nes_apres_2004 = individu('nombre_enfants', period) - nombre_enfants_nes_avant_2004
         majoration = majoration_par_enfant_pr_2004 * nombre_enfants_nes_apres_2004
         sexe = individu('sexe', period)
@@ -1507,7 +1507,7 @@ class fonction_publique_majoration_pension_au_31_decembre(Variable):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         majoration_pension_au_31_decembre_annee_precedente = individu('fonction_publique_majoration_pension_au_31_decembre', last_year)
-        revalorisation = parameters(period).secteur_public.pension_civile.revalorisation_pension_au_31_decembre
+        revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         majoration_pension = individu('fonction_publique_majoration_pension', period)
         return revalorise(majoration_pension_au_31_decembre_annee_precedente, majoration_pension, annee_de_liquidation, revalorisation, period)
 
@@ -1525,7 +1525,7 @@ class fonction_publique_minimum_garanti(Variable):
         duree_de_service_effective = individu('fonction_publique_duree_de_service_effective', period)
         annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
         decote = individu('fonction_publique_decote', period)
-        service_public = parameters(period).secteur_public.pension_civile
+        service_public = parameters(period).retraites.secteur_public.pension_civile
         minimum_garanti = service_public.minimum_garanti
         points_moins_40_ans = minimum_garanti.points_moins_40_ans[liquidation_date]
         points_plus_15_ans = minimum_garanti.points_plus_15_ans[liquidation_date]
@@ -1623,7 +1623,7 @@ class fonction_publique_pension_brute_au_31_decembre(Variable):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         pension_brute_au_31_decembre_annee_precedente = individu('fonction_publique_pension_brute_au_31_decembre', last_year)
-        revalorisation = parameters(period).secteur_public.pension_civile.revalorisation_pension_au_31_decembre
+        revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         pension_brute = individu('fonction_publique_pension_brute', period)
         return revalorise(pension_brute_au_31_decembre_annee_precedente, pension_brute, annee_de_liquidation, revalorisation, period)
 
@@ -1639,7 +1639,7 @@ class fonction_publique_pension_servie(Variable):
             return individu.empty_array()
         last_year = period.start.period('year').offset(-1)
         pension_au_31_decembre_annee_precedente = individu('fonction_publique_pension_au_31_decembre', last_year)
-        revalorisation = parameters(period).secteur_public.pension_civile.revalarisation_pension_servie
+        revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalarisation_pension_servie
         pension = individu('fonction_publique_pension_au_31_decembre', period)
         return revalorise(pension_au_31_decembre_annee_precedente, pension, annee_de_liquidation, revalorisation, period)
 
@@ -1686,7 +1686,7 @@ class fonction_publique_surcote(Variable):
     def formula_2004(individu, period, parameters):
         surcote_trimestres = individu('fonction_publique_surcote_trimestres', period)
         actif_a_la_liquidation = individu('fonction_publique_actif_a_la_liquidation', period)
-        taux_surcote = parameters(period).secteur_public.pension_civile.surcote.taux_surcote_par_trimestre
+        taux_surcote = parameters(period).retraites.secteur_public.pension_civile.surcote.taux_surcote_par_trimestre
         return where(actif_a_la_liquidation, 0, taux_surcote * surcote_trimestres)
 
 class fonction_publique_surcote_trimestres(Variable):
@@ -1698,7 +1698,7 @@ class fonction_publique_surcote_trimestres(Variable):
     def formula_2004(individu, period, parameters):
         liquidation_date = individu('fonction_publique_liquidation_date', period)
         date_de_naissance = individu('date_de_naissance', period)
-        aod_sedentaire = parameters(period).secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
+        aod_sedentaire = parameters(period).retraites.secteur_public.pension_civile.aod_s.age_ouverture_droits_fonction_publique_sedentaire_selon_annee_naissance
         if period.start.year <= 2011:
             aod_sedentaire_annee = aod_sedentaire.before_1951_07_01.annee
             aod_sedentaire_mois = 0
@@ -1708,7 +1708,7 @@ class fonction_publique_surcote_trimestres(Variable):
         age_en_mois_a_la_liquidation = (individu('fonction_publique_liquidation_date', period) - individu('date_de_naissance', period)).astype('timedelta64[M]').astype(int)
         arrondi_trimestres_aod = np.ceil if period.start.year < 2009 else np.floor
         trimestres_apres_aod = max_(0, (age_en_mois_a_la_liquidation - (12 * aod_sedentaire_annee + aod_sedentaire_mois)) / 3)
-        duree_assurance_requise = parameters(period).secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
+        duree_assurance_requise = parameters(period).retraites.secteur_public.pension_civile.trimtp.nombre_trimestres_cibles_taux_plein_par_generation[date_de_naissance]
         trimestres_apres_instauration_surcote = (individu('fonction_publique_liquidation_date', period) - np.datetime64('2004-01-01')).astype('timedelta64[M]').astype(int) / 3
         duree_assurance_excedentaire = individu('duree_assurance_tous_regimes', period) - duree_assurance_requise
         trimestres_surcote = max_(0, arrondi_trimestres_aod(min_(min_(trimestres_apres_instauration_surcote, trimestres_apres_aod), duree_assurance_excedentaire)))
@@ -1723,7 +1723,7 @@ class fonction_publique_taux_de_liquidation(Variable):
     def formula(individu, period, parameters):
         decote = individu('fonction_publique_decote', period)
         surcote = individu('fonction_publique_surcote', period)
-        taux_plein = parameters(period).secteur_public.pension_civile.taux_plein.taux_plein
+        taux_plein = parameters(period).retraites.secteur_public.pension_civile.taux_plein.taux_plein
         return taux_plein * (1 - decote + surcote)
 
 class fonction_publique_taux_de_liquidation_proratise(Variable):

@@ -60,7 +60,7 @@ class TypesSalaireValidantTrimestre(Enum):
 class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
     name = "Régime de base du secteur privé: régime général de la Cnav"
     variable_prefix = "regime_general_cnav"
-    parameters_prefix = "secteur_prive.regime_general_cnav"
+    parameters_prefix = "retraites.secteur_prive.regime_general_cnav"
 
     class age_annulation_decote_droit_commun(Variable):
         value_type = float
@@ -860,7 +860,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
             # Voir https://www.securite-sociale.fr/files/live/sites/SSFR/files/medias/CCSS/2021/Rapport%20CCSS-Septembre2021.pdf pages 156-157
             # Obligation d'avoir liquider toutes ses pensions
             # 2012 écretement
-            regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
+            regime_general_cnav = parameters(period).retraites.secteur_prive.regime_general_cnav
             minimum_contributif = regime_general_cnav.montant_mico
             mico = minimum_contributif.minimum_contributif.annuel
             mico_majoration = minimum_contributif.minimum_contributif_majore.annuel - mico
@@ -955,7 +955,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
 
         def formula_2004_01_01(individu, period, parameters):
             """Introduction de la majoration du minimum contributif."""
-            regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
+            regime_general_cnav = parameters(period).retraites.secteur_prive.regime_general_cnav
             minimum_contributif = regime_general_cnav.montant_mico
             mico = minimum_contributif.minimum_contributif.annuel
             mico_majoration = minimum_contributif.minimum_contributif_majore.annuel - mico
@@ -992,7 +992,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
                 ) * mico + majoration
 
         def formula_1983_04_01(individu, period, parameters):
-            regime_general_cnav = parameters(period).secteur_prive.regime_general_cnav
+            regime_general_cnav = parameters(period).regime_name
             minimum_contributif = regime_general_cnav.montant_mico
             mico = minimum_contributif.minimum_contributif.annuel
             duree_assurance = individu("regime_name_duree_assurance", period)
@@ -1045,7 +1045,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
             salaire_de_reference = individu.empty_array()
 
             revalorisation = dict(
-                (annee_salaire, parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)])
+                (annee_salaire, parameters(period).regime_name.revalorisation_salaire_cummulee[str(annee_salaire)])
                 for annee_salaire in range(
                     max(
                         (
@@ -1064,7 +1064,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
                 if _annee_de_naissance + OFFSET >= period.start.year:
                     break
                 k = int(
-                    parameters(period).secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
+                    parameters(period).regime_name.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen[
                         np.array(str(_annee_de_naissance), dtype="datetime64[Y]")
                         ]
                     )
@@ -1107,7 +1107,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
             annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
 
             revalorisation = dict(
-                (annee_salaire, parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)])
+                (annee_salaire, parameters(period).regime_name.revalorisation_salaire_cummulee[str(annee_salaire)])
                 for annee_salaire in range(
                     max(
                         annee_initiale + OFFSET,
@@ -1137,7 +1137,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
             mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k = n)
             annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
             revalorisation = dict(
-                (annee_salaire, parameters(period).secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)])
+                (annee_salaire, parameters(period).regime_name.revalorisation_salaire_cummulee[str(annee_salaire)])
                 for annee_salaire in range(
                     max(
                         annee_initiale + OFFSET,

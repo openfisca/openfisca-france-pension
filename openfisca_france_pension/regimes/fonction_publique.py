@@ -20,7 +20,7 @@ class TypesCategorieActivite(Enum):
 class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
-    parameters_prefix = "secteur_public.pension_civile"
+    parameters_prefix = "retraites.secteur_public.pension_civile"
 
     class actif_a_la_liquidation(Variable):
         value_type = bool
@@ -1113,10 +1113,10 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
 class RegimeFonctionPublique(AbstractRegimeFonctionPublique):
     name = "Régime de base de la fonction publique"
     variable_prefix = "fonction_publique"
-    parameters_prefix = "secteur_public.pension_civile"
+    parameters_prefix = "retraites.secteur_public.pension_civile"
 
 
 class RegimeCnracl(AbstractRegimeFonctionPublique):
     name = 'Régime de la Caisse nationale des agents des collectivités locales'
     variable_prefix = 'cnracl'
-    parameters_prefix = 'secteur_public.pension_civile'
+    parameters_prefix = 'retraites.secteur_public.pension_civile'

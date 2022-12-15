@@ -23,34 +23,34 @@ script_ast.main(verbose = False)
 def build_regimes_prelevements_sociaux(parameters):
     # Cnav
     regime_general_cnav = parameters.prelevements_sociaux.cotisations_securite_sociale_regime_general.cnav
-    parameters.secteur_prive.regime_general_cnav.add_child(
+    parameters.retraites.secteur_prive.regime_general_cnav.add_child(
         "prelevements_sociaux",
         regime_general_cnav,
         )
     # Agric-Arrco pré 2019
     arrco = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.arrco
-    parameters.secteur_prive.regimes_complementaires.arrco.add_child(
+    parameters.retraites.secteur_prive.regimes_complementaires.arrco.add_child(
         "prelevements_sociaux",
         arrco,
         )
     agirc = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.agirc
-    parameters.secteur_prive.regimes_complementaires.agirc.add_child(
+    parameters.retraites.secteur_prive.regimes_complementaires.agirc.add_child(
         "prelevements_sociaux",
         agirc,
         )
     # Régime unifié Agric-Arrco depuis 2019
     agirc_arrco = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.agirc_arrco
-    parameters.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.add_child(
+    parameters.retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.add_child(
         "agirc_arrco",
         agirc_arrco,
         )
-    parameters.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.add_child(
+    parameters.retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.add_child(
         "agirc_arrco",
         agirc_arrco,
         )
     # Ircantec
     ircantec = parameters.prelevements_sociaux.cotisations_secteur_public.ircantec
-    parameters.secteur_public.regimes_complementaires.ircantec.add_child(
+    parameters.retraites.secteur_public.regimes_complementaires.ircantec.add_child(
         "prelevements_sociaux",
         ircantec.taux_cotisations_appeles
         )
@@ -75,19 +75,19 @@ class CountryTaxBenefitSystem(TaxBenefitSystem):
                     }
                 }
             )
-        self.parameters.secteur_public.pension_civile.add_child("taux_plein", taux_plein)
+        self.parameters.retraites.secteur_public.pension_civile.add_child("taux_plein", taux_plein)
         build_regimes_prelevements_sociaux(self.parameters)
 
-        arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
-        unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
+        arrco = self.parameters.retraites.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
+        unirs = self.parameters.retraites.secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
         arrco.values_list = arrco.values_list + unirs.values_list
 
-        arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
-        unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
+        arrco = self.parameters.retraites.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
+        unirs = self.parameters.retraites.secteur_prive.regimes_complementaires.unirs.salaire_de_reference.salaire_reference_en_euros
         arrco.values_list = arrco.values_list + unirs.values_list
 
-        arrco = self.parameters.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
-        unirs = self.parameters.secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
+        arrco = self.parameters.retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        unirs = self.parameters.retraites.secteur_prive.regimes_complementaires.unirs.point.valeur_point_en_euros
         arrco.values_list = arrco.values_list + unirs.values_list
 
         self.cache_blacklist = [
