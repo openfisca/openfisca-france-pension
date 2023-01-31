@@ -35,7 +35,7 @@ class ircantec_coefficient_de_minoration(Variable):
     def formula_1971(individu, period, parameters):
         minoration = parameters(period).retraites.secteur_public.regimes_complementaires.ircantec.coefficient_de_minoration
         trimestres_de_decote = min_(individu('regime_general_cnav_decote_trimestres', period), 10 * 4)
-        coefficient_de_minoration = np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans + +np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
+        coefficient_de_minoration = np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans + np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
         return 1 - coefficient_de_minoration
 
 class ircantec_cotisation(Variable):

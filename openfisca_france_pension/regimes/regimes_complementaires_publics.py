@@ -52,7 +52,7 @@ class RegimeIrcantec(AbstractRegimeEnPoints):
             coefficient_de_minoration = (
                 np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add
                 + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans
-                + + np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
+                + np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
                 )
             return 1 - coefficient_de_minoration
 
