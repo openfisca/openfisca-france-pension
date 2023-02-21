@@ -26,7 +26,9 @@
 
 ## Erreurs à corriger
 
-### Surcote régime général
+### Surcote et décote régime général
+
+Problèmes de déclages de plus ou moins 1 trimestres
 
 EIR
 (regime == 'regime_general_cnav') & (target_regime_general_cnav_surcote_trimestres == 0) & (regime_general_cnav_surcote_trimestres > 0) & (nombre_enfants == 0)
@@ -37,3 +39,7 @@ Construire un masque avec la période de référence sur laquelle on compte les 
 
 Match EIR-EIC
 (regime == 'regime_general_cnav') & (diff_regime_general_cnav_duree_assurance > 0) & (regime_general_cnav_duree_assurance >= 150) & (regime_general_cnav_majoration_duree_assurance == 0)
+
+### Durée de service fonction publique
+
+Très bruitée  difgnostic à la réunion du 2023-02-20

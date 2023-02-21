@@ -17,6 +17,7 @@ from openfisca_france_pension.regimes.regime import AbstractRegimeEnAnnuites
 from openfisca_france_pension.tools import calendar_quarters_elapsed_this_year_asof, count_calendar_quarters, mean_over_k_nonzero_largest, next_calendar_quarter_start_date
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
+OFFSET = 10
 REVAL_S_YEAR_MIN = 1949
 
 def conversion_en_monnaie_courante(period):
@@ -46,6 +47,23 @@ class TypesSalaireValidantTrimestre(Enum):
     metropole = 'Métropole'
     guadeloupe_guyane_martinique = 'Guadeloupe, Guyane et Martinique'
     reunion = 'Réunion'
+
+def build_revalorisation_salaire_cummulee(parameters_regime_name, period, annee_de_naissance):
+    """
+    Construit le dictionnaire des revalorisations de salaire par année d'octroi.
+
+    Args:
+        parameters (Parameters): paramètre de la législation
+        period (Period): period
+        annee_initiale (int): première année de la revalorisation
+
+    Returns:
+        dict: le dictionnaire des revalorisations de salaire par année d'octroi
+    """
+    annees_de_naissance_distinctes = np.unique(annee_de_naissance)
+    most_recent_revaloraisation_year = int(max(parameters_regime_name.revalorisation_salaire_cummulee._children.keys()))
+    revalorisation = dict(((annee_salaire, parameters_regime_name.revalorisation_salaire_cummulee[str(np.clip(annee_salaire, REVAL_S_YEAR_MIN, most_recent_revaloraisation_year))]) for annee_salaire in range(max(min(annees_de_naissance_distinctes) + OFFSET if annees_de_naissance_distinctes.size > 0 else REVAL_S_YEAR_MIN, REVAL_S_YEAR_MIN), period.start.year)))
+    return revalorisation
 
 class regime_general_cnav_age_a_la_liquidation(Variable):
     value_type = float
@@ -497,11 +515,17 @@ class regime_general_cnav_majoration_duree_assurance_enfant(Variable):
     entity = Person
     definition_period = ETERNITY
     label = "Majoration de durée d'assurance pour présence d'enfants"
+    reference = 'https://www.cairn.info/revue-retraite-et-societe1-2012-1-page-183.htm'
 
-    def formula(individu, period):
+    def formula_1974_07(individu, period):
         n_est_pas_a_la_fonction_publique = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970 >= 2250
         sexe = individu('sexe', period)
         return where(sexe * n_est_pas_a_la_fonction_publique, individu('nombre_enfants', period) * 8, 0)
+
+    def formula_1972(individu, period):
+        n_est_pas_a_la_fonction_publique = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970 >= 2250
+        sexe = individu('sexe', period)
+        return where(sexe * n_est_pas_a_la_fonction_publique * (individu('nombre_enfants', period) >= 2), individu('nombre_enfants', period) * 4, 0)
 
 class regime_general_cnav_majoration_pension(Variable):
     value_type = float
@@ -766,12 +790,11 @@ class regime_general_cnav_salaire_de_reference(Variable):
     reference = 'https://www.cor-retraites.fr/sites/default/files/2019-06/doc-1554.pdf'
 
     def formula_1994(individu, period, parameters):
-        OFFSET = 10
         liquidation_date = individu('regime_general_cnav_liquidation_date', period)
         annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
         annees_de_naissance_distinctes = np.unique(annee_de_naissance[liquidation_date >= np.datetime64(period.start)])
         salaire_de_reference = individu.empty_array()
-        revalorisation = dict(((annee_salaire, parameters(period).retraites.secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]) for annee_salaire in range(max(min(annees_de_naissance_distinctes) + OFFSET if annees_de_naissance_distinctes.size > 0 else REVAL_S_YEAR_MIN, REVAL_S_YEAR_MIN), period.start.year)))
+        revalorisation = build_revalorisation_salaire_cummulee(parameters(period).retraites.secteur_prive.regime_general_cnav, period, annee_de_naissance)
         for _annee_de_naissance in sorted(annees_de_naissance_distinctes):
             if _annee_de_naissance + OFFSET >= period.start.year:
                 break
@@ -785,20 +808,19 @@ class regime_general_cnav_salaire_de_reference(Variable):
 
     def formula_1972(individu, period, parameters):
         """L'avpf n'existe pas avant 1972."""
-        OFFSET = 10
         n = parameters(period).retraites.secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.before_1934_01_01
         mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
         annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
-        revalorisation = dict(((annee_salaire, parameters(period).retraites.secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]) for annee_salaire in range(max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), period.start.year)))
+        annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+        revalorisation = build_revalorisation_salaire_cummulee(parameters(period).retraites.secteur_prive.regime_general_cnav, period, annee_de_naissance)
         salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('regime_general_cnav_salaire_de_base', period=year) + individu('regime_general_cnav_avpf', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year - 1, annee_initiale + OFFSET, -1)]))
         return salaire_de_refererence
 
     def formula(individu, period, parameters):
-        OFFSET = 10
         n = parameters(1972).retraites.secteur_prive.regime_general_cnav.sam.nombre_annees_carriere_entrant_en_jeu_dans_determination_salaire_annuel_moyen.before_1934_01_01
         mean_over_largest = functools.partial(mean_over_k_nonzero_largest, k=n)
-        annee_initiale = (individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970).min()
-        revalorisation = dict(((annee_salaire, parameters(period).retraites.secteur_prive.regime_general_cnav.revalorisation_salaire_cummulee[str(annee_salaire)]) for annee_salaire in range(max(annee_initiale + OFFSET, REVAL_S_YEAR_MIN), period.start.year)))
+        annee_de_naissance = individu('date_de_naissance', period).astype('datetime64[Y]').astype(int) + 1970
+        revalorisation = build_revalorisation_salaire_cummulee(parameters(period).retraites.secteur_prive.regime_general_cnav, period, annee_de_naissance)
         salaire_de_refererence = np.apply_along_axis(mean_over_largest, axis=0, arr=np.vstack([min_(individu('regime_general_cnav_salaire_de_base', period=year), parameters(year).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(year)) * revalorisation.get(year, revalorisation[min(revalorisation.keys())]) for year in range(period.start.year - 1, annee_initiale + OFFSET, -1)]))
         return salaire_de_refererence
 

@@ -742,7 +742,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
         value_type = float
         entity = Person
         definition_period = ETERNITY
-        label = "Majration de duree d'assurance"
+        label = "Majoration de duree d'assurance"
         definition_period = YEAR
 
         def formula(individu, period):
