@@ -17,7 +17,7 @@ def create_depart_a_age_fixe(age_fixe = 65):
 
     """
     class depart_a_age_fixe(Reform):
-        name = f"Départ à âge donné (défaut à 65 ans)"
+        name = "Départ à âge donné (défaut à 65 ans)"
 
         class regime_general_cnav_liquidation_date(Variable):
             value_type = date
@@ -47,10 +47,8 @@ def create_depart_a_age_fixe(age_fixe = 65):
             label = 'Age décimal à la liquidation'
             default_value = age_fixe
 
-
         def apply(self):
             self.update_variable(self.regime_general_cnav_liquidation_date)
             self.add_variable(self.age_de_depart)
-
 
     return depart_a_age_fixe

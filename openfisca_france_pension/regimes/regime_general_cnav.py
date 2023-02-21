@@ -1338,10 +1338,10 @@ def build_revalorisation_salaire_cummulee(parameters_regime_name, period, annee_
             )
         for annee_salaire in range(
             max(
-                    min(annees_de_naissance_distinctes) + OFFSET
-                    if annees_de_naissance_distinctes.size > 0
-                    else REVAL_S_YEAR_MIN,  # annees_de_naissance_distinctes can be empty
-                    REVAL_S_YEAR_MIN,
+                min(annees_de_naissance_distinctes) + OFFSET
+                if annees_de_naissance_distinctes.size > 0
+                else REVAL_S_YEAR_MIN,  # annees_de_naissance_distinctes can be empty
+                REVAL_S_YEAR_MIN,
                 ),
             period.start.year
             )
