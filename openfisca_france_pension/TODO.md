@@ -42,4 +42,7 @@ Match EIR-EIC
 
 ### Durée de service fonction publique
 
-Très bruitée  difgnostic à la réunion du 2023-02-20
+Très bruitée  diagnostic à la réunion du 2023-02-20
+
+
+### Pourquoi coexistence duree_service et duree_assurance qui sont les mêmes pour le regime général ?

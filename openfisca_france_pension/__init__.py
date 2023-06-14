@@ -40,6 +40,10 @@ def build_regimes_prelevements_sociaux(parameters):
         )
     # Régime unifié Agric-Arrco depuis 2019
     agirc_arrco = parameters.prelevements_sociaux.regimes_complementaires_retraite_secteur_prive.agirc_arrco
+    parameters.retraites.secteur_prive.regimes_complementaires.agirc_arrco.add_child(
+        "prelevements_sociaux",
+        agirc_arrco,
+        )
     parameters.retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.add_child(
         "agirc_arrco",
         agirc_arrco,
@@ -48,6 +52,7 @@ def build_regimes_prelevements_sociaux(parameters):
         "agirc_arrco",
         agirc_arrco,
         )
+
     # Ircantec
     ircantec = parameters.prelevements_sociaux.cotisations_secteur_public.ircantec
     parameters.retraites.secteur_public.regimes_complementaires.ircantec.add_child(

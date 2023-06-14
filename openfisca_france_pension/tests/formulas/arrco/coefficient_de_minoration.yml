@@ -1,4 +1,4 @@
-- name: coefficientde minoration Arrco
+- name: coefficient de minoration Arrco
   description: test
   period: 2010
   input:
@@ -7,7 +7,7 @@
     arrco_coefficient_de_minoration: .88
 
 
-- name: coefficientde minoration Arrco avant mise en oeuvre
+- name: coefficient de minoration Arrco avant mise en oeuvre
   description: test
   period: 1955
   input:

@@ -214,7 +214,25 @@ class agirc_points_annuels(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Points'
+    label = 'Points annuels'
+
+    def formula(individu, period):
+        points_emploi_annuels = individu('agirc_points_emploi_annuels', period)
+        points_hors_emploi_annuels = individu('agirc_points_hors_emploi_annuels', period)
+        return points_emploi_annuels + points_hors_emploi_annuels
+
+class agirc_points_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels en emploi'
+
+    def formula_2019(individu, period, parameters):
+        agirc_arrco = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco
+        salaire_de_reference = agirc_arrco.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = agirc_arrco.prelevements_sociaux.taux_appel
+        cotisation = individu('agirc_cotisation', period)
+        return cotisation / salaire_de_reference / taux_appel
 
     def formula_1947(individu, period, parameters):
         salaire_de_reference = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
@@ -228,7 +246,7 @@ class agirc_points_enfants(Variable):
     definition_period = YEAR
     label = 'Points enfants'
 
-    def formula(individu, period, parameters):
+    def formula(individu, period):
         """
             Deux types de majorations pour enfants peuvent s'appliquer :
                 - pour enfant à charge au moment du départ en retraite
@@ -266,6 +284,12 @@ class agirc_points_enfants_nes_et_eleves(Variable):
         points = individu('agirc_points', period)
         nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
         return points * ((nombre_enfants_nes_et_eleves == 3) * 0.08 + (nombre_enfants_nes_et_eleves == 4) * 0.12 + (nombre_enfants_nes_et_eleves == 5) * 0.16 + (nombre_enfants_nes_et_eleves == 6) * 0.2 + (nombre_enfants_nes_et_eleves >= 7) * 0.24)
+
+class agirc_points_hors_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels hors emploi'
 
 class agirc_points_minimum_garantis(Variable):
     value_type = float
@@ -463,7 +487,25 @@ class arrco_points_annuels(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Points'
+    label = 'Points annuels'
+
+    def formula(individu, period):
+        points_emploi_annuels = individu('arrco_points_emploi_annuels', period)
+        points_hors_emploi_annuels = individu('arrco_points_hors_emploi_annuels', period)
+        return points_emploi_annuels + points_hors_emploi_annuels
+
+class arrco_points_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels en emploi'
+
+    def formula_2019(individu, period, parameters):
+        agirc_arrco = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco
+        salaire_de_reference = agirc_arrco.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = agirc_arrco.prelevements_sociaux.taux_appel
+        cotisation = individu('arrco_cotisation', period)
+        return cotisation / salaire_de_reference / taux_appel
 
     def formula_1962(individu, period, parameters):
         salaire_de_reference = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
@@ -477,7 +519,7 @@ class arrco_points_enfants(Variable):
     definition_period = YEAR
     label = 'Points enfants'
 
-    def formula(individu, period, parameters):
+    def formula(individu, period):
         """
             Deux types de majorations pour enfants peuvent s'appliquer :
                 - pour enfant à charge au moment du départ en retraite
@@ -523,6 +565,12 @@ class arrco_points_enfants_nes_et_eleves(Variable):
 
     def formula_1945(individu, period, parameters):
         return individu.empty_array()
+
+class arrco_points_hors_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels hors emploi'
 
 class arrco_points_minimum_garantis(Variable):
     value_type = float

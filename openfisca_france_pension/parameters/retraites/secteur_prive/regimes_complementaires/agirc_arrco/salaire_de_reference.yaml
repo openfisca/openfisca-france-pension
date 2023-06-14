@@ -1,6 +1,6 @@
 description: Salaire de référence AGIRC-ARRCO
-salaire_reference_prix_achat_valeur_nominale:
-  description: Salaire de référence AGIRC (valeur d'achat) en euros
+salaire_reference_en_euros:
+  description: Salaire de référence AGIRC-ARRCO (valeur d'achat)
   values:
     2020-01-01:
       value: 17.3982
@@ -11,7 +11,7 @@ salaire_reference_prix_achat_valeur_nominale:
     unit: currency
 metadata:
   order:
-  - salaire_reference_prix_achat_valeur_nominale
+  - salaire_reference
   reference:
     2020-01-01:
     - title: Circulaire 2019-14-DT de l'AGIRC-ARRCO

@@ -90,7 +90,7 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
         definition_period = YEAR
         label = "Points enfants"
 
-        def formula(individu, period, parameters):
+        def formula(individu, period):
             """
             Deux types de majorations pour enfants peuvent s'appliquer :
                 - pour enfant à charge au moment du départ en retraite
@@ -100,6 +100,25 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
             points_enfants_a_charge = individu('regime_name_points_enfants_a_charge', period)
             points_enfants_nes_et_eleves = individu('regime_name_points_enfants_nes_et_eleves', period)
             return max_(points_enfants_a_charge, points_enfants_nes_et_eleves)
+
+    class points_annuels(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points annuels"
+
+        def formula(individu, period):
+            points_emploi_annuels = individu('regime_name_points_emploi_annuels', period)
+            points_hors_emploi_annuels = individu('regime_name_points_hors_emploi_annuels', period)
+            return points_emploi_annuels + points_hors_emploi_annuels
+
+    class points_hors_emploi_annuels(Variable):
+        value_type = float
+        entity = Person
+        definition_period = YEAR
+        label = "Points annuels hors emploi"
+
+
 
 
 class RegimeArrco(AbstractRegimeAgircArrco):
@@ -180,11 +199,20 @@ class RegimeArrco(AbstractRegimeAgircArrco):
 #                 majoration_pension, trim_decote):
 #         ''' le régime Arrco ne tient pas compte du coefficient de
 #         minoration pour le calcul des majorations pour enfants '''
-    class points_annuels(Variable):
+
+    class points_emploi_annuels(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Points"
+        label = "Points annuels en emploi"
+
+        def formula_2019(individu, period, parameters):
+            agirc_arrco = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco
+            salaire_de_reference = agirc_arrco.salaire_de_reference.salaire_reference_en_euros
+            taux_appel = agirc_arrco.prelevements_sociaux.taux_appel
+            cotisation = individu("regime_name_cotisation", period)
+
+            return cotisation / salaire_de_reference / taux_appel
 
         def formula_1962(individu, period, parameters):
             salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros
@@ -311,11 +339,19 @@ class RegimeAgirc(AbstractRegimeAgircArrco):
                 * agirc.calc(salaire_de_base, factor = plafond_securite_sociale)
                 )
 
-    class points_annuels(Variable):
+    class points_emploi_annuels(Variable):
         value_type = float
         entity = Person
         definition_period = YEAR
-        label = "Points"
+        label = "Points annuels en emploi"
+
+        def formula_2019(individu, period, parameters):
+            agirc_arrco = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco
+            salaire_de_reference = agirc_arrco.salaire_de_reference.salaire_reference_en_euros
+            taux_appel = agirc_arrco.prelevements_sociaux.taux_appel
+            cotisation = individu("regime_name_cotisation", period)
+
+            return cotisation / salaire_de_reference / taux_appel
 
         def formula_1947(individu, period, parameters):
             salaire_de_reference = parameters(period).regime_name.salaire_de_reference.salaire_reference_en_euros

@@ -9,7 +9,8 @@
     duree_assurance_cotisee_tous_regimes: 190
   output:
     fonction_publique_carriere_longue: False
-    fonction_publique_annee_age_ouverture_droits: 2025
+    fonction_publique_ouverture_des_droits_date: 2025-04-11
+
 
 - name: Pas de carriere anticipee pour motif de carriere longue - pas assez trimestres
   absolute_error_margin: .001
@@ -22,9 +23,10 @@
     duree_assurance_cotisee_tous_regimes: 130
   output:
     fonction_publique_carriere_longue: False
-    fonction_publique_annee_age_ouverture_droits: 2025
+    fonction_publique_ouverture_des_droits_date: 2025-04-11
 
-- name: Depart anticipe pour motif de carriere longue - debut carriere à 16 ans 
+
+- name: Depart anticipe pour motif de carriere longue - debut carriere à 16 ans
   absolute_error_margin: .001
   period: 2014
   input:
@@ -35,10 +37,10 @@
     duree_assurance_cotisee_tous_regimes: 190
   output:
     fonction_publique_carriere_longue: True
-    fonction_publique_annee_age_ouverture_droits: 2021
+    fonction_publique_ouverture_des_droits_date: 2021-04-11
 
-  
-- name: Depart anticipe pour motif de carriere longue - debut carriere à 20 ans 
+
+- name: Depart anticipe pour motif de carriere longue - debut carriere à 20 ans
   absolute_error_margin: .001
   period: 2014
   input:
@@ -49,4 +51,4 @@
     duree_assurance_cotisee_tous_regimes: 199
   output:
     fonction_publique_carriere_longue: True
-    fonction_publique_annee_age_ouverture_droits: 2023
+    fonction_publique_ouverture_des_droits_date: 2023-04-11

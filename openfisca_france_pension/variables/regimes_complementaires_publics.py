@@ -28,8 +28,6 @@ class ircantec_coefficient_de_minoration(Variable):
         coefficient_de_minoration = np.clip(trimestres_de_decote, 0, 3 * 4) * minoration.decote_par_trimestre_entre_aod_plus_2_ans_et_add + np.clip(trimestres_de_decote - 3 * 4, 0, 2 * 4) * minoration.decote_par_trimestre_entre_aod_et_aod_plus_2_ans + +np.clip(trimestres_de_decote - 5 * 4, 0, 5 * 4) * minoration.decote_par_trimestre_avant_aod
         trimestres_de_surcote = individu('regime_general_cnav_surcote_trimestres', period)
         coefficient_de_majoration = trimestres_de_surcote * minoration.surcote_par_trimestre
-        print(coefficient_de_minoration)
-        print(coefficient_de_majoration)
         return 1 - coefficient_de_minoration + coefficient_de_majoration
 
     def formula_1971(individu, period, parameters):

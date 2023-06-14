@@ -38,8 +38,6 @@ class RegimeIrcantec(AbstractRegimeEnPoints):
                 )
             trimestres_de_surcote = individu('regime_general_cnav_surcote_trimestres', period)
             coefficient_de_majoration = trimestres_de_surcote * minoration.surcote_par_trimestre
-            print(coefficient_de_minoration)
-            print(coefficient_de_majoration)
             return 1 - coefficient_de_minoration + coefficient_de_majoration
 
         def formula_1971(individu, period, parameters):

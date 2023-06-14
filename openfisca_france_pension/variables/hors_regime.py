@@ -6,6 +6,7 @@ import numpy as np
 
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
+from openfisca_france_pension.regimes import REGIMES_DE_BASE
 
 
 class TypesCategorieSalarie(Enum):
@@ -90,6 +91,7 @@ class duree_assurance_cotisee_tous_regimes(Variable):
         return (
             individu('regime_general_cnav_duree_assurance_personnellement_cotisee', period)
             + individu('fonction_publique_duree_de_service_effective', period)
+            + individu('cnracl_duree_de_service_effective', period)
             )
 
 
@@ -126,11 +128,10 @@ class duree_assurance_tous_regimes_annuelle(Variable):
     label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
-        regimes_de_base = ['regime_general_cnav', 'fonction_publique']
         duree_assurance_hors_majoration =  np.clip(
             sum(
                 individu(f'{regime}_duree_assurance_annuelle', period)
-                for regime in regimes_de_base
+                for regime in REGIMES_DE_BASE
                 ),
             0,
             4
@@ -141,7 +142,7 @@ class duree_assurance_tous_regimes_annuelle(Variable):
                 == period.start.year
                 )
             * individu(f'{regime}_majoration_duree_assurance', period)
-            for regime in regimes_de_base
+            for regime in REGIMES_DE_BASE
             )
         return duree_assurance_hors_majoration + majoration_duree_assurance
 

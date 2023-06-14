@@ -7,6 +7,7 @@ from openfisca_core.parameters import ParameterNotFound
 
 from openfisca_france_pension.entities import Person
 from openfisca_france_pension.regimes.regime import AbstractRegimeEnAnnuites
+from openfisca_france_pension.tools import add_vectorial_timedelta, year_
 from openfisca_france_pension.variables.hors_regime import TypesRaisonDepartTauxPleinAnticipe
 
 
@@ -22,6 +23,40 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
     variable_prefix = "fonction_publique"
     parameters_prefix = "retraites.secteur_public.pension_civile"
 
+    class ouverture_des_droits_date(Variable):
+        value_type = date
+        entity = Person
+        definition_period = YEAR
+        label = "Date à laquelle l'individu atteint l'âge d'ouverture des droits"
+        default_value = date(2250, 12, 31)
+
+        def formula_2006(individu, period):
+            ouverture_des_droits_date_normale = individu("regime_name_ouverture_des_droits_date_normale", period)
+
+            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants", period)
+            depart_anticipe_trois_enfants = individu("regime_name_depart_anticipe_trois_enfants", period)
+            date_ouverture_droits_depart_anticipe_trois_enfants = min_(
+                ouverture_des_droits_date_normale,
+                date_satisfaction_condition_depart_anticipe_parents_trois_enfants
+                )
+            ouverture_des_droits_carriere_longue_date = min_(
+                ouverture_des_droits_date_normale,
+                individu('regime_name_ouverture_des_droits_carriere_longue_date', period),
+                )
+
+            carriere_longue = individu('regime_name_carriere_longue', period)
+            return select(
+                [
+                    depart_anticipe_trois_enfants,
+                    carriere_longue,
+                    ],
+                [
+                    date_ouverture_droits_depart_anticipe_trois_enfants,
+                    ouverture_des_droits_carriere_longue_date,
+                    ],
+                default = ouverture_des_droits_date_normale,
+                )
+
     class actif_a_la_liquidation(Variable):
         value_type = bool
         entity = Person
@@ -34,44 +69,12 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
             actif = individu('regime_name_nombre_annees_actif', period) >= actif_annee
             return actif
 
-    class annee_age_ouverture_droits(Variable):
-        value_type = int
+    class ouverture_des_droits_carriere_longue_date(Variable):
+        value_type = date
         entity = Person
         definition_period = YEAR
-        label = "Annee_age_ouverture_droits"
-
-        def formula_2006(individu, period):
-            annee_age_ouverture_droits_normale = individu("regime_name_annee_age_ouverture_droits_normale", period)
-
-            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu("regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants", period)
-            depart_anticipe_trois_enfants = individu("regime_name_depart_anticipe_trois_enfants", period)
-            annee_age_ouverture_droits_depart_anticipe_trois_enfants = min_(
-                annee_age_ouverture_droits_normale,
-                date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970
-                )
-            annee_age_ouverture_droits_carriere_longue = min_(
-                annee_age_ouverture_droits_normale,
-                individu('regime_name_annee_age_ouverture_droits_carriere_longue', period),
-                )
-
-            carriere_longue = individu('regime_name_carriere_longue', period)
-            return select(
-                [
-                    depart_anticipe_trois_enfants,
-                    carriere_longue,
-                    ],
-                [
-                    annee_age_ouverture_droits_depart_anticipe_trois_enfants,
-                    annee_age_ouverture_droits_carriere_longue,
-                    ],
-                default = annee_age_ouverture_droits_normale,
-                )
-
-    class annee_age_ouverture_droits_carriere_longue(Variable):
-        value_type = int
-        entity = Person
-        definition_period = YEAR
-        label = "Année de l'âge d'ouverture des droits pour les départs anticipés pour carrière longue"
+        label = "Date de l'ouverture des droits pour les départs anticipés pour carrière longue"
+        default_value = date(2250, 12, 31)
 
         def formula_2006(individu, period, parameters):
             carriere_longue_seuil_determine_aod = individu('regime_name_carriere_longue_seuil_determine_aod', period)
@@ -106,22 +109,20 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
                     aod_carriere_longue_2_mois
                     ]
                 )
-            annee_age_ouverture_droits_carriere_longue = np.trunc(
-                date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
-                + aod_carriere_longue_annee
-                + (
-                    (date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int')
-                    + aod_carriere_longue_mois
-                    ) / 12
-                ).astype(int)
+            ouverture_des_droits_carriere_longue_date = add_vectorial_timedelta(
+                date_de_naissance,
+                aod_carriere_longue_annee,
+                aod_carriere_longue_mois,
+                )
 
-            return annee_age_ouverture_droits_carriere_longue
+            return ouverture_des_droits_carriere_longue_date
 
-    class annee_age_ouverture_droits_normale(Variable):
-        value_type = int
+    class ouverture_des_droits_date_normale(Variable):
+        value_type = date
         entity = Person
         definition_period = YEAR
-        label = "Annee_age_ouverture_droits"
+        label = "Date de l'ouverture des droits selon l'âge"
+        default_value = date(2250, 12, 31)
 
         def formula(individu, period, parameters):
             date_de_naissance = individu('date_de_naissance', period)
@@ -158,15 +159,9 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
                     ],
                 default = aod_sedentaire_mois
                 )
-            annee_age_ouverture_droits = np.trunc(
-                date_de_naissance.astype('datetime64[Y]').astype('int') + 1970
-                + aod_annee
-                + (
-                    (date_de_naissance.astype('datetime64[M]') - date_de_naissance.astype('datetime64[Y]')).astype('int')
-                    + aod_mois
-                    ) / 12
-                ).astype(int)
-            return annee_age_ouverture_droits
+            ouverture_des_droits_date = add_vectorial_timedelta(date_de_naissance, years = aod_annee, months = aod_mois)
+
+            return ouverture_des_droits_date
 
     class aod(Variable):
         value_type = int
@@ -295,7 +290,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
     class date_satisfaction_condition_depart_anticipe_parents_trois_enfants(Variable):
         value_type = date
         entity = Person
-        definition_period = ETERNITY
+        definition_period = YEAR
         label = "Date à laquelle les deux conditions permettant un départ anticipé pour motif de parent de trois enfant sont satisfaites"
         default_value = date(2250, 12, 31)
 
@@ -321,13 +316,13 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
         def formula(individu, period):
             nombre_enfants = individu('nombre_enfants', period)
             duree_de_service_effective = individu("regime_name_duree_de_service_effective", period)
-            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
+            ouverture_des_droits_date = individu('regime_name_ouverture_des_droits_date', period)
             liquidation_date = individu('regime_name_liquidation_date', period)
-            annee_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period).astype('datetime64[Y]').astype('int')
-            condition_date = annee_satisfaction_condition_depart_anticipe_parents_trois_enfants < 2012
+            date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
+            condition_date = year_(date_satisfaction_condition_depart_anticipe_parents_trois_enfants) < 2012
             condition_enfant = nombre_enfants >= 3
             condition_service = duree_de_service_effective >= 60
-            condition_aod = annee_age_ouverture_droits < 2016
+            condition_aod = year_(ouverture_des_droits_date) < 2016
             condition_date_liquidation = liquidation_date < np.datetime64("2011-07-01")
             return condition_enfant * condition_service * condition_aod * condition_date_liquidation * condition_date
 
@@ -342,8 +337,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
             carriere_longue = individu('regime_name_carriere_longue', period)
             actif_a_la_liquidation = individu('regime_name_actif_a_la_liquidation', period)
             super_actif_a_la_liquidation = individu('regime_name_super_actif_a_la_liquidation', period)
-
-            annee_age_ouverture_droits = individu('fonction_publique_annee_age_ouverture_droits', period)
+            annee_age_ouverture_droits = year_(individu('regime_name_ouverture_des_droits_date', period))
             conditions_depart_anticipe_parent_trois_enfants = individu('regime_name_decote_a_date_depart_anticipe_parent_trois_enfants', period)
             aad_en_nombre_trimestres_par_rapport_limite_age = parameters(period).regime_name.aad.age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
             reduction_add_en_mois = where(
@@ -385,13 +379,13 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
                     ],
                 default = duree_assurance_requise_sedentaires,
                 )
-            trimestres = individu('duree_assurance_tous_regimes', period)
+            duree_assurance_tous_regimes = individu('duree_assurance_tous_regimes', period)
             decote_trimestres = min_(
                 max_(
                     0,
                     min_(
                         trimestres_avant_aad,
-                        duree_assurance_requise - trimestres
+                        duree_assurance_requise - duree_assurance_tous_regimes
                         )
                     ),
                 20,
@@ -415,7 +409,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
         label = "annee_age_ouverture_droits"
 
         def formula_2006(individu, period, parameters):
-            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
+            annee_age_ouverture_droits = year_(individu('regime_name_ouverture_des_droits_date', period))
             decote_trimestres = individu('regime_name_decote_trimestres', period)
             taux_decote = (
                 (annee_age_ouverture_droits >= 2006)  # TODO check condtion on 2015 ?
@@ -433,11 +427,11 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
 
         def formula(individu, period, parameters):
             aod_egal_date_depart_anticipe_parent_trois_enfants = individu('regime_name_aod_egal_date_depart_anticipe_parent_trois_enfants', period)
-            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits_normale', period)
+            annee_age_ouverture_droits = year_(individu('regime_name_ouverture_des_droits_date_normale', period))
             raison_depart_taux_plein_anticipe = individu("raison_depart_taux_plein_anticipe", period)
             date_satisfaction_condition_depart_anticipe_parents_trois_enfants = individu('regime_name_date_satisfaction_condition_depart_anticipe_parents_trois_enfants', period)
             condition_aod = annee_age_ouverture_droits < 2016
-            condition_decote = date_satisfaction_condition_depart_anticipe_parents_trois_enfants.astype('datetime64[Y]').astype('int') + 1970 < 2003
+            condition_decote = year_(date_satisfaction_condition_depart_anticipe_parents_trois_enfants) < 2003
 
             return (
                 aod_egal_date_depart_anticipe_parent_trois_enfants * (condition_aod + condition_decote)
@@ -805,7 +799,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
             liquidation_date = individu('regime_name_liquidation_date', period)
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             duree_de_service_effective = individu("fonction_publique_duree_de_service_effective", period)
-            annee_age_ouverture_droits = individu('regime_name_annee_age_ouverture_droits', period)
+            annee_age_ouverture_droits = year_(individu('regime_name_ouverture_des_droits_date', period))
             decote = individu("regime_name_decote", period)
 
             service_public = parameters(period).regime_name
@@ -1012,6 +1006,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
         definition_period = YEAR
         label = "L'âge d'ouverture des droit des personnes pouvant bénéficier du dispositif RACL dépend de l'âge de début de cotisation"
 
+        # TODO: transformer en Enum
         def formula(individu, period, parameters):
             carriere_longue = parameters(period).regime_name.carriere_longue
             date_de_naissance = individu('date_de_naissance', period)
