@@ -32,7 +32,7 @@ setup(
         "bottleneck >=1.3.2,<=2.0.0",
         "OpenFisca-Core @ git+https://github.com/openfisca/openfisca-core@asof-parameters#egg=openfisca-core",
         "numba>=0.54,<1.0.0",
-        "pandas>=1.3.4<1.5.0",
+        "pandas>=1.3.4,<1.5.0",
         ],
     extras_require = {
         "dev": [
