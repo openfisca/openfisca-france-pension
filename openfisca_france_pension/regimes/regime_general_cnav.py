@@ -773,7 +773,6 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
                 )
 
             pension_tous_regime_apres_minimum = pension_apres_minimum + autres_pensions
-            print(f"minimum_contributif_plafond_annuel: {minimum_contributif_plafond_annuel}")
             pension_brute = where(
                 (
                     (pension_avant_minimum > 0)

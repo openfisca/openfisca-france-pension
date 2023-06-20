@@ -119,8 +119,6 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
         label = "Points annuels hors emploi"
 
 
-
-
 class RegimeArrco(AbstractRegimeAgircArrco):
     name = "Régime complémentaire Arrco"
     variable_prefix = "arrco"

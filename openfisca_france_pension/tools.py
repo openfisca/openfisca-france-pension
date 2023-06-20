@@ -74,5 +74,6 @@ def add_vectorial_timedelta(date, years = 0, months = 0):
         + (date.astype('datetime64[D]') - date.astype('datetime64[M]'))
         )
 
+
 def year_(date):
     return date.astype('datetime64[Y]').astype('int') + 1970
