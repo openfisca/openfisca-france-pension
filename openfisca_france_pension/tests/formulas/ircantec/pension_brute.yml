@@ -1,0 +1,12 @@
+- name: pension_brute_ircantec
+  description: Pension brute Ircantec
+  period: 2021
+  relative_error_margin: 0.001
+  input:
+    categorie_salarie: public_non_titulaire
+    ircantec_points: 3000
+    ircantec_liquidation_date: 2021-12-31
+    regime_general_cnav_decote_trimestres: 0
+  output:
+    ircantec_pension_brute: 1461.15
+    ircantec_pension: 1461.15

@@ -1,0 +1,37 @@
+description: Nombre de trimestres par enfant accordé au motif de bonifications
+metadata:
+  order:
+  - nombre_trimestres_par_enfant_bonification
+documentation: |-
+  Lecture : Ce tableau renseigne, pour une date de légilsation donnée (la date d'effet, en ligne), le paramètre en fonction de l'année de naissance des enfants.
+  La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
+  Le paramètre était tout d'abord exprimé en pourcentage de la pension puis en nombre de trimestres.
+nombre_trimestres_par_enfant_bonification:
+  description: Nombre de trimestres par enfant accordé au motif de bonifications selon l'année de naissance de l'enfant
+  metadata:
+    description_en: Taking into accout children in bonus computation
+    reference:
+      1948-09-20:
+        title: loi 48-1450 du 20/09/1948
+        href: https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000684723/
+      2003-08-21:
+        title: Décret 2003-1306 du 26/12/2003
+        href: https://www.legifrance.gouv.fr/eli/decret/2003/12/26/FPPA0300175D/jo/texte
+    official_journal_date:
+      1948-09-20: "1948-09-21"
+      2003-08-21: "2003-12-30"
+    notes:
+      1948-09-20:
+      - title: La loi 48-1450 du 20 septembre 1948 instaure les bonifications pour enfant
+      2003-08-21:
+      - title: Le décret cité modifie le nombre de trimestres pour les assurés dont les enfants sont nés après 2004.
+  before_2004_01_01:
+    description: Né avant le 01/01/2004
+    values:
+      1948-09-20:
+        value: 4
+  after_2004_01_01:
+    description: Né après le 01/01/2004
+    values:
+      2003-08-21:
+        value: 2

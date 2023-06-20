@@ -9,8 +9,8 @@ part_fixe_1:
   metadata:
     ipp_csv_id: enf1
     unit:
-      2002-01-01: currency-EUR
-      1985-11-01: currency-FRF
+      2002-01-01: currency
+      1985-11-01: currency
 part_fixe_2:
   description: Part fixe 2
   values:
@@ -23,8 +23,8 @@ part_fixe_2:
   metadata:
     ipp_csv_id: enf2
     unit:
-      2002-01-01: currency-EUR
-      1985-11-01: currency-FRF
+      2002-01-01: currency
+      1985-11-01: currency
 part_fixe_3:
   description: Part fixe 3
   values:
@@ -37,8 +37,8 @@ part_fixe_3:
   metadata:
     ipp_csv_id: enf3
     unit:
-      2002-01-01: currency-EUR
-      1985-11-01: currency-FRF
+      2002-01-01: currency
+      1985-11-01: currency
 part_fixe_4:
   description: Part fixe 4
   values:
@@ -51,8 +51,8 @@ part_fixe_4:
   metadata:
     ipp_csv_id: enf4
     unit:
-      2002-01-01: currency-EUR
-      1985-11-01: currency-FRF
+      2002-01-01: currency
+      1985-11-01: currency
 taux_2:
   description: Taux 2
   values:

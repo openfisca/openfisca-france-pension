@@ -1,0 +1,25 @@
+description: Âge légal de départ en retraite pour les carrieres longues seuil 2, selon l'année de naissance
+before_1954_07_01:
+  description: Né avant le 01/07/1954
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 60
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 0
+after_1954_07_01:
+  description: Né après le 01/07/1954
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 60
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 0

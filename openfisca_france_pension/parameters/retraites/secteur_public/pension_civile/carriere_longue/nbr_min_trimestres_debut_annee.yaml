@@ -1,0 +1,6 @@
+description: Nombre de trimestres d'assurance requis en début de carrière pour les personnes ayant commencé à travailler en début d'année (né entre janvier et septembre)
+before_1944_01_01:
+  description: Avant 1944
+  values:
+    2003-01-01:
+      value: 5

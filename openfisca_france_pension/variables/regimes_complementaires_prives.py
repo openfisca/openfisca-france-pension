@@ -1,5 +1,4 @@
 """Abstract regimes definition."""
-import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.errors.variable_not_found_error import VariableNotFoundError
 from openfisca_france_pension.entities import Person
@@ -11,7 +10,7 @@ import numpy as np
 from openfisca_core.model_api import *
 from openfisca_core.variables import Variable
 from openfisca_france_pension.entities import Person
-from openfisca_france_pension.regimes.regime import AbstractRegimeComplementaire
+from openfisca_france_pension.regimes.regime import AbstractRegimeEnPoints
 from openfisca_france_pension.variables.hors_regime import TypesCategorieSalarie
 from openfisca_france_pension.regimes.regime_general_cnav import conversion_parametre_en_euros
 
@@ -23,7 +22,7 @@ class agirc_coefficient_de_minoration(Variable):
     label = 'Coefficient de minoration'
 
     def formula_1947_03_14(individu, period, parameters):
-        minoration = parameters(period).secteur_prive.regimes_complementaires.agirc.coefficient_de_minoration
+        minoration = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.coefficient_de_minoration
         coefficient_de_minoration_by_distance_aad_en_annee = minoration.coefficient_minoration_en_fonction_distance_age_annulation_decote_en_annee
         distances_age_annulation_decote_en_annee = np.asarray(list(coefficient_de_minoration_by_distance_aad_en_annee._children.keys())).astype('int')
         annees_de_decote = min_(max_((-individu('regime_general_cnav_decote_trimestres', period) / 4).astype(int), distances_age_annulation_decote_en_annee.min()), distances_age_annulation_decote_en_annee.max())
@@ -41,24 +40,21 @@ class agirc_cotisation(Variable):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.agirc_arrco.employeur
-        salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.agirc_arrco.salarie
+        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.agirc_arrco.employeur
+        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.agirc_arrco.salarie
         return (categorie_salarie == TypesCategorieSalarie.prive_cadre) * (employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale))
 
-    def formula(individu, period, parameters):
+    def formula_1948(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.employeur.agirc
-        salarie = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.salarie.agirc
-        agirc = employeur.copy()
+        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.employeur.agirc.copy()
+        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.salarie.agirc.copy()
+        agirc = employeur
         agirc.add_tax_scale(salarie)
-        points_gmp = parameters(period).secteur_prive.regimes_complementaires.agirc.gmp.garantie_minimale_points
-        try:
-            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
-        except ParameterNotFound:
-            return individu.empty_array()
+        points_gmp = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.gmp.garantie_minimale_points
+        salaire_de_reference = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         cotisation_gmp_annuelle = points_gmp * salaire_de_reference * taux_appel
         base_gmp_annuelle = cotisation_gmp_annuelle / agirc.rates[1]
         salaire_charniere_annuel = plafond_securite_sociale + base_gmp_annuelle
@@ -85,19 +81,19 @@ class agirc_majoration_pension(Variable):
 
     def formula_2019(individu, period, parameters):
         points_enfants = individu('agirc_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
-        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
 
     def formula_2012(individu, period, parameters):
         points_enfants = individu('agirc_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
-        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).retraites.secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
         return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
 
     def formula_1999(individu, period, parameters):
         points_enfants = individu('agirc_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
         return points_enfants * valeur_du_point
 
     def formula(individu, period, parameters):
@@ -153,14 +149,14 @@ class agirc_pension_brute(Variable):
     label = 'Pension brute'
 
     def formula_2019(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
         points = individu('agirc_points', period)
         points_minimum_garantis = individu('agirc_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
 
     def formula(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.point.valeur_point_en_euros
         points = individu('agirc_points', period)
         points_minimum_garantis = individu('agirc_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
@@ -201,26 +197,46 @@ class agirc_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        points_annuels_annee_courante = individu('agirc_points_annuels', period)
         points_annee_precedente = individu('agirc_points', last_year)
+        points_annuels_annee_courante = individu('agirc_points_annuels', period) + individu('agirc_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
         if all(points_annee_precedente == 0):
             return points_annuels_annee_courante
         points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annuels_annee_courante])
         return points
 
+class agirc_points_a_la_liquidation(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Points à la liquidation'
+
 class agirc_points_annuels(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Points'
+    label = 'Points annuels'
 
-    def formula(individu, period, parameters):
-        from openfisca_core.errors import ParameterNotFound
-        try:
-            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
-        except ParameterNotFound:
-            return individu.empty_array()
+    def formula(individu, period):
+        points_emploi_annuels = individu('agirc_points_emploi_annuels', period)
+        points_hors_emploi_annuels = individu('agirc_points_hors_emploi_annuels', period)
+        return points_emploi_annuels + points_hors_emploi_annuels
+
+class agirc_points_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels en emploi'
+
+    def formula_2019(individu, period, parameters):
+        agirc_arrco = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco
+        salaire_de_reference = agirc_arrco.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = agirc_arrco.prelevements_sociaux.taux_appel
+        cotisation = individu('agirc_cotisation', period)
+        return cotisation / salaire_de_reference / taux_appel
+
+    def formula_1947(individu, period, parameters):
+        salaire_de_reference = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_appel
         cotisation = individu('agirc_cotisation', period)
         return cotisation / salaire_de_reference / taux_appel
 
@@ -230,7 +246,7 @@ class agirc_points_enfants(Variable):
     definition_period = YEAR
     label = 'Points enfants'
 
-    def formula(individu, period, parameters):
+    def formula(individu, period):
         """
             Deux types de majorations pour enfants peuvent s'appliquer :
                 - pour enfant à charge au moment du départ en retraite
@@ -269,6 +285,12 @@ class agirc_points_enfants_nes_et_eleves(Variable):
         nombre_enfants_nes_et_eleves = individu('nombre_enfants', period)
         return points * ((nombre_enfants_nes_et_eleves == 3) * 0.08 + (nombre_enfants_nes_et_eleves == 4) * 0.12 + (nombre_enfants_nes_et_eleves == 5) * 0.16 + (nombre_enfants_nes_et_eleves == 6) * 0.2 + (nombre_enfants_nes_et_eleves >= 7) * 0.24)
 
+class agirc_points_hors_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels hors emploi'
+
 class agirc_points_minimum_garantis(Variable):
     value_type = float
     entity = Person
@@ -283,7 +305,7 @@ class arrco_coefficient_de_minoration(Variable):
     label = 'Coefficient de minoration'
 
     def formula_1957_05_15(individu, period, parameters):
-        minoration = parameters(period).secteur_prive.regimes_complementaires.arrco.coefficient_de_minoration
+        minoration = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.coefficient_de_minoration
         coefficient_de_minoration_by_distance_aad_en_annee = minoration.coefficient_minoration_en_fonction_distance_age_annulation_decote_en_annee
         distances_age_annulation_decote_en_annee = np.asarray(list(coefficient_de_minoration_by_distance_aad_en_annee._children.keys())).astype('int')
         annees_de_decote = min_(max_((-individu('regime_general_cnav_decote_trimestres', period) / 4).astype(int), distances_age_annulation_decote_en_annee.min()), distances_age_annulation_decote_en_annee.max())
@@ -301,21 +323,21 @@ class arrco_cotisation(Variable):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.employeur
-        salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.salarie
+        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.employeur
+        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.agirc_arrco.salarie
         return (categorie_salarie == TypesCategorieSalarie.prive_non_cadre) * (employeur.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale) + salarie.agirc_arrco.calc(salaire_de_base, factor=plafond_securite_sociale))
 
-    def formula(individu, period, parameters):
+    def formula_1962(individu, period, parameters):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.employeur
+        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.employeur
         employeur_non_cadre = employeur.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         employeur_cadre = employeur.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-        salarie = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.salarie
+        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.salarie
         salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, categorie_salarie == TypesCategorieSalarie.prive_cadre], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre])
+        return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, (categorie_salarie == TypesCategorieSalarie.prive_cadre) * (period.start.year >= 1976)], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre], default=0)
 
 class arrco_liquidation_date(Variable):
     value_type = date
@@ -332,19 +354,19 @@ class arrco_majoration_pension(Variable):
 
     def formula_2019(individu, period, parameters):
         points_enfants = individu('arrco_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
-        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
 
     def formula_2012(individu, period, parameters):
         points_enfants = individu('arrco_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
-        plafond = 1000 * valeur_du_point / parameters(2012).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        plafond = 1000 * valeur_du_point / parameters(2012).retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         return where(individu('date_de_naissance', period) >= np.datetime64('1951-08-02'), min_(points_enfants * valeur_du_point, plafond), points_enfants * valeur_du_point)
 
     def formula_1999(individu, period, parameters):
         points_enfants = individu('arrco_points_enfants', period)
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         return points_enfants * valeur_du_point
 
     def formula(individu, period, parameters):
@@ -400,14 +422,14 @@ class arrco_pension_brute(Variable):
     label = 'Pension brute'
 
     def formula_2019(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco.point.valeur_point_en_euros
         points = individu('arrco_points', period)
         points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
         return pension_brute
 
     def formula(individu, period, parameters):
-        valeur_du_point = parameters(period).secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
+        valeur_du_point = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.point.valeur_point_en_euros
         points = individu('arrco_points', period)
         points_minimum_garantis = individu('arrco_points_minimum_garantis', period)
         pension_brute = (points + points_minimum_garantis) * valeur_du_point
@@ -448,26 +470,46 @@ class arrco_points(Variable):
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         last_year = period.start.period('year').offset(-1)
-        points_annuels_annee_courante = individu('arrco_points_annuels', period)
         points_annee_precedente = individu('arrco_points', last_year)
+        points_annuels_annee_courante = individu('arrco_points_annuels', period) + individu('arrco_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
         if all(points_annee_precedente == 0):
             return points_annuels_annee_courante
         points = select([period.start.year > annee_de_liquidation, period.start.year <= annee_de_liquidation], [points_annee_precedente, points_annee_precedente + points_annuels_annee_courante])
         return points
 
+class arrco_points_a_la_liquidation(Variable):
+    value_type = float
+    entity = Person
+    definition_period = ETERNITY
+    label = 'Points à la liquidation'
+
 class arrco_points_annuels(Variable):
     value_type = float
     entity = Person
     definition_period = YEAR
-    label = 'Points'
+    label = 'Points annuels'
 
-    def formula(individu, period, parameters):
-        from openfisca_core.errors import ParameterNotFound
-        try:
-            salaire_de_reference = parameters(period).secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
-            taux_appel = parameters(period).secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
-        except ParameterNotFound:
-            return individu.empty_array()
+    def formula(individu, period):
+        points_emploi_annuels = individu('arrco_points_emploi_annuels', period)
+        points_hors_emploi_annuels = individu('arrco_points_hors_emploi_annuels', period)
+        return points_emploi_annuels + points_hors_emploi_annuels
+
+class arrco_points_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels en emploi'
+
+    def formula_2019(individu, period, parameters):
+        agirc_arrco = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc_arrco
+        salaire_de_reference = agirc_arrco.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = agirc_arrco.prelevements_sociaux.taux_appel
+        cotisation = individu('arrco_cotisation', period)
+        return cotisation / salaire_de_reference / taux_appel
+
+    def formula_1962(individu, period, parameters):
+        salaire_de_reference = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.salaire_de_reference.salaire_reference_en_euros
+        taux_appel = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_appel
         cotisation = individu('arrco_cotisation', period)
         return cotisation / salaire_de_reference / taux_appel
 
@@ -477,7 +519,7 @@ class arrco_points_enfants(Variable):
     definition_period = YEAR
     label = 'Points enfants'
 
-    def formula(individu, period, parameters):
+    def formula(individu, period):
         """
             Deux types de majorations pour enfants peuvent s'appliquer :
                 - pour enfant à charge au moment du départ en retraite
@@ -523,6 +565,12 @@ class arrco_points_enfants_nes_et_eleves(Variable):
 
     def formula_1945(individu, period, parameters):
         return individu.empty_array()
+
+class arrco_points_hors_emploi_annuels(Variable):
+    value_type = float
+    entity = Person
+    definition_period = YEAR
+    label = 'Points annuels hors emploi'
 
 class arrco_points_minimum_garantis(Variable):
     value_type = float

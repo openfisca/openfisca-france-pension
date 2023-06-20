@@ -212,9 +212,10 @@ def main(verbose = False):
                 )
             }
         for name in [
-            'regime_general_cnav',
-            'fonction_publique',
-            'regimes_complementaires_prives',
+            "regime_general_cnav",
+            "fonction_publique",
+            "regimes_complementaires_prives",
+            "regimes_complementaires_publics",
             ]
         }
 

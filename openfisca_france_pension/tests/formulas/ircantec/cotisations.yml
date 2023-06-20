@@ -1,0 +1,39 @@
+- name: ircantec_sous_plafond
+  description: Cotisations IRCANTEC lorsque l'assiette est < 1 PSS
+  period: 2021
+  absolute_error_margin: 0.03
+  input:
+    categorie_salarie: public_non_titulaire
+    regime_general_cnav_salaire_de_base: 3000 * 12
+  output:
+    ircantec_cotisation: 1.25 * (0.0224 + 0.0336) * 3000 * 12
+
+- name: ircantec_entre_1_et_8_pss
+  description: Cotisations IRCANTEC lorsque l'assiette est entre 1 et 8 PSS
+  period: 2021
+  absolute_error_margin: 0.03
+  input:
+    categorie_salarie: public_non_titulaire
+    regime_general_cnav_salaire_de_base: 5000 * 12
+  output:
+    ircantec_cotisation: 1.25 * ((0.0224 + 0.0336) * 3428 + (0.0556 + 0.1004) * (5000 - 3428)) * 12
+
+- name: ircantec_superieur_a_8_pss
+  description: Cotisations IRCANTEC lorsque l'assiette est > 8 PSS
+  period: 2021
+  absolute_error_margin: 0.03
+  input:
+    categorie_salarie: public_non_titulaire
+    regime_general_cnav_salaire_de_base: 30000 * 12
+  output:
+    ircantec_cotisation: 1.25 *((0.0224 + 0.0336) * 3428 + (0.0556 + 0.1004) * (27424-3428)) * 12
+
+- name: ircantec_absente
+  description: Cotisations IRCANTEC pour un salarié du privé (donc, zéro)
+  period: 2021
+  absolute_error_margin: 0.03
+  input:
+    categorie_salarie: prive_non_cadre
+    regime_general_cnav_salaire_de_base: 30000
+  output:
+    ircantec_cotisation: 0

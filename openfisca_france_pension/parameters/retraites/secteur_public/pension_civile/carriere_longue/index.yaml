@@ -1,0 +1,15 @@
+description: Retraites anticipées au titre des carrières longues
+metadata:
+  description_en: Early retirement for long career
+  order:
+  - aod_seuil_15
+  - aod_seuil_2
+  - aod_seuil_1
+  - age_seuil_15
+  - age_seuil_2
+  - age_seuil_1
+  - nbr_min_trimestres_fin_annee
+  - nbr_min_trimestres_debut_annee
+  - duree_assurance_seuil_15
+  - duree_assurance_seuil_2
+  - duree_assurance_seuil_1

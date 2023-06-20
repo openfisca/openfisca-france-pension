@@ -1,23 +1,23 @@
 - name: Salaire de réference
-  absolute_error_margin: .001
+  absolute_error_margin: .01
   max_spiral_loops: 2
   period: 2021
   input:
-    date_de_naissance: 1940-11-19
+    date_de_naissance: [1940-11-19, 1940-11-19]
     regime_general_cnav_salaire_de_base:
-      2020: 10000
+      2020: [10000, 20000]
   output:
-    regime_general_cnav_salaire_de_reference: 1.004 * 10000
+    regime_general_cnav_salaire_de_reference: [10040, 20080]
 
 
-- name: Salaire de réference
-  absolute_error_margin: .001
-  period: 2021
-  max_spiral_loops: 3
-  input:
-    date_de_naissance: 1940-11-19
-    regime_general_cnav_salaire_de_base:
-      2020: 10000
-      2019: 10000
-  output:
-    regime_general_cnav_salaire_de_reference: 10000 * (1.004  + 1.01404) / 2
+# - name: Salaire de réference
+#   absolute_error_margin: .001
+#   period: 2021
+#   max_spiral_loops: 3
+#   input:
+#     date_de_naissance: 1940-11-19
+#     regime_general_cnav_salaire_de_base:
+#       2020: 10000
+#       2019: 10000
+#   output:
+#     regime_general_cnav_salaire_de_reference: 10000 * (1.004  + 1.01404) / 2

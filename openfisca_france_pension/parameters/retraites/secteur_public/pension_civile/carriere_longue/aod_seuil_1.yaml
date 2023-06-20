@@ -1,0 +1,145 @@
+description: Âge légal de départ en retraite pour les carrieres longues seuil 1, selon l'année de naissance
+before_1953_07_01:
+  description: Né avant le 01/07/1953
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 56
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 0
+after_1953_07_01:
+  description: Né après le 01/07/1953
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 56
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 0
+after_1954_07_01:
+  description: Né après le 01/07/1954
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 56
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 0
+after_1955_07_01:
+  description: Né après le 01/07/1955
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 56
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 4
+after_1956_07_01:
+  description: Né après le 01/07/1956
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 56
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 8
+after_1957_07_01:
+  description: Né après le 01/07/1957
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 57
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 0
+after_1958_07_01:
+  description: Né après le 01/07/1958
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 57
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 4
+after_1959_07_01:
+  description: Né après le 01/07/1959
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 57
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 8
+after_1960_07_01:
+  description: Né après le 01/07/1960
+  metadata:
+    order:
+    - annee
+    - mois
+  annee:
+    description: Année
+    values:
+      2003-01-01:
+        value: 58
+  mois:
+    description: Mois
+    values:
+      2003-01-01:
+        value: 0

@@ -1,0 +1,9 @@
+description: Minimum garanti
+metadata:
+  description_en: Civil pension minimum
+  order:
+  - valeur_indice_maj
+  - part_valeur_indice_majore
+  - points_plus_15_ans
+  - points_moins_40_ans
+  - annee_moins_40_ans

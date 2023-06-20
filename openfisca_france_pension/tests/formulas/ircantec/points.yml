@@ -1,0 +1,10 @@
+- name: points_ircantec
+  description: Points IRCANTEC https://www.ircantec.retraites.fr/actif/acquisition-droits/activite-professionnelle/calcul-droits-cotisation-demarches
+  period: 2018
+  relative_error_margin: 0.001
+  input:
+    categorie_salarie: public_non_titulaire
+    regime_general_cnav_salaire_de_base: 42500
+  output:
+    ircantec_cotisation: 3321 # 2657 * 1.25
+    ircantec_points_annuels: 537

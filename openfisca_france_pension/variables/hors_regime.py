@@ -6,6 +6,7 @@ import numpy as np
 
 from openfisca_core.model_api import *
 from openfisca_france_pension.entities import Person
+from openfisca_france_pension.regimes import REGIMES_DE_BASE
 
 
 class TypesCategorieSalarie(Enum):
@@ -20,7 +21,7 @@ class TypesCategorieSalarie(Enum):
     non_pertinent = 'non_pertinent'  # Ou autre dont polycotisant
 
 class TypesRaisonDepartTauxPleinAnticipe(Enum):
-    __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant famille travailleur_manuel'
+    __order__ = 'non_concerne handicape ancien_deporte inapte ancien_combattant famille travailleur_manuel carriere_longue'
     non_concerne = "Non concerné"
     handicape = "Handicapé"
     ancien_deporte = "Ancien déporté ou interné politique"
@@ -28,6 +29,7 @@ class TypesRaisonDepartTauxPleinAnticipe(Enum):
     ancien_combattant = "Ancien combattant"
     famille = "Raison familiale"
     travailleur_manuel = "Travailleur manuel ou mère de famille ouvrière"
+    carriere_longue = "Carrière longue"
 
 class TypesStatutDuCotisant(Enum):
     # Guide EIC 2013 section 3.4.1 page 28
@@ -88,7 +90,8 @@ class duree_assurance_cotisee_tous_regimes(Variable):
     def formula(individu, period):
         return (
             individu('regime_general_cnav_duree_assurance_personnellement_cotisee', period)
-            + individu('fonction_publique_duree_de_service', period)
+            + individu('fonction_publique_duree_de_service_effective', period)
+            + individu('cnracl_duree_de_service_effective', period)
             )
 
 
@@ -125,11 +128,10 @@ class duree_assurance_tous_regimes_annuelle(Variable):
     label = "Durée d'assurance tous régimes (trimestres validés tous régimes confondus)"
 
     def formula(individu, period):
-        regimes_de_base = ['regime_general_cnav', 'fonction_publique']
         duree_assurance_hors_majoration =  np.clip(
             sum(
                 individu(f'{regime}_duree_assurance_annuelle', period)
-                for regime in regimes_de_base
+                for regime in REGIMES_DE_BASE
                 ),
             0,
             4
@@ -140,7 +142,7 @@ class duree_assurance_tous_regimes_annuelle(Variable):
                 == period.start.year
                 )
             * individu(f'{regime}_majoration_duree_assurance', period)
-            for regime in regimes_de_base
+            for regime in REGIMES_DE_BASE
             )
         return duree_assurance_hors_majoration + majoration_duree_assurance
 
@@ -190,5 +192,5 @@ class raison_depart_taux_plein_anticipe(Variable):
     possible_values = TypesRaisonDepartTauxPleinAnticipe
     default_value = TypesRaisonDepartTauxPleinAnticipe.non_concerne
     entity = Person
-    label = "Raison du départ anticipé au taux plein "
+    label = "Raison du départ anticipé au taux plein"
     definition_period = ETERNITY

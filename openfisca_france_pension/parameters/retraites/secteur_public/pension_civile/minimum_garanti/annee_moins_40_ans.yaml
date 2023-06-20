@@ -1,0 +1,69 @@
+description: Nombre de trimestres enentre trente et quarante ans de service pris en compte dans le calcul du minimum garanti
+metadata:
+  order:
+  - before_2004_01_01
+  - after_2004_01_01
+  - after_2005_01_01
+  - after_2006_01_01
+  - after_2007_01_01
+  - after_2008_01_01
+  - after_2009_01_01
+  - after_2010_01_01
+  - after_2011_01_01
+  - after_2012_01_01
+  - after_2013_01_01
+before_2004_01_01:
+  description: Pension liquidée avant le 01/01/2004
+  values:
+    1976-01-01:
+      value: 100
+after_2004_01_01:
+  description: Pension liquidée après le 01/01/2004
+  values:
+    2004-01-01:
+      value: 102
+after_2005_01_01:
+  description: Pension liquidée après le 01/01/2005
+  values:
+    2005-01-01:
+      value: 104
+after_2006_01_01:
+  description: Pension liquidée après le 01/01/2006
+  values:
+    2006-01-01:
+      value: 106
+after_2007_01_01:
+  description: Pension liquidée après le 01/01/2007
+  values:
+    2007-01-01:
+      value: 108
+after_2008_01_01:
+  description: Pension liquidée après le 01/01/2008
+  values:
+    2008-01-01:
+      value: 110
+after_2009_01_01:
+  description: Pension liquidée après le 01/01/2009
+  values:
+    2009-01-01:
+      value: 112
+after_2010_01_01:
+  description: Pension liquidée après le 01/01/2010
+  values:
+    2010-01-01:
+      value: 114
+after_2011_01_01:
+  description: Pension liquidée après le 01/01/2011
+  values:
+    2011-01-01:
+      value: 116
+after_2012_01_01:
+  description: Pension liquidée après le 01/01/2012
+  values:
+    2012-01-01:
+      value: 118
+after_2013_01_01:
+  description: Pension liquidée après le 01/01/2013
+  values:
+    2013-01-01:
+      value: 120

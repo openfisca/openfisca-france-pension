@@ -4,7 +4,7 @@ from openfisca_core.entities import build_entity
 Household = build_entity(
     key = "household",
     plural = "households",
-    label = u'All the people in a family or group who live together in the same place.',
+    label = 'All the people in a family or group who live together in the same place.',
     doc = '''
     Household is an example of a group entity.
     A group entity contains one or more individual·s.
@@ -23,16 +23,16 @@ Household = build_entity(
         {
             'key': 'parent',
             'plural': 'parents',
-            'label': u'Parents',
+            'label': 'Parents',
             'max': 2,
             'subroles': ['first_parent', 'second_parent'],
-            'doc': u'The one or two adults in charge of the household.'
+            'doc': 'The one or two adults in charge of the household.'
             },
         {
             'key': 'child',
             'plural': 'children',
-            'label': u'Child',
-            'doc': u'Other individuals living in the household.'
+            'label': 'Child',
+            'doc': 'Other individuals living in the household.'
             }
         ]
     )
@@ -40,7 +40,7 @@ Household = build_entity(
 Person = build_entity(
     key = "person",
     plural = "persons",
-    label = u'An individual. The minimal legal entity on which a legislation might be applied.',
+    label = 'An individual. The minimal legal entity on which a legislation might be applied.',
     doc = '''
 
     Variables like 'salary' and 'income_tax' are usually defined for the entity 'Person'.

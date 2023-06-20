@@ -185,8 +185,8 @@ plafond_securite_sociale_mensuel:
   metadata:
     ipp_csv_id: pss_m
     unit:
-      2002-01-01: currency-EUR
-      1946-07-01: currency-FRF
+      2002-01-01: currency
+      1946-07-01: currency
 plafond_securite_sociale_annuel:
   description: Plafond de la Sécurité sociale (annuel)
   values:
@@ -357,8 +357,8 @@ plafond_securite_sociale_annuel:
   metadata:
     ipp_csv_id: pss_a
     unit:
-      2002-01-01: currency-EUR
-      1930-07-01: currency-FRF
+      2002-01-01: currency
+      1930-07-01: currency
 metadata:
   order:
   - plafond_securite_sociale_mensuel

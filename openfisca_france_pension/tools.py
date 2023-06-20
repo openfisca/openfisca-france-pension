@@ -66,3 +66,14 @@ def count_calendar_quarters(start_date, stop_date):
 
     d = (stop_date_year - start_date_year) * 12 + (stop_date_month - start_date_month) - 1 * (stop_date_day < start_date_day)
     return d // 3
+
+
+def add_vectorial_timedelta(date, years = 0, months = 0):
+    return (
+        date.astype('datetime64[M]') + np.array(12 * years + months, dtype = "int")
+        + (date.astype('datetime64[D]') - date.astype('datetime64[M]'))
+        )
+
+
+def year_(date):
+    return date.astype('datetime64[Y]').astype('int') + 1970

@@ -58,8 +58,8 @@ La durée de service annuelle est la somme de
 
 #### La majoration de durée de service
 
-La durée de service est majorée par la bonification du cinquième pour les supers actifs
-et de la majoration de durée de service (`majoration_duree_de_service`)
+La durée de service effective est majorée par la bonification du cinquième pour les supers actifs
+et de la bonification du code des pensions civiles et militaires `bonification_cpcm` (elles entrent toutes les deux dans le calcul du coefficient de proratisation).
 
 ### La durée d'assurance
 
@@ -75,6 +75,8 @@ durées d'assurance annuelles (`duree_assurance_annuelle`) qui est la sommes éc
 - de la durée d'assurance rachetée annuelle duree_assurance_rachetée_annuelle (prise égale à la durée de service rachetée annuelle)
 - et de la durée d'assurance du service national annuelle (`duree_assurance_service_national_annuelle`)
 
+En pratique on injecte directement la durée d'assurance annuelle dans la fonction publique.
+
 #### La majoration de durée d'assurance
 
-La majoration de durée d'assurance totale est la somme de la majoration de durée d'assurance lié à la présence d'enfants (`majoration_duree_assurance_enfant`) et les autres majorations de durées d'assurance (`majoration_duree_assurance_autre`)
+La majoration de durée d'assurance totale est la somme de la majoration de durée d'assurance lié à la présence d'enfants (`majoration_duree_assurance_enfant`) et les autres majorations de durées d'assurance (`majoration_duree_assurance_autre`).
