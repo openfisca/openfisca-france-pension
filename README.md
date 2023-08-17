@@ -32,15 +32,19 @@ il vaut mieux suivre la procédure d'installation avec `conda`.
 
 Les étapes à suivre sont les suivantes:
 - installer une distribution `conda` comme [`anaconda`](https://www.anaconda.com/)
-- Procéder à l'installation via des dépendances via le fichier `environment.yml` :
+- procéder à l'installation via des dépendances via le fichier `environment.yml` :
 ```shell
 conda env create -f environment.yml
 ```
-- Procéder à l'installation du paquet :
+- activer l'environnement que l'on vient de créer
+```shell
+conda activate openfisca-france-pension
+```
+- procéder à l'installation du paquet :
 ```shell
 pip install -e .
 ```
-- Tester si tout a bien fonctionné :
+- tester si tout a bien fonctionné :
 ```shell
 openfisca test openfisca_france_pension/tests/
 ```
