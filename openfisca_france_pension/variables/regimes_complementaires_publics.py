@@ -159,7 +159,7 @@ class ircantec_points(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('ircantec_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         points_annee_precedente = individu('ircantec_points', last_year)
         points_annuels_annee_courante = individu('ircantec_points_annuels', period) + individu('ircantec_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
         if all(points_annee_precedente == 0):

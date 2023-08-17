@@ -243,7 +243,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
         default_value = date(2250, 12, 31)
 
         def formula(individu, period):
-            last_year = period.start.period('year').offset(-1)
+            last_year = period.last_year
             nombre_annees_actif_annee_courante = individu('regime_name_nombre_annees_actif', period)
             date_actif_annee_precedente = individu('regime_name_date_quinze_ans_actif', last_year)
             date = select(
@@ -269,7 +269,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
         default_value = date(2250, 12, 31)
 
         def formula(individu, period):
-            last_year = period.start.period('year').offset(-1)
+            last_year = period.last_year
             nombre_annees_service_annee_courante = individu('regime_name_duree_de_service_effective', period)
             date_service_annee_precedente = individu('regime_name_date_quinze_ans_service', last_year)
             date = select(
@@ -866,7 +866,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
             annee_de_liquidation = individu('regime_name_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
             if all(period.start.year > annee_de_liquidation):
                 return individu.empty_array()
-            last_year = period.start.period('year').offset(-1)
+            last_year = period.last_year
             nombre_annees_actif_annee_precedente = individu('regime_name_nombre_annees_actif', last_year)
             categorie_activite = individu('regime_name_categorie_activite', period)
             return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)

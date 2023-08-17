@@ -196,7 +196,7 @@ class agirc_points(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('agirc_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         points_annee_precedente = individu('agirc_points', last_year)
         points_annuels_annee_courante = individu('agirc_points_annuels', period) + individu('agirc_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
         if all(points_annee_precedente == 0):
@@ -469,7 +469,7 @@ class arrco_points(Variable):
 
     def formula(individu, period, parameters):
         annee_de_liquidation = individu('arrco_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         points_annee_precedente = individu('arrco_points', last_year)
         points_annuels_annee_courante = individu('arrco_points_annuels', period) + individu('arrco_points_a_la_liquidation', period) * (annee_de_liquidation == period.start.year)
         if all(points_annee_precedente == 0):

@@ -549,7 +549,7 @@ class regime_general_cnav_majoration_pension_au_31_decembre(Variable):
         annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         majoration_pension_au_31_decembre_annee_precedente = individu('regime_general_cnav_majoration_pension_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_prive.regime_general_cnav.revalorisation_pension_au_31_decembre
         majoration_pension = individu('regime_general_cnav_majoration_pension', period)
@@ -670,7 +670,7 @@ class regime_general_cnav_pension_brute_au_31_decembre(Variable):
         annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         pension_brute_au_31_decembre_annee_precedente = individu('regime_general_cnav_pension_brute_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_prive.regime_general_cnav.revalorisation_pension_au_31_decembre
         pension_brute = individu('regime_general_cnav_pension_brute', period)
@@ -769,7 +769,7 @@ class regime_general_cnav_pension_servie(Variable):
         annee_de_liquidation = individu('regime_general_cnav_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         pension_au_31_decembre_annee_precedente = individu('regime_general_cnav_pension_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_prive.regime_general_cnav.revalarisation_pension_servie
         pension = individu('regime_general_cnav_pension_au_31_decembre', period)
