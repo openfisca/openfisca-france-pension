@@ -181,7 +181,7 @@ class cnracl_date_quinze_ans_actif(Variable):
     default_value = date(2250, 12, 31)
 
     def formula(individu, period):
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         nombre_annees_actif_annee_courante = individu('cnracl_nombre_annees_actif', period)
         date_actif_annee_precedente = individu('cnracl_date_quinze_ans_actif', last_year)
         date = select([date_actif_annee_precedente < np.datetime64('2250-12-31'), (nombre_annees_actif_annee_courante >= 15) & (date_actif_annee_precedente == np.datetime64('2250-12-31')), (nombre_annees_actif_annee_courante < 15) & (date_actif_annee_precedente == np.datetime64('2250-12-31'))], [date_actif_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
@@ -195,7 +195,7 @@ class cnracl_date_quinze_ans_service(Variable):
     default_value = date(2250, 12, 31)
 
     def formula(individu, period):
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         nombre_annees_service_annee_courante = individu('cnracl_duree_de_service_effective', period)
         date_service_annee_precedente = individu('cnracl_date_quinze_ans_service', last_year)
         date = select([date_service_annee_precedente < np.datetime64('2250-12-31'), (nombre_annees_service_annee_courante >= 60) * (date_service_annee_precedente == np.datetime64('2250-12-31')), (nombre_annees_service_annee_courante < 60) * (date_service_annee_precedente == np.datetime64('2250-12-31'))], [date_service_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
@@ -587,7 +587,7 @@ class cnracl_majoration_pension_au_31_decembre(Variable):
         annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         majoration_pension_au_31_decembre_annee_precedente = individu('cnracl_majoration_pension_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         majoration_pension = individu('cnracl_majoration_pension', period)
@@ -636,7 +636,7 @@ class cnracl_nombre_annees_actif(Variable):
         annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(period.start.year > annee_de_liquidation):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         nombre_annees_actif_annee_precedente = individu('cnracl_nombre_annees_actif', last_year)
         categorie_activite = individu('cnracl_categorie_activite', period)
         return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
@@ -767,7 +767,7 @@ class cnracl_pension_brute_au_31_decembre(Variable):
         annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         pension_brute_au_31_decembre_annee_precedente = individu('cnracl_pension_brute_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         pension_brute = individu('cnracl_pension_brute', period)
@@ -783,7 +783,7 @@ class cnracl_pension_servie(Variable):
         annee_de_liquidation = individu('cnracl_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         pension_au_31_decembre_annee_precedente = individu('cnracl_pension_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalarisation_pension_servie
         pension = individu('cnracl_pension_au_31_decembre', period)
@@ -1042,7 +1042,7 @@ class fonction_publique_date_quinze_ans_actif(Variable):
     default_value = date(2250, 12, 31)
 
     def formula(individu, period):
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         nombre_annees_actif_annee_courante = individu('fonction_publique_nombre_annees_actif', period)
         date_actif_annee_precedente = individu('fonction_publique_date_quinze_ans_actif', last_year)
         date = select([date_actif_annee_precedente < np.datetime64('2250-12-31'), (nombre_annees_actif_annee_courante >= 15) & (date_actif_annee_precedente == np.datetime64('2250-12-31')), (nombre_annees_actif_annee_courante < 15) & (date_actif_annee_precedente == np.datetime64('2250-12-31'))], [date_actif_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
@@ -1056,7 +1056,7 @@ class fonction_publique_date_quinze_ans_service(Variable):
     default_value = date(2250, 12, 31)
 
     def formula(individu, period):
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         nombre_annees_service_annee_courante = individu('fonction_publique_duree_de_service_effective', period)
         date_service_annee_precedente = individu('fonction_publique_date_quinze_ans_service', last_year)
         date = select([date_service_annee_precedente < np.datetime64('2250-12-31'), (nombre_annees_service_annee_courante >= 60) * (date_service_annee_precedente == np.datetime64('2250-12-31')), (nombre_annees_service_annee_courante < 60) * (date_service_annee_precedente == np.datetime64('2250-12-31'))], [date_service_annee_precedente, np.datetime64(str(period.start)), np.datetime64('2250-12-31')], default=np.datetime64('2250-12-31'))
@@ -1448,7 +1448,7 @@ class fonction_publique_majoration_pension_au_31_decembre(Variable):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         majoration_pension_au_31_decembre_annee_precedente = individu('fonction_publique_majoration_pension_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         majoration_pension = individu('fonction_publique_majoration_pension', period)
@@ -1497,7 +1497,7 @@ class fonction_publique_nombre_annees_actif(Variable):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(period.start.year > annee_de_liquidation):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         nombre_annees_actif_annee_precedente = individu('fonction_publique_nombre_annees_actif', last_year)
         categorie_activite = individu('fonction_publique_categorie_activite', period)
         return nombre_annees_actif_annee_precedente + 1 * (categorie_activite == TypesCategorieActivite.actif)
@@ -1628,7 +1628,7 @@ class fonction_publique_pension_brute_au_31_decembre(Variable):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(period.start.year < annee_de_liquidation):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         pension_brute_au_31_decembre_annee_precedente = individu('fonction_publique_pension_brute_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalorisation_pension_au_31_decembre
         pension_brute = individu('fonction_publique_pension_brute', period)
@@ -1644,7 +1644,7 @@ class fonction_publique_pension_servie(Variable):
         annee_de_liquidation = individu('fonction_publique_liquidation_date', period).astype('datetime64[Y]').astype(int) + 1970
         if all(annee_de_liquidation > period.start.year):
             return individu.empty_array()
-        last_year = period.start.period('year').offset(-1)
+        last_year = period.last_year
         pension_au_31_decembre_annee_precedente = individu('fonction_publique_pension_au_31_decembre', last_year)
         revalorisation = parameters(period).retraites.secteur_public.pension_civile.revalarisation_pension_servie
         pension = individu('fonction_publique_pension_au_31_decembre', period)
