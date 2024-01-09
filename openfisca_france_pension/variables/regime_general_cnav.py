@@ -330,7 +330,7 @@ class regime_general_cnav_duree_assurance_avpf_annuelle(Variable):
 
     def formula_1972(individu, period, parameters):
         avpf = individu('regime_general_cnav_avpf', period)
-        smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_brut_mensuel * 3.0
+        smic_trimestriel = parameters(period).marche_travail.salaire_minimum.smic.smic_b_mensuel * 3.0
         avpf = avpf * conversion_en_monnaie_courante(period)
         return np.clip((avpf / smic_trimestriel).astype(int), 0, 4)
 
