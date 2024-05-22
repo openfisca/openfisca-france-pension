@@ -21,8 +21,7 @@ La durée d'assurance (sous entendue majorée) est égale à la somme de:
 
 La durée d'assurance validée (`duree_assurance_validee`) est la somme des
 durées d'assurance annuelles (`duree_assurance_annuelle`) qui sont les sommes écrêtées à 4 trimestres par an:
-- des durées d'assu
-- de rance cotisées annuelles  (`duree_assurance_cotisee_annuelle)`
+- des durées d'assurance cotisées annuelles  (`duree_assurance_cotisee_annuelle)`
 - et des périodes assimilées annuelles  (`duree_assurance_periode_assimilee_annuelle`)
 
 La durée d'assurance cotisée est la somme de
