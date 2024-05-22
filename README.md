@@ -48,4 +48,4 @@ pip install -e .
 openfisca test openfisca_france_pension/tests/
 ```
 
-La modélisation à proprement parler est décrite [ici](./doc/modelisation.md)
+La modélisation à proprement parler est décrite [ici](./doc/modelisation.md).
