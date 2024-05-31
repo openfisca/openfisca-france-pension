@@ -42,10 +42,10 @@ setup(
             "flake8-print",
             "pycodestyle >=2.6.0",
             ],
-        "scenario": [
-            "OpenFisca-Survey-Manager >=0.46.6,<1.0.0",
-            "pyreadr>=0.4.2,<1.0.0",
-            ]
+        # "scenario": [
+        #     # "OpenFisca-Survey-Manager >=0.46.6,<1.0.0",
+        #     # "pyreadr>=0.4.2,<1.0.0",
+        #     ]
         },
     packages=find_packages(),
     )
