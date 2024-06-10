@@ -31,6 +31,7 @@ setup(
     install_requires = [
         "bottleneck >=1.3.2,<=2.0.0",
         "OpenFisca-Core @ git+https://github.com/openfisca/openfisca-core@pension-rebased#egg=openfisca-core",
+        # "OpenFisca-Core >= 41.1,<42",
         "numba>=0.54,<1.0.0",
         "pandas>=2.0,<3.0",
         ],
@@ -42,10 +43,10 @@ setup(
             "flake8-print",
             "pycodestyle >=2.6.0",
             ],
-        "scenario": [
-            "OpenFisca-Survey-Manager >=0.46.6,<1.0.0",
-            "pyreadr>=0.4.2,<1.0.0",
-            ]
+        # "scenario": [
+        #     # "OpenFisca-Survey-Manager >=0.46.6,<1.0.0",
+        #     # "pyreadr>=0.4.2,<1.0.0",
+        #     ]
         },
     packages=find_packages(),
     )
