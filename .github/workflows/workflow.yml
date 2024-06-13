@@ -1,4 +1,4 @@
-name: OpenFisca France
+name: OpenFisca France Pension
 
 on:
   push:
@@ -290,7 +290,7 @@ jobs:
           path: conda-build-tmp
       - name: Install with conda
         run: |
-          conda install -c ./conda-build-tmp/noarch/openfisca-france-pension-dev-${{ env.PACKAGE_VERSION }}-py_0.tar.bz2  openfisca-france-dev
+          conda install -c ./conda-build-tmp/noarch/openfisca-france-pension-dev-${{ env.PACKAGE_VERSION }}-py_0.tar.bz2  openfisca-france-pension-dev
       - name: openfisca test
         run: openfisca test --country-package openfisca_france_pension tests
 
