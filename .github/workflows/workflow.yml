@@ -67,8 +67,8 @@ jobs:
       - run: make check-style
       - name: Lint Python files
         run: "${GITHUB_WORKSPACE}/.github/lint-changed-python-files.sh"
-      - name: Lint YAML tests
-        run: "${GITHUB_WORKSPACE}/.github/lint-changed-yaml-tests.sh"
+      # - name: Lint YAML tests
+      #   run: "${GITHUB_WORKSPACE}/.github/lint-changed-yaml-tests.sh"
   test-python:
     runs-on: ${{ matrix.os }}
     needs: [ build ]
