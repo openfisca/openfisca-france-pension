@@ -11,15 +11,12 @@ deps:
 	pip install --upgrade pip twine wheel
 
 install: deps
-	@# Install OpenFisca-Extension-Template for development.
-	@# `make install` installs the editable version of OpenFisca-France.
+	@# `make install` installs the editable version of OpenFisca-France-Pension.
 	@# This allows contributors to test as they code.
 	pip install --editable .[dev] --upgrade
 
 build: clean deps
-	@# Install OpenFisca-Extension-Template for deployment and publishing.
 	@# `make build` allows us to be be sure tests are run against the packaged version
-	@# of OpenFisca-Extension-Template, the same we put in the hands of users and reusers.
 	python setup.py bdist_wheel
 	find dist -name "*.whl" -exec pip install --upgrade {}[dev] \;
 
@@ -37,4 +34,4 @@ check-style:
 	flake8 `git ls-files | grep "\.py$$" | grep -v openfisca_france_pension/variables/`
 
 test: clean check-syntax-errors check-style
-	openfisca test --country-package openfisca_france_pension openfisca_france_pension/tests
+	openfisca test --country-package openfisca_france_pension tests
