@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.6 [6](https://github.com/openfisca/openfisca-france-pension/pull/6)
+## 0.0.3 [6](https://github.com/openfisca/openfisca-france-pension/pull/6)
 
 * Amélioration technique.
 * Détails :
