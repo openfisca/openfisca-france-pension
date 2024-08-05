@@ -1,0 +1,30 @@
+description: Taux employeur des cotisations de sécurité sociale (SS) des journalistes pigistes (1964-1974) pour les allocations familiales, sous le plafond de la sécurité sociale (PSS)
+values:
+  1964-01-01:
+    value: 0.108
+  1967-10-01:
+    value: 0.092
+  1971-01-01:
+    value: 0.084
+  1974-01-01:
+    value: 0.072
+metadata:
+  short_label: Taux employeur
+  last_value_still_valid_on: "1974-01-01"
+  label_en: SSCs for freelance journalists (1964-1974)
+  ipp_csv_id: fam_j_p_0_1
+  unit: /1
+  reference:
+    1964-01-01:
+      title: Arrêté du 09/12/1963
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+    1971-01-01:
+      title: Arrêté du 30/12/1970
+    1974-01-01:
+      title: Arrêté du 15/01/1974
+  official_journal_date:
+    1964-01-01: "1963-12-22"
+    1967-10-01: "1967-10-01"
+    1971-01-01: "1971-01-15"
+    1974-01-01: "1974-02-07"

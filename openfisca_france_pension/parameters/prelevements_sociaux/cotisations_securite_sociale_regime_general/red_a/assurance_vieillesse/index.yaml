@@ -1,0 +1,6 @@
+description: Cotisations de sécurité sociale (SS) des artistes du spectacle pour l'assurance vieillesse
+metadata:
+  short_label: Branche assurance vieillesse
+  label_en: SSCs for artists
+  order:
+  - sous_pss

@@ -1,0 +1,28 @@
+description: Taux employeur des cotisations de sécurité sociale (SS) des professions médicales à temps partiel, pour l'assurance maladie, sous le plafond de la sécurité sociale (PSS)
+values:
+  1967-10-01:
+    value: 0.0605
+  1969-01-01:
+    value: 0.0665
+  1971-01-01:
+    value: 0.0732
+metadata:
+  short_label: Taux employeur
+  last_value_still_valid_on: "1971-01-01"
+  label_en: SSCs for physicians working part-time
+  ipp_csv_id: mmid_m_i65_s_0_1
+  unit: /1
+  reference:
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+    1969-01-01:
+      title: Arrêté du 31/12/1968
+    1971-01-01:
+      title: Arrêté du 30/12/1970
+  official_journal_date:
+    1967-10-01: "1967-10-01"
+    1969-01-01: "1969-01-01"
+    1971-01-01: "1971-01-15"
+  notes:
+    1967-10-01:
+    - title: Il n'y a pas de distinctions d'âge pour les cotisations mmid.

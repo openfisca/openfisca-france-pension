@@ -171,11 +171,11 @@ class RegimeArrco(AbstractRegimeAgircArrco):
             categorie_salarie = individu("categorie_salarie", period)
             salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            employeur = parameters(period).regime_name.prelevements_sociaux.employeur
+            employeur = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.employeur
 
             employeur_non_cadre = employeur.noncadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
             employeur_cadre = employeur.cadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
-            salarie = parameters(period).regime_name.prelevements_sociaux.salarie
+            salarie = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.salarie
             salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
 
             salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
@@ -312,8 +312,8 @@ class RegimeAgirc(AbstractRegimeAgircArrco):
             categorie_salarie = individu("categorie_salarie", period)
             salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            employeur = parameters(period).regime_name.prelevements_sociaux.employeur.agirc.copy()
-            salarie = parameters(period).regime_name.prelevements_sociaux.salarie.agirc.copy()
+            employeur = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.avant81.employeur.agirc.copy()
+            salarie = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.avant81.salarie.agirc.copy()
 
             agirc = employeur
             agirc.add_tax_scale(salarie)

@@ -1,0 +1,6 @@
+description: Cotisations employeurs pour l'Association pour la gestion de la structure financière (ASF)
+metadata:
+  short_label: Employeur
+  label_en: Employer contributions to the association for the mangement of the financial structure ASF
+  order:
+  - asf

@@ -1,0 +1,7 @@
+description: Réduction du temps de travail de 10% des allègements Robien des cotisations de Sécurité sociale (SS)
+metadata:
+  short_label: Réduction du temps de travail de 10%
+  label_en: Robien reductions
+  order:
+  - taux_annee1
+  - taux_6annees_suivantes

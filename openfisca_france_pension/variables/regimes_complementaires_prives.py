@@ -48,8 +48,8 @@ class agirc_cotisation(Variable):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.employeur.agirc.copy()
-        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.salarie.agirc.copy()
+        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_effectifs_salaries_employeurs.avant81.employeur.agirc.copy()
+        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.prelevements_sociaux.taux_effectifs_salaries_employeurs.avant81.salarie.agirc.copy()
         agirc = employeur
         agirc.add_tax_scale(salarie)
         points_gmp = parameters(period).retraites.secteur_prive.regimes_complementaires.agirc.gmp.garantie_minimale_points
@@ -331,10 +331,10 @@ class arrco_cotisation(Variable):
         categorie_salarie = individu('categorie_salarie', period)
         salaire_de_base = individu('regime_general_cnav_salaire_de_base', period)
         plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.employeur
+        employeur = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_effectifs_salaries_employeurs.employeur
         employeur_non_cadre = employeur.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         employeur_cadre = employeur.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
-        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.salarie
+        salarie = parameters(period).retraites.secteur_prive.regimes_complementaires.arrco.prelevements_sociaux.taux_effectifs_salaries_employeurs.salarie
         salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor=plafond_securite_sociale)
         return select([categorie_salarie == TypesCategorieSalarie.prive_non_cadre, (categorie_salarie == TypesCategorieSalarie.prive_cadre) * (period.start.year >= 1976)], [employeur_non_cadre + salarie_non_cadre, employeur_cadre + salarie_cadre], default=0)

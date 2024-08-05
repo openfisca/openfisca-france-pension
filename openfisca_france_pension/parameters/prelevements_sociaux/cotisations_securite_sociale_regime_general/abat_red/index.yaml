@@ -1,0 +1,9 @@
+description: Abattements de cotisations de sécurité sociale du régime général pour les artistes, médecins et journalistes
+metadata:
+  documentation_start: true
+  short_label: Abattements spécifiques
+  label_en: SSCs rebate for artists, physicians and journalists
+  order:
+  - artistes
+  - medecins
+  - journalistes

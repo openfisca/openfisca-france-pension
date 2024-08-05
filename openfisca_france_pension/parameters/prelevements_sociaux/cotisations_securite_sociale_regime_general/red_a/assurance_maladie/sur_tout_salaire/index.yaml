@@ -1,0 +1,7 @@
+description: Cotisations de sécurité sociale (SS) des artistes du spectacle pour l'assurance maladie, sur tout salaire
+metadata:
+  short_label: Sur tout salaire
+  label_en: SSCs for artists
+  order:
+  - employeur
+  - employe

@@ -1,0 +1,17 @@
+description: Sécurité sociale/ Indemnités journalières
+brackets:
+- threshold:
+    2003-01-01:
+      value: 0
+  rate:
+    2003-01-01:
+      value: 0.007
+- threshold:
+    2003-01-01:
+      value: 5
+  rate:
+    2003-01-01:
+      value: 0
+metadata:
+  rate_unit: /1
+  threshold_unit: PSS

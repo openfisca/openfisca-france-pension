@@ -1,0 +1,13 @@
+description: Taxe sur les salaires
+metadata:
+  short_label: Taxe sur les salaires
+  label_en: Payroll tax ("tax on wages")
+  order:
+  - metro
+  - taux_maj
+  - guy
+  - mgr
+  - franchise
+  - decote_montant
+  - decote_taux
+  - abattement_special

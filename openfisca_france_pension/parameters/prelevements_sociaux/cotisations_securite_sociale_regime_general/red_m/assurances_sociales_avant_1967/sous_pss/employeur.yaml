@@ -1,0 +1,33 @@
+description: Taux employeur des cotisations de sécurité sociale (SS) des professions médicales à temps partiel, pour les assurances sociales (avant 1967), sous le plafond de la sécurité sociale (PSS)
+values:
+  1961-05-01:
+    value: 0.0945
+  1962-04-01:
+    value: 0.0995
+  1966-10-01:
+    value: 0.105
+  1967-10-01:
+    value: null
+metadata:
+  short_label: Taux employeur
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSCs for physicians working part-time
+  ipp_csv_id: css_m_p_0_1
+  unit: /1
+  reference:
+    1961-05-01:
+      title: Arrêté du 01/05/1961
+    1962-04-01:
+      title: Arrêté du 26/02/1962
+    1966-10-01:
+      title: Arrêté du 15/09/1966
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+  official_journal_date:
+    1961-05-01: "1961-05-20"
+    1962-04-01: "1962-03-18"
+    1966-10-01: "1966-09-27"
+    1967-10-01: "1967-10-01"
+  notes:
+    1967-10-01:
+    - title: Il n'y a pas de distinctions d'âge pour les cotisations mmid.

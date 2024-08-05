@@ -1,0 +1,18 @@
+description: Taux employé des cotisations de sécurité sociale (SS) des professions médicales à temps partiel, pour l'assurance maladie, tout salaire
+values:
+  1967-10-01:
+    value: 0.007
+metadata:
+  short_label: Taux employé
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSCs for physicians working part-time
+  ipp_csv_id: mmid_m_s_0_
+  unit: /1
+  reference:
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+  official_journal_date:
+    1967-10-01: "1967-10-01"
+  notes:
+    1967-10-01:
+    - title: Il n'y a pas de distinctions d'âge pour les cotisations mmid.
