@@ -20,7 +20,7 @@ setup(
     description = "OpenFisca tax and benefit system for France-Pension",
     keywords = "benefit microsimulation social tax",
     license ="http://www.fsf.org/licensing/licenses/agpl-3.0.html",
-    # url = "https://github.com/openfisca/country-template",
+    url = "https://github.com/openfisca/openfisca-france-pension",
     include_package_data = True,  # Will read MANIFEST.in
     data_files = [
         (
@@ -30,8 +30,7 @@ setup(
         ],
     install_requires = [
         "bottleneck >=1.3.2,<=2.0.0",
-        "OpenFisca-Core @ git+https://github.com/openfisca/openfisca-core@pension-rebase-2d#egg=openfisca-core",
-        # "OpenFisca-Core >= 41.1,<42",
+        "OpenFisca-Core >= 41.5.0,<42",
         "numba>=0.54,<1.0.0",
         "pandas>=2.0,<3.0",
         ],
