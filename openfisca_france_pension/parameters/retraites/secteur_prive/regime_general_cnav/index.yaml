@@ -1,7 +1,10 @@
-description: Régime général (CNAV)
+description: Régime général de la caisse nationale d'assurance vieiilesse (CNAV)
 metadata:
+  short_label: Régime général (CNAV)
+  label_en: Main pension scheme (ie "régime général" or CNAV)
+  short_label_en: CNAV pension scheme
   order:
-  - reval_p
+  - revalorisation_pension
   - reval_s
   - reval_s_49
   - salval
@@ -17,4 +20,4 @@ metadata:
   - surcote
   - reversion
   - reversion_minimum
-  description_en: Main pension scheme (ie "régime général" or CNAV)
+documentation: L’ordonnance du 19 octobre 1945 a créé le régime général des retraites qui rassemble (à l’exception des salariés agricoles) tous les salariés du secteur privé. Ils doivent, quel que soit le montant de leur salaire, cotiser à l’assurance vieillesse (désormais dénommée assurance retraite) dont l’organisme gestionnaire à l’échelle nationale est la branche retraite de la caisse nationale d’assurance vieillesse (CNAV), et cela dans la limite d’un plafond de cotisations, dit plafond de la sécurité sociale.

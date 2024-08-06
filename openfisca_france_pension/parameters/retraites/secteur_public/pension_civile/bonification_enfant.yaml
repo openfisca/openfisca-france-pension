@@ -9,7 +9,7 @@ documentation: |-
 nombre_trimestres_par_enfant_bonification:
   description: Nombre de trimestres par enfant accordé au motif de bonifications selon l'année de naissance de l'enfant
   metadata:
-    description_en: Taking into accout children in bonus computation
+    label_en: Taking into accout children in bonus computation
     reference:
       1948-09-20:
         title: loi 48-1450 du 20/09/1948

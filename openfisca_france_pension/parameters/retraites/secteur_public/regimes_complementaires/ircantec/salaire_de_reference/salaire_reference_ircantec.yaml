@@ -1,13 +1,4 @@
 description: Salaire de référence IRCANTEC
-metadata:
-  ipp_csv_id: sal_ref_ircantec
-  notes:
-    1971-01-01:
-    - title: '1971: Création de l''IRCANTEC'
-  reference:
-    2017-01-01:
-      title: Ircantec - Notes juridiques n°2144 du 26/03/2015
-  unit: currency
 values:
   1925-01-01:
     value: null
@@ -115,3 +106,12 @@ values:
     value: 5.028
   2022-01-01:
     value: 5.083
+metadata:
+  ipp_csv_id: sal_ref_ircantec
+  unit: currency
+  reference:
+    2017-01-01:
+      title: Ircantec - Notes juridiques n°2144 du 26/03/2015
+  notes:
+    1971-01-01:
+    - title: "1971: Création de l'IRCANTEC"

@@ -1,6 +1,6 @@
 description: Âge légal de départ en retraite FP active
 metadata:
-  description_en: Minimum pension age ("Age légal") - "active"
+  label_en: Minimum pension age ("Age légal") - "active"
   reference:
     1976-01-01:
       title: Loi 75-1280 du 30/12/1975
@@ -29,8 +29,8 @@ documentation: |-
   Lecture :
   Ce tableau renseigne, pour une date de législation donnée (la date d'entrée en vigueur, en ligne), le paramètre en fonction de la date de naissance (en ordonnée).
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
-  Notes :
-  (1) L'âge d'ouverture des droits peut être inférieur à 55 ans pour certains grades des actifs (les "super actifs", par exemple les fonctionnaires de polices), et pour les militaires,pour qui la condition d'ouverture des droits
+  Note :
+  L'âge d'ouverture des droits peut être inférieur à 55 ans pour certains grades des actifs (les "super actifs", par exemple les fonctionnaires de polices), et pour les militaires,pour qui la condition d'ouverture des droits
   n'est pas une condition d'âge mais de durée de service : 25 ans pour les officiers et non officiers, 15 pour les militaires du rangs (respectivement 27 et 17 après la réforme de 2010).
 age_ouverture_droits_fonction_publique_active_selon_annee_naissance:
   description: Âge d'ouverture des droits pour la fonction publique active, selon l'année de naissance

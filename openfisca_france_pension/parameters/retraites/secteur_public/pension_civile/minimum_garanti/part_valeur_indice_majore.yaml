@@ -1,6 +1,7 @@
 description: Part de la valeur de l'indice majoré pris en compte dans le calcul du minimum garanti
 metadata:
-  description_en: Index point of public sector (1970-2017)
+  label_en: Index point of public sector
+  unit: /1
   order:
   - before_2004_01_01
   - after_2004_01_01
@@ -12,9 +13,7 @@ metadata:
   - after_2010_01_01
   - after_2011_01_01
   - after_2012_01_01
-  unit: /1
 documentation: |-
-  Notes :
   Le point d'indice (ou la valeur de l'indice majoré 100) permet de déterminer la rémunération fixe des fonctionnaires
   La valeur du traitement mensuel brut correspondant à l'indice majoré détenu par un
   agent est égale à :

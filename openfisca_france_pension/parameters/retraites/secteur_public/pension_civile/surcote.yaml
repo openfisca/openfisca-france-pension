@@ -1,6 +1,6 @@
 description: Surcote FP
 metadata:
-  description_en: Pension bonus for later retirement
+  label_en: Pension bonus for later retirement
   reference:
     2004-01-01:
       title: Loi 2003-775 du 21/08/2003, art. 51
@@ -14,7 +14,6 @@ metadata:
   order:
   - taux_surcote_par_trimestre
 documentation: |-
-  Note :
   La date d'effet porte sur les pensions liquidées à partir de cette date.
   La décote est définie d'après la formule suivante: taux minoré = taux plein * (1 + surcote * (nombre de trimestres de surcote))
 taux_surcote_par_trimestre:

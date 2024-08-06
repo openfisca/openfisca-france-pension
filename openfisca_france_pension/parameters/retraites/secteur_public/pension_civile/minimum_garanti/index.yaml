@@ -1,6 +1,6 @@
 description: Minimum garanti
 metadata:
-  description_en: Civil pension minimum
+  label_en: Civil pension minimum
   order:
   - valeur_indice_maj
   - part_valeur_indice_majore

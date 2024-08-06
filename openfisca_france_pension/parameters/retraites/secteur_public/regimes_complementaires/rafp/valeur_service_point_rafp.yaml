@@ -1,6 +1,4 @@
 description: Valeur de service du point RAFP
-metadata:
-  unit: currency
 values:
   2005-01-01:
     value: 0.04
@@ -34,3 +32,5 @@ values:
     value: 0.04656
   2021-01-01:
     value: 0.04675
+metadata:
+  unit: currency

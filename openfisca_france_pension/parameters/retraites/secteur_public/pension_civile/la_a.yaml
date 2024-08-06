@@ -1,6 +1,6 @@
-description: Limite d'âge FP active
+description: Limite d'âge dans la fonction publique active
 metadata:
-  description_en: Age limit - "active"
+  label_en: Age limit - "active"
   reference:
     1937-01-01:
       title: Loi du 18/08/1936
@@ -25,7 +25,7 @@ metadata:
     2012-01-01: "2011-11-22"
   notes:
     1937-01-01:
-    - title: Voir note (2).
+    - title: La distinction se fait selon les catégories (A et B dans le texte) et, au sein de ces catégories, selon les échelons. 67 ans s'applique au premier échelon de la catégorie B. 2ème = 65 ans (Police = 59 ans), 3ème= 62 ans (Police = 56 ans), 4ème = 60 ans (Police = 55 ans). Voir également la Loi 46-195 1946-02-15 art. 1 (JORF 16 février 1946), le Décret 53-711 du 9 août 1953 - art. 1 JORF 10 août 1953), le Décret 54-597 1954-06-09 art. 1 ( JORF 12 juin 1954).
     1976-01-01:
     - title: La réforme prévoit une montée en régime progressive, avec un âge limite de 67 ans jusqu'au 31/12/1976, 66 ans et six mois du 01/01 au 30/12/1977,et 67 ans à partir de cette date.Toutefois, la limite d'âge des professeurs titulaires du Collège de France reste fixée à soixante-dix ans.
   order:
@@ -34,12 +34,8 @@ documentation: |-
   Lecture :
   Ce tableau renseigne, pour une date de législation donnée (la date d'entrée en vigueur, en ligne), le paramètre en fonction de la date de naissance (en ordonnée).
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
-  Notes :
-  (1) La limite d'âge dans la fonction publique du type de fonction publique (civil/militaire). Pour les militaires, la limite d'âge est spécifique au grade et au corps. Pour les civils actifs, la limite normale est celle donnée ci-contre
-  mais il existe des différences en fonction du type de la catégorie d'actif (par exemple, 55ans pour le personnel surveillant des établissements pénitenciaires et 62 ans pour les controleurs des affaires maritimes). Pour la fonction
-  publique sédentaire, la limite d'âge peut être plus élevé pour certaines catégories de fonctionnaires (par exemple 70 ans pour les professeurs au Collège de France).
-  (2) La distinction se fait selon les catégories (A et B dans le texte) et, au sein de ces catégories, selon les échelons. 67 ans s'applique au premier échelon de la catégorie B. 2ème = 65 ans (Police = 59 ans), 3ème= 62 ans (Police = 56 ans), 4ème = 60 ans (Police = 55 ans). Voir également la Loi 46-195 1946-02-15 art. 1 (JORF 16 février 1946), le Décret 53-711 du 9 août 1953 - art. 1 JORF 10 août 1953), le Décret 54-597 1954-06-09 art. 1 ( JORF 12 juin 1954).
-  (3) Pas de modification entre 2012 et 2019.
+  Note :
+  La limite d'âge dans la fonction publique du type de fonction publique (civil/militaire). Pour les militaires, la limite d'âge est spécifique au grade et au corps. Pour les civils actifs, la limite normale est celle donnée ci-contre mais il existe des différences en fonction du type de la catégorie d'actif (par exemple, 55 ans pour le personnel surveillant des établissements pénitenciaires et 62 ans pour les controleurs des affaires maritimes).
 age_limite_fonction_publique_active_selon_annee_naissance:
   description: Âge limite fonction publique active selon l'année de naissance
   metadata:

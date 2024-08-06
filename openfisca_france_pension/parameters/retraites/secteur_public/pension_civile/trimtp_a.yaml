@@ -1,6 +1,6 @@
 description: Durée de service maximale cible pour le taux plein FP pour les actifs
 metadata:
-  description_en: Required contribution duration for full rate
+  label_en: Required contribution duration for full rate
   reference:
     1948-01-01:
       title: Loi 48-1450 du 20/09/1948
@@ -23,7 +23,10 @@ metadata:
     2014-01-01: "2014-01-21"
   notes:
     2003-01-01:
-    - title: Voir note (1)
+    - title: |-
+        La loi de 2003 prévoit une augmentation de la durée cible pour l'obtention du taux plein, pour le régime général (et les régimes alignés) et la fonction publique. La durée est fixée par génération.
+        Après une convergence entre les durées du régime général et du privé pour les générations 1943-1948, la durée est fixée chaque année jusqu'à 2020 en fonction des gains d'espérance de vie.
+        L'augmentation de durée d'assurance légiférée ne prend pas en compte le principe acté en 2003 d'une augmentation proportionnelle aux gains d'espérance de vie.
     2011-08-01:
     - title: Plus précisément, le décret cité précise le nombre de trimestres pour les assurés nés en 1955. Le Décret 2012-1487 du 27/12/2012 (JO 29/12/2012) étend ce nombre de trimestres aux assurés nés en 1956, et le Décret 2013-1155 du 13/12/2013 (JO 15/12/2013) étend ce nombre à la génération née en 1957..
     2014-01-01:
@@ -34,10 +37,6 @@ documentation: |-
   Lecture :
   Ce tableau renseigne, pour une date de législation donnée (la date d'entrée en vigueur, en ligne), le paramètre en fonction de la date de naissance (en ordonnée).
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
-  Notes :
-  (1) La loi de 2003 prévoit une augmentation de la durée cible pour l'obtention du taux plein, pour le régime général (et les régimes alignés) et la fonction publique. La durée est fixée par génération.
-   Après une convergence entre les durées du régime général et du privé pour les générations 1943-1948, la durée est fixée chaque année jusqu'à 2020 en fonction des gains d'espérance de vie.
-  L'augmentation de durée d'assurance légiférée ne prend pas en compte le principe acté en 2003 d'une augmentation proportionnelle aux gains d'espérance de vie.
 nombre_trimestres_cibles_taux_plein_par_generation_actifs:
   description: Nombre de trimestres cibles pour le taux plein par génération pour les actifs
   metadata:

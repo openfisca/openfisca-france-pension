@@ -1,13 +1,4 @@
 description: Salaire de référence IPACTE
-metadata:
-  ipp_csv_id: sal_ref_ipacte
-  notes:
-    1947-01-01:
-    - title: A partir de cette date, les salaires de références sont identiques pour
-        les deux catégories.
-    1971-01-01:
-    - title: '1971: Création de l''IRCANTEC'
-  unit: currency
 values:
   1925-01-01:
     value: 0.00419
@@ -83,3 +74,11 @@ values:
     value: 0.395
   1971-01-01:
     value: null
+metadata:
+  ipp_csv_id: sal_ref_ipacte
+  unit: currency
+  notes:
+    1947-01-01:
+    - title: A partir de cette date, les salaires de références sont identiques pour les deux catégories.
+    1971-01-01:
+    - title: "1971: Création de l'IRCANTEC"

@@ -1,6 +1,6 @@
-description: Durée de service maximale pour le coefficient de proratisation FP
+description: Durée de service maximale pour le coefficient de proratisation du régime de retraite de la fonction publique
 metadata:
-  description_en: Working life in the public sector for full pension
+  label_en: Working life in the public sector for full pension
   reference:
     1948-01-01:
       title: Loi 48-1450 du 20/09/1948
@@ -24,7 +24,9 @@ metadata:
     2014-01-01: "2014-01-21"
   notes:
     2003-01-01:
-    - title: Voir note (1)
+    - title: |-
+        La loi de 2003 prévoit une augmentation de la durée cible pour l'obtention du taux plein, pour le régime général (et les régimes alignés) et la fonction publique. La durée est fixée par génération.
+        Après une convergence entre les durées du régime général et du privé pour les générations 1943-1948, la durée est fixée chaque année jusqu'à 2020 en fonction des gains d'espérance de vie.
     2011-08-01:
     - title: Plus précisément, le décret cité précise le nombre de trimestres pour les assurés nés en 1955. Le Décret 2012-1487 du 27/12/2012 (JO 29/12/2012) étend ce nombre de trimestres aux assurés nés en 1956, et le Décret 2013-1155 du 13/12/2013 (JO 15/12/2013) étend ce nombre à la génération née en 1957..
     2014-01-01:
@@ -35,10 +37,8 @@ documentation: |-
   Lecture :
   Ce tableau renseigne, pour une date de législation donnée (la date d'entrée en vigueur, en ligne), le paramètre en fonction de la date de naissance (en ordonnée).
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
-  Notes :
-  (1) La loi de 2003 prévoit une augmentation de la durée cible pour l'obtention du taux plein, pour le régime général (et les régimes alignés) et la fonction publique. La durée est fixée par génération.
-  Après une convergence entre les durées du régime général et du privé pour les générations 1943-1948, la durée est fixée chaque année jusqu'à 2020 en fonction des gains d'espérance de vie.
-  (2) Pour un fonctionnaire ayant un âge d'ouverture des droits inférieur à 60 ans (actifs ou militaires), la durée maximale de prorisatisation est celle qui a cours pour les fonctionnaires qui atteignent 60 ans à l'année
+  Note :
+  Pour un fonctionnaire ayant un âge d'ouverture des droits inférieur à 60 ans (actifs ou militaires), la durée maximale de prorisatisation est celle qui a cours pour les fonctionnaires qui atteignent 60 ans à l'année
    de l'ouverture de ses droits (Code des pensions civiles et militaires de retraite- Article L13).
 nombre_trimestres_cibles_maximal_pris_en_compte_proratisation_par_generation:
   description: Nombre de trimestres cibles maximal pris en compte pour la proratisation, par génération

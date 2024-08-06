@@ -1,5 +1,6 @@
 description: Fraction de point d'indice supplémentaire par année entre quinze et trente ans de service
 metadata:
+  unit: /1
   order:
   - before_2004_01_01
   - after_2004_01_01
@@ -12,7 +13,6 @@ metadata:
   - after_2011_01_01
   - after_2012_01_01
   - after_2013_01_01
-  unit: /1
 before_2004_01_01:
   description: Pension liquidée avant le 01/01/2004
   values:

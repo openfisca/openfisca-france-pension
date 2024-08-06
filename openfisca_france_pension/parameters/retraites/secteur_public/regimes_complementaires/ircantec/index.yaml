@@ -1,6 +1,6 @@
 description: Ircantec
 metadata:
-  description_en: Ircantec
+  label_en: Ircantec
   order:
   - salaire_de_reference
   - valeur_du_point
