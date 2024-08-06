@@ -7,11 +7,11 @@ logging.basicConfig(level=logging.INFO)
 
 
 def get_info(package_name: str = '') -> dict:
-    '''
+    """
     Get minimal informations needed by .conda/meta.yaml from PyPi JSON API.
     ::package_name:: Name of package to get infos from.
     ::return:: A dict with last_version, url and sha256
-    '''
+    """
     if package_name == '':
         raise ValueError('Package name not provided.')
     resp = requests.get(f'https://pypi.org/pypi/{package_name}/json').json()
@@ -26,10 +26,10 @@ def get_info(package_name: str = '') -> dict:
 
 
 def replace_in_file(filepath: str, info: dict):
-    '''
+    """
     ::filepath:: Path to meta.yaml, with filename
     ::info:: Dict with information to populate
-    '''
+    """
     with open(filepath, 'rt') as fin:
         meta = fin.read()
     # Replace with info from PyPi

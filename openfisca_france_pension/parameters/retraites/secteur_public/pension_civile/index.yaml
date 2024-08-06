@@ -1,6 +1,6 @@
 description: Pension civile
 metadata:
-  description_en: Civil pension
+  label_en: Civil pension
   order:
   - la_s
   - la_a

@@ -1,7 +1,8 @@
-description: Régime de retraite des cotisations du régime de la SNCF - Cotisations spécifiques à la fonction publique
+description: Régime de retraite des cotisations du régime de la SNCF
 metadata:
-  ux_name: Régime de retraite
+  short_label: Régime de retraite
+  label_en: Contributions to the SNCF scheme (public railway company)
   order:
   - cotisations_employes
   - cotisations_employeur
-  description_en: Contributions to the SNCF scheme (public railway company)
+documentation: "Sources : Chiffres clés du régime CPRPSNCF publiés annuellement"

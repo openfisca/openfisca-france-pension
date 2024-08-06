@@ -1,0 +1,20 @@
+description: Cotisations employé (de pluss de 65 ans, en Alscace-Moselle) Cotisations de sécurité sociale (SS) des artistes du spectacle, assurances sociales avant 1967, sous le plafond de la sécurité sociale (PSS)
+values:
+  1960-01-01:
+    value: 0.021
+  1967-10-01:
+    value: null
+metadata:
+  short_label: Plus de 65 ans
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSCs for artists
+  ipp_csv_id: css_a_s65_s_0_1
+  unit: /1
+  reference:
+    1960-01-01:
+      title: Arrêté du 27/01/1960
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+  official_journal_date:
+    1960-01-01: "1960-02-09"
+    1967-10-01: "1967-10-01"

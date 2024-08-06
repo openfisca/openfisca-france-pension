@@ -1,6 +1,4 @@
 description: Valeur d'acquisition du point RAFP
-metadata:
-  unit: currency
 values:
   2005-01-01:
     value: 1
@@ -36,3 +34,5 @@ values:
     value: 1.2452
   2021-01-01:
     value: 1.2452
+metadata:
+  unit: currency

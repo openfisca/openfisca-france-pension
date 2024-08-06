@@ -1,29 +1,34 @@
 description: "Régime complémentaire des indépendants : valeur d'achat du point"
-valeur_annuelle_acquisition_point_rsi:
-  description: Valeur annuelle d'acquisition du point RSI
-  values:
-    2021-01-01:
-      value: 17.765
-    2020-01-01:
-      value: 17.691
-    2019-01-01:
-      value: 17.515
-    2017-10-01:
-      value: 17.456
-    2015-10-01:
-      value: 17.324
-    2013-01-01:
-      value: 17.309
-  metadata:
-    ipp_csv_id: sal_ref_ircantec
-    unit: currency
 metadata:
+  label_en: "Complementary scheme of self-employed : reference wage"
+  notes:
+    2013-01-01:
+    - title: "A partir du 1er janvier 2013, les artisans et commerçants bénéficient d'un régime complémentaire unique commun : le Régime Complémentaire des Indépendants (RCI)."
   order:
   - valeur_annuelle_acquisition_point_rsi
-  notes:
-    2013-01-01: "A partir du 1er janvier 2013, les artisans et commerçants bénéficient d'un régime complémentaire unique commun : le Régime Complémentaire des Indépendants (RCI)."
-  description_en: "Complementary scheme of self-employed : reference wage"
-documentation: |
+documentation: |-
   Sources :
   legislation CNAV
   https://www.legislation.cnav.fr/Pages/bareme.aspx?Nom=rci_valeur_achat_point_bar
+valeur_annuelle_acquisition_point_rsi:
+  description: Valeur annuelle d'acquisition du point RSI
+  values:
+    2013-01-01:
+      value: 17.309
+    2015-10-01:
+      value: 17.324
+    2017-10-01:
+      value: 17.456
+    2019-01-01:
+      value: 17.515
+    2020-01-01:
+      value: 17.691
+    2021-01-01:
+      value: 17.765
+    2022-01-01:
+      value: 17.956
+    2023-01-01:
+      value: 19.394
+  metadata:
+    ipp_csv_id: sal_ref_rci
+    unit: currency

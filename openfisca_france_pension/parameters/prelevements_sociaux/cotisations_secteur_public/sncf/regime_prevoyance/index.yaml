@@ -1,7 +1,8 @@
-description: Régime de prévoyance des cotisations du régime de la SNCF - Cotisations spécifiques à la fonction publique
+description: Régime de prévoyance des cotisations du régime de la SNCF
 metadata:
-  ux_name: Régime de prévoyance
+  short_label: Régime de prévoyance
+  label_en: Contributions to the SNCF scheme (public railway company)
   order:
   - salaries
   - employeurs
-  description_en: Contributions to the SNCF scheme (public railway company)
+documentation: "Sources : Chiffres clés du régime CPRPSNCF publiés annuellement"

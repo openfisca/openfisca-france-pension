@@ -1,0 +1,15 @@
+description: Taux employé des ctisations de sécurité sociale (SS) des journalistes pigistes pour l'assurance vieillesse, sous le plafond de la sécurité sociale (PSS)
+values:
+  1967-10-01:
+    value: 0.024
+metadata:
+  short_label: Taux employé
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSCs for freelance journalists
+  ipp_csv_id: ret_j_s_0_1
+  unit: /1
+  reference:
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+  official_journal_date:
+    1967-10-01: "1967-10-01"

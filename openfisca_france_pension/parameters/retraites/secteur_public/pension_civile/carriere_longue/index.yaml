@@ -1,6 +1,6 @@
 description: Retraites anticipées au titre des carrières longues
 metadata:
-  description_en: Early retirement for long career
+  label_en: Early retirement for long career
   order:
   - aod_seuil_15
   - aod_seuil_2

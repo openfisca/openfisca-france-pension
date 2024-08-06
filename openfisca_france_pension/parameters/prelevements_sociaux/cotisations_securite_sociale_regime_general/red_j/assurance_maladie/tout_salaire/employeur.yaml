@@ -1,0 +1,15 @@
+description: Taux employeur de cotisations de sécurité sociale (SS) des journalistes pigistes (1964-1974) pour l'assurance maladie, tout salaire
+values:
+  1967-10-01:
+    value: 0.016
+metadata:
+  short_label: Taux employeur
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSCs for freelance journalists (1964-1974)
+  ipp_csv_id: mmid_j_p_0_
+  unit: /1
+  reference:
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+  official_journal_date:
+    1967-10-01: "1967-10-01"

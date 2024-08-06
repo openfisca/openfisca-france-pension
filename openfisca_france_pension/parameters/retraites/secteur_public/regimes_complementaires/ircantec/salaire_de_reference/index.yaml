@@ -1,11 +1,10 @@
 description: Salaire de référence IRCANTEC
-documentation: 'Sources :
-
-  Barèmes fournis par l''Ircantec. Voir https://baseircantec.retraites.fr/docrestreint.api/4366/e95d26380efa88eae65891b8edec12e685df073e/pdf/anx0801_externe_tx_theoriques_sal_ref2021.pdf
-  pour plus d''informations.'
 metadata:
-  description_en: Reference wage IRCANTEC
+  label_en: Reference wage IRCANTEC
   order:
   - salaire_reference_ircantec
   - salaire_reference_igrante
   - salaire_reference_ipacte
+documentation: |-
+  Sources :
+  Barèmes fournis par l'Ircantec. Voir https://baseircantec.retraites.fr/docrestreint.api/4366/e95d26380efa88eae65891b8edec12e685df073e/pdf/anx0801_externe_tx_theoriques_sal_ref2021.pdf pour plus d'informations.

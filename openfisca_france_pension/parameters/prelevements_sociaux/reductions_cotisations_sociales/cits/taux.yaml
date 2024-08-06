@@ -1,0 +1,24 @@
+description: Taux du crédit d'impôt de taxe sur les salaires (CITS)
+values:
+  2017-01-01:
+    value: 0.04
+  2019-01-01:
+    value: null
+metadata:
+  short_label: Taux
+  last_value_still_valid_on: "2019-01-01"
+  label_en: Tax credit on the payroll tax (CITS)
+  unit: /1
+  reference:
+    2017-01-01:
+      title: Loi 2016-1917 du 29/12/2016 (LF pour 2017), art. 88
+      href: https://www.legifrance.gouv.fr/affichTexteArticle.do?idArticle=LEGIARTI000033760638&cidTexte=JORFTEXT000033734169
+    2019-01-01:
+      title: Loi 2017-1837 du 30/12/2017 (LF pour 2018), art. 87
+      href: https://www.legifrance.gouv.fr/affichTexteArticle.do?idArticle=LEGIARTI000036377546&cidTexte=JORFTEXT000036339197
+  official_journal_date:
+    2017-01-01: "2016-12-30"
+    2019-01-01: "2017-12-31"
+  notes:
+    2019-01-01:
+    - title: Abrogation et remplacement par un allègement de cotisations employeur

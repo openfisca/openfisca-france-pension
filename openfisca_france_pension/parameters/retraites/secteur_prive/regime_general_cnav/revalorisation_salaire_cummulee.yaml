@@ -5,6 +5,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
   values:
     '2022-01-01':
       value: 1.011
+    '2023-01-01':
+      value: 1.019088
 2020:
   description: "Coefficient pour ann\xE9e 2020"
   values:
@@ -12,6 +14,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.004
     '2022-01-01':
       value: 1.0150439999999998
+    '2023-01-01':
+      value: 1.0231643519999998
 2019:
   description: "Coefficient pour ann\xE9e 2019"
   values:
@@ -21,6 +25,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.01404
     '2022-01-01':
       value: 1.02519444
+    '2023-01-01':
+      value: 1.0333959955199998
 2018:
   description: "Coefficient pour ann\xE9e 2018"
   values:
@@ -32,6 +38,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0292506
     '2022-01-01':
       value: 1.0405723565999998
+    '2023-01-01':
+      value: 1.0488969354527997
 2017:
   description: "Coefficient pour ann\xE9e 2017"
   values:
@@ -45,6 +53,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0292506
     '2022-01-01':
       value: 1.0405723565999998
+    '2023-01-01':
+      value: 1.0488969354527997
 2016:
   description: "Coefficient pour ann\xE9e 2016"
   values:
@@ -62,6 +72,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0374846047999997
     '2022-01-01':
       value: 1.0488969354527995
+    '2023-01-01':
+      value: 1.0572881109364218
 2015:
   description: "Coefficient pour ann\xE9e 2015"
   values:
@@ -83,6 +95,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0374846047999997
     '2022-01-01':
       value: 1.0488969354527995
+    '2023-01-01':
+      value: 1.0572881109364218
 2014:
   description: "Coefficient pour ann\xE9e 2014"
   values:
@@ -108,6 +122,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0385220894047997
     '2022-01-01':
       value: 1.0499458323882525
+    '2023-01-01':
+      value: 1.0583453990473586
 2013:
   description: "Coefficient pour ann\xE9e 2013"
   values:
@@ -137,6 +153,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0385220894047997
     '2022-01-01':
       value: 1.0499458323882525
+    '2023-01-01':
+      value: 1.0583453990473586
 2012:
   description: "Coefficient pour ann\xE9e 2012"
   values:
@@ -170,6 +188,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.052022876567062
     '2022-01-01':
       value: 1.0635951282092997
+    '2023-01-01':
+      value: 1.0721038892349741
 2011:
   description: "Coefficient pour ann\xE9e 2011"
   values:
@@ -207,6 +227,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0741153569749704
     '2022-01-01':
       value: 1.085930625901695
+    '2023-01-01':
+      value: 1.0946180709089086
 2010:
   description: "Coefficient pour ann\xE9e 2010"
   values:
@@ -248,6 +270,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.0966717794714445
     '2022-01-01':
       value: 1.1087351690456302
+    '2023-01-01':
+      value: 1.1176050503979953
 2009:
   description: "Coefficient pour ann\xE9e 2009"
   values:
@@ -293,6 +317,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.1065418254866872
     '2022-01-01':
       value: 1.1187137855670406
+    '2023-01-01':
+      value: 1.127663495851577
 2008:
   description: "Coefficient pour ann\xE9e 2008"
   values:
@@ -342,6 +368,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.117607243741554
     '2022-01-01':
       value: 1.129900923422711
+    '2023-01-01':
+      value: 1.1389401308100928
 2007:
   description: "Coefficient pour ann\xE9e 2007"
   values:
@@ -395,6 +423,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.1389401308100926
     '2022-01-01':
       value: 1.1514684722490034
+    '2023-01-01':
+      value: 1.1606802200269954
 2006:
   description: "Coefficient pour ann\xE9e 2006"
   values:
@@ -450,6 +480,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.1594410531646748
     '2022-01-01':
       value: 1.1721949047494862
+    '2023-01-01':
+      value: 1.181572463987482
 2005:
   description: "Coefficient pour ann\xE9e 2005"
   values:
@@ -507,6 +539,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.1803109921216388
     '2022-01-01':
       value: 1.1932944130349767
+    '2023-01-01':
+      value: 1.2028407683392566
 2004:
   description: "Coefficient pour ann\xE9e 2004"
   values:
@@ -566,6 +600,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.2039172119640713
     '2022-01-01':
       value: 1.217160301295676
+    '2023-01-01':
+      value: 1.2268975837060414
 2003:
   description: "Coefficient pour ann\xE9e 2003"
   values:
@@ -627,6 +663,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.2243838045674609
     '2022-01-01':
       value: 1.2378520264177029
+    '2023-01-01':
+      value: 1.2477548426290446
 2002:
   description: "Coefficient pour ann\xE9e 2002"
   values:
@@ -690,6 +728,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.242749561635973
     '2022-01-01':
       value: 1.2564198068139685
+    '2023-01-01':
+      value: 1.2664711652684801
 2001:
   description: "Coefficient pour ann\xE9e 2001"
   values:
@@ -755,6 +795,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.2700900519919642
     '2022-01-01':
       value: 1.2840610425638757
+    '2023-01-01':
+      value: 1.2943335309043866
 2000:
   description: "Coefficient pour ann\xE9e 2000"
   values:
@@ -822,6 +864,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.2980320331357873
     '2022-01-01':
       value: 1.312310385500281
+    '2023-01-01':
+      value: 1.3228088685842831
 1999:
   description: "Coefficient pour ann\xE9e 1999"
   values:
@@ -891,6 +935,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.3045221933014663
     '2022-01-01':
       value: 1.3188719374277824
+    '2023-01-01':
+      value: 1.3294229129272046
 1998:
   description: "Coefficient pour ann\xE9e 1998"
   values:
@@ -962,6 +1008,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.320176459621084
     '2022-01-01':
       value: 1.3346984006769158
+    '2023-01-01':
+      value: 1.345375987882331
 1997:
   description: "Coefficient pour ann\xE9e 1997"
   values:
@@ -1035,6 +1083,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.3346984006769156
     '2022-01-01':
       value: 1.3493800830843614
+    '2023-01-01':
+      value: 1.3601751237490363
 1996:
   description: "Coefficient pour ann\xE9e 1996"
   values:
@@ -1110,6 +1160,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.3507147814850389
     '2022-01-01':
       value: 1.3655726440813742
+    '2023-01-01':
+      value: 1.3764972252340253
 1995:
   description: "Coefficient pour ann\xE9e 1995"
   values:
@@ -1187,6 +1239,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.3777290771147397
     '2022-01-01':
       value: 1.3928840969630016
+    '2023-01-01':
+      value: 1.4040271697387057
 1994:
   description: "Coefficient pour ann\xE9e 1994"
   values:
@@ -1268,6 +1322,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.4012331351703162
     '2022-01-01':
       value: 1.4166466996571896
+    '2023-01-01':
+      value: 1.427979873254447
 1993:
   description: "Coefficient pour ann\xE9e 1993"
   values:
@@ -1351,6 +1407,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.4292577978737226
     '2022-01-01':
       value: 1.4449796336503336
+    '2023-01-01':
+      value: 1.4565394707195363
 1992:
   description: "Coefficient pour ann\xE9e 1992"
   values:
@@ -1436,6 +1494,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.447838149246081
     '2022-01-01':
       value: 1.4637643688877877
+    '2023-01-01':
+      value: 1.47547448383889
 1991:
   description: "Coefficient pour ann\xE9e 1991"
   values:
@@ -1525,6 +1585,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.4886382282918358
     '2022-01-01':
       value: 1.5050132488030459
+    '2023-01-01':
+      value: 1.5170533547934704
 1990:
   description: "Coefficient pour ann\xE9e 1990"
   values:
@@ -1618,6 +1680,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.5260566387981793
     '2022-01-01':
       value: 1.5428432618249592
+    '2023-01-01':
+      value: 1.555186007919559
 1989:
   description: "Coefficient pour ann\xE9e 1989"
   values:
@@ -1715,6 +1779,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.5791321256672597
     '2022-01-01':
       value: 1.5965025790495995
+    '2023-01-01':
+      value: 1.6092745996819964
 1988:
   description: "Coefficient pour ann\xE9e 1988"
   values:
@@ -1816,6 +1882,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.5980817111752676
     '2022-01-01':
       value: 1.6156606099981954
+    '2023-01-01':
+      value: 1.628585894878181
 1987:
   description: "Coefficient pour ann\xE9e 1987"
   values:
@@ -1921,6 +1989,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.66094704952948
     '2022-01-01':
       value: 1.679217467074304
+    '2023-01-01':
+      value: 1.6926512068108985
 1986:
   description: "Coefficient pour ann\xE9e 1986"
   values:
@@ -2030,6 +2100,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.707752537385221
     '2022-01-01':
       value: 1.7265378152964581
+    '2023-01-01':
+      value: 1.7403501178188299
 1985:
   description: "Coefficient pour ann\xE9e 1985"
   values:
@@ -2143,6 +2215,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.7386030869730846
     '2022-01-01':
       value: 1.7577277209297884
+    '2023-01-01':
+      value: 1.7717895426972268
 1984:
   description: "Coefficient pour ann\xE9e 1984"
   values:
@@ -2260,6 +2334,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.8480516285042141
     '2022-01-01':
       value: 1.8683801964177602
+    '2023-01-01':
+      value: 1.8833272379891024
 1983:
   description: "Coefficient pour ann\xE9e 1983"
   values:
@@ -2381,6 +2457,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.922705522089272
     '2022-01-01':
       value: 1.9438552828322537
+    '2023-01-01':
+      value: 1.9594061250949117
 1982:
   description: "Coefficient pour ann\xE9e 1982"
   values:
@@ -2504,6 +2582,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 1.999613742972842
     '2022-01-01':
       value: 2.021609494145543
+    '2023-01-01':
+      value: 2.037782370098707
 1981:
   description: "Coefficient pour ann\xE9e 1981"
   values:
@@ -2631,6 +2711,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 2.2914733656696726
     '2022-01-01':
       value: 2.316679572692039
+    '2023-01-01':
+      value: 2.3352130092735752
 1980:
   description: "Coefficient pour ann\xE9e 1980"
   values:
@@ -2762,6 +2844,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 2.59659221020205
     '2022-01-01':
       value: 2.6251547245142723
+    '2023-01-01':
+      value: 2.6461559623103867
 1979:
   description: "Coefficient pour ann\xE9e 1979"
   values:
@@ -2897,6 +2981,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 2.91196391368435
     '2022-01-01':
       value: 2.9439955167348777
+    '2023-01-01':
+      value: 2.9675474808687565
 1978:
   description: "Coefficient pour ann\xE9e 1978"
   values:
@@ -3036,6 +3122,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 3.225291230796789
     '2022-01-01':
       value: 3.2607694343355536
+    '2023-01-01':
+      value: 3.286855589810238
 1977:
   description: "Coefficient pour ann\xE9e 1977"
   values:
@@ -3179,6 +3267,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 3.643314776637897
     '2022-01-01':
       value: 3.683391239180913
+    '2023-01-01':
+      value: 3.7128583690943606
 1976:
   description: "Coefficient pour ann\xE9e 1976"
   values:
@@ -3326,6 +3416,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 4.237561276596198
     '2022-01-01':
       value: 4.284174450638756
+    '2023-01-01':
+      value: 4.318447846243866
 1975:
   description: "Coefficient pour ann\xE9e 1975"
   values:
@@ -3477,6 +3569,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 4.965599729283084
     '2022-01-01':
       value: 5.020221326305197
+    '2023-01-01':
+      value: 5.060383096915639
 1974:
   description: "Coefficient pour ann\xE9e 1974"
   values:
@@ -3632,6 +3726,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 5.7851620334018055
     '2022-01-01':
       value: 5.848798815769225
+    '2023-01-01':
+      value: 5.895589206295379
 1973:
   description: "Coefficient pour ann\xE9e 1973"
   values:
@@ -3791,6 +3887,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 6.678934856590182
     '2022-01-01':
       value: 6.752403140012673
+    '2023-01-01':
+      value: 6.806422365132774
 1972:
   description: "Coefficient pour ann\xE9e 1972"
   values:
@@ -3954,6 +4052,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 7.4069387559585085
     '2022-01-01':
       value: 7.488415082274051
+    '2023-01-01':
+      value: 7.548322402932244
 1971:
   description: "Coefficient pour ann\xE9e 1971"
   values:
@@ -4121,6 +4221,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 8.258736712893738
     '2022-01-01':
       value: 8.349582816735568
+    '2023-01-01':
+      value: 8.416379479269452
 1970:
   description: "Coefficient pour ann\xE9e 1970"
   values:
@@ -4292,6 +4394,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 9.092869120896003
     '2022-01-01':
       value: 9.192890681225858
+    '2023-01-01':
+      value: 9.266433806675666
 1969:
   description: "Coefficient pour ann\xE9e 1969"
   values:
@@ -4467,6 +4571,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 10.17492054628263
     '2022-01-01':
       value: 10.286844672291737
+    '2023-01-01':
+      value: 10.36913942967007
 1968:
   description: "Coefficient pour ann\xE9e 1968"
   values:
@@ -4648,6 +4754,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 11.373497696857198
     '2022-01-01':
       value: 11.498606171522626
+    '2023-01-01':
+      value: 11.590595020894806
 1967:
   description: "Coefficient pour ann\xE9e 1967"
   values:
@@ -4833,6 +4941,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 12.0104135678812
     '2022-01-01':
       value: 12.142528117127892
+    '2023-01-01':
+      value: 12.239668342064915
 1966:
   description: "Coefficient pour ann\xE9e 1966"
   values:
@@ -5022,6 +5132,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 12.707017554818307
     '2022-01-01':
       value: 12.846794747921308
+    '2023-01-01':
+      value: 12.94956910590468
 1965:
   description: "Coefficient pour ann\xE9e 1965"
   values:
@@ -5215,6 +5327,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 13.583801766100775
     '2022-01-01':
       value: 13.733223585527883
+    '2023-01-01':
+      value: 13.843089374212106
 1964:
   description: "Coefficient pour ann\xE9e 1964"
   values:
@@ -5412,6 +5526,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 15.078019960371858
     '2022-01-01':
       value: 15.243878179935948
+    '2023-01-01':
+      value: 15.365829205375436
 1963:
   description: "Coefficient pour ann\xE9e 1963"
   values:
@@ -5613,6 +5729,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 16.887382355616474
     '2022-01-01':
       value: 17.073143561528255
+    '2023-01-01':
+      value: 17.20972871002048
 1962:
   description: "Coefficient pour ann\xE9e 1962"
   values:
@@ -5818,6 +5936,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 19.589363532515122
     '2022-01-01':
       value: 19.804846531372785
+    '2023-01-01':
+      value: 19.963285303623767
 1961:
   description: "Coefficient pour ann\xE9e 1961"
   values:
@@ -6027,6 +6147,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 22.52776806239239
     '2022-01-01':
       value: 22.775573511078704
+    '2023-01-01':
+      value: 22.957778099167335
 1960:
   description: "Coefficient pour ann\xE9e 1960"
   values:
@@ -6240,6 +6362,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 24.262406203196605
     '2022-01-01':
       value: 24.529292671431765
+    '2023-01-01':
+      value: 24.72552701280322
 1959:
   description: "Coefficient pour ann\xE9e 1959"
   values:
@@ -6457,6 +6581,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 26.80995885453224
     '2022-01-01':
       value: 27.10486840193209
+    '2023-01-01':
+      value: 27.321707349147548
 1958:
   description: "Coefficient pour ann\xE9e 1958"
   values:
@@ -6678,6 +6804,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 30.429303299894084
     '2022-01-01':
       value: 30.764025636192915
+    '2023-01-01':
+      value: 31.010137841282457
 1957:
   description: "Coefficient pour ann\xE9e 1957"
   values:
@@ -6903,6 +7031,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 32.71150104738613
     '2022-01-01':
       value: 33.07132755890737
+    '2023-01-01':
+      value: 33.33589817937863
 1956:
   description: "Coefficient pour ann\xE9e 1956"
   values:
@@ -7132,6 +7262,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 36.63688117307247
     '2022-01-01':
       value: 37.039886865976264
+    '2023-01-01':
+      value: 37.336205960904074
 1955:
   description: "Coefficient pour ann\xE9e 1955"
   values:
@@ -7365,6 +7497,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 39.751016072783614
     '2022-01-01':
       value: 40.18827724958423
+    '2023-01-01':
+      value: 40.5097834675809
 1954:
   description: "Coefficient pour ann\xE9e 1954"
   values:
@@ -7602,6 +7736,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 43.32860751933416
     '2022-01-01':
       value: 43.805222202046835
+    '2023-01-01':
+      value: 44.15566397966321
 1953:
   description: "Coefficient pour ann\xE9e 1953"
   values:
@@ -7841,6 +7977,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 43.32860751933416
     '2022-01-01':
       value: 43.805222202046835
+    '2023-01-01':
+      value: 44.15566397966321
 1952:
   description: "Coefficient pour ann\xE9e 1952"
   values:
@@ -8084,6 +8222,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 51.994329023201004
     '2022-01-01':
       value: 52.56626664245621
+    '2023-01-01':
+      value: 52.98679677559586
 1951:
   description: "Coefficient pour ann\xE9e 1951"
   values:
@@ -8331,6 +8471,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 57.19376192552108
     '2022-01-01':
       value: 57.82289330670181
+    '2023-01-01':
+      value: 58.285476453155425
 1950:
   description: "Coefficient pour ann\xE9e 1950"
   values:
@@ -8580,6 +8722,8 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 66.34476383360445
     '2022-01-01':
       value: 67.07455623577408
+    '2023-01-01':
+      value: 67.61115268566027
 1949:
   description: "Coefficient pour ann\xE9e 1949"
   values:
@@ -8831,3 +8975,5 @@ description: "Coefficient de revalorisation cummul\xE9e par ann\xE9e de percepti
       value: 87.57508826035792
     '2022-01-01':
       value: 88.53841423122185
+    '2023-01-01':
+      value: 89.24672154507162

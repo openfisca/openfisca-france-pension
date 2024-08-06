@@ -1,0 +1,20 @@
+description: Taux employé (de plus de 65 ans, hors Alsace-Moselle) des cotisations de sécurité sociale (SS) des journalistes pigistes pour les assurances sociales avant 1967, sous le plafond de la sécurité sociale (PSS)
+values:
+  1964-01-01:
+    value: 0.048
+  1967-10-01:
+    value: null
+metadata:
+  short_label: Plus de 65 ans
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSCs for freelance journalists
+  ipp_csv_id: css_j_s65_s_0_1
+  unit: /1
+  reference:
+    1964-01-01:
+      title: Arrêté du 09/12/1963
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+  official_journal_date:
+    1964-01-01: "1963-12-22"
+    1967-10-01: "1967-10-01"

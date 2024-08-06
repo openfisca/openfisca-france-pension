@@ -1,0 +1,41 @@
+description: Taux ouvrier (de moins de 65 ans) des cotisations de sécurité sociale (SS), sous le plafond de la sécurité sociale (PSS)
+values:
+  1930-07-01:
+    value: 0.04
+  1936-01-01:
+    value: 0.035
+  1937-01-01:
+    value: 0.04
+  1945-01-01:
+    value: 0.06
+  1967-09-01:
+    value: null
+metadata:
+  short_label: Moins de 65 ans
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSC
+  ipp_csv_id: css_i65_s_0_1
+  unit: /1
+  reference:
+    1930-07-01:
+    - title: Loi du 05/04/1928, art. 2 § 2
+    - title: Loi du 30/04/1930, art. 2 §2
+    1936-01-01:
+      title: Décret loi du 28/10/1935, art. 40
+    1937-01-01:
+      title: Décret loi du 28/10/1935, art. 2 § 2
+    1945-01-01:
+      title: Ordonnance du 30/12/1944
+  official_journal_date:
+    1930-07-01: 1928-04-12; 1930-05-01
+    1936-01-01: "1935-10-31"
+    1937-01-01: "1935-10-31"
+  notes:
+    1930-07-01:
+    - title: La date d'effet est bien le 01/07/1930.
+    1936-01-01:
+    - title: La baisse des taux est prévue comme une mesure provisoire d'un an (destinée à apporter une aide transitoire à la production)
+    1937-01-01:
+    - title: L'art. 2-§2 rappelle que les taux sont fixés à 4%, hors les dispositions exceptionnelles de 1936 prévues à l'art. 40
+    1967-09-01:
+    - title: En 1967 la cotisation globale de Sécurité sociale est remplacée par des cotisations différenciées par branches

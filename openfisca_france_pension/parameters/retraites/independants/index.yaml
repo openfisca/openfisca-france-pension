@@ -1,5 +1,6 @@
 description: Indépendants
 metadata:
+  label_en: Self-employed
   order:
   - ram
   - pt_organic
@@ -11,4 +12,3 @@ metadata:
   - pt_rc_com
   - salref_rc_com
   - rsi_vp
-  description_en: Self-employed

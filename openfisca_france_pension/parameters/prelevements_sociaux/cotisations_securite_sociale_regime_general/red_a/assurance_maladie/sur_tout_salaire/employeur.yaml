@@ -1,0 +1,20 @@
+description: Taux employeur des cotisations de sécurité sociale (SS) des artistes du spectacle pour l'assurance maladie, sur tout salaire
+values:
+  1960-01-01:
+    value: null
+  1967-10-01:
+    value: 0.014
+metadata:
+  short_label: Taux employeur
+  last_value_still_valid_on: "1967-01-01"
+  label_en: SSCs for artists
+  ipp_csv_id: mmid_a_p_0_
+  unit: /1
+  reference:
+    1960-01-01:
+      title: Arrêté du 27/01/1960
+    1967-10-01:
+      title: Arrêté du 29/09/1967
+  official_journal_date:
+    1960-01-01: "1960-02-09"
+    1967-10-01: "1967-10-01"

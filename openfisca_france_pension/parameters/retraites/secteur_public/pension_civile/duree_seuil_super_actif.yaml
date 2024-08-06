@@ -1,6 +1,6 @@
 description: Durée de service minimale pour relever de la catégorie super active (policie, pénitentaire, contrôle aérien, activité insalubre)
 metadata:
-  description_en: Required contribution duration to be considered as super-active
+  label_en: Required contribution duration to be considered as super-active
   reference:
     2010-11-09:
       title: Loi 2010-1330 du 09/11/2010, chap. 3, art. 33

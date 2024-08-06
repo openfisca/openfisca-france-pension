@@ -92,10 +92,10 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
 
         def formula(individu, period):
             """
-            Deux types de majorations pour enfants peuvent s'appliquer :
-                - pour enfant à charge au moment du départ en retraite
-                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
-                C'est la plus avantageuse qui s'applique.
+            Deux types de majorations pour enfants peuvent s'appliquer:
+            - pour enfant à charge au moment du départ en retraite
+            - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
+            C'est la plus avantageuse qui s'applique.
             """
             points_enfants_a_charge = individu('regime_name_points_enfants_a_charge', period)
             points_enfants_nes_et_eleves = individu('regime_name_points_enfants_nes_et_eleves', period)
@@ -171,11 +171,11 @@ class RegimeArrco(AbstractRegimeAgircArrco):
             categorie_salarie = individu("categorie_salarie", period)
             salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            employeur = parameters(period).regime_name.prelevements_sociaux.employeur
+            employeur = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.employeur
 
             employeur_non_cadre = employeur.noncadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
             employeur_cadre = employeur.cadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
-            salarie = parameters(period).regime_name.prelevements_sociaux.salarie
+            salarie = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.salarie
             salarie_non_cadre = salarie.noncadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
 
             salarie_cadre = salarie.cadre.arrco.calc(salaire_de_base, factor = plafond_securite_sociale)
@@ -195,8 +195,8 @@ class RegimeArrco(AbstractRegimeAgircArrco):
 
 #     def pension(self, data, coefficient_age, pension_brute_b,
 #                 majoration_pension, trim_decote):
-#         ''' le régime Arrco ne tient pas compte du coefficient de
-#         minoration pour le calcul des majorations pour enfants '''
+#         """ le régime Arrco ne tient pas compte du coefficient de
+#         minoration pour le calcul des majorations pour enfants """
 
     class points_emploi_annuels(Variable):
         value_type = float
@@ -312,8 +312,8 @@ class RegimeAgirc(AbstractRegimeAgircArrco):
             categorie_salarie = individu("categorie_salarie", period)
             salaire_de_base = individu("regime_general_cnav_salaire_de_base", period)
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
-            employeur = parameters(period).regime_name.prelevements_sociaux.employeur.agirc.copy()
-            salarie = parameters(period).regime_name.prelevements_sociaux.salarie.agirc.copy()
+            employeur = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.avant81.employeur.agirc.copy()
+            salarie = parameters(period).regime_name.prelevements_sociaux.taux_effectifs_salaries_employeurs.avant81.salarie.agirc.copy()
 
             agirc = employeur
             agirc.add_tax_scale(salarie)

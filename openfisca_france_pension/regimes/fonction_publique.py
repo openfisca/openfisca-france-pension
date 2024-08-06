@@ -1083,7 +1083,7 @@ class AbstractRegimeFonctionPublique(AbstractRegimeEnAnnuites):
                 )
 
     # def cotisations(self, data):
-    #     ''' Calcul des cotisations passées par année'''
+    #     """ Calcul des cotisations passées par année"""
     #     sali = data.sali * data.workstate.isin(self.code_regime).astype(int)
     #     Pcot_regime = reduce(getattr, self.param_name.split('.'), self.P_cot)
     #     # getattr(self.P_longit.prive.complementaire,  self.name)

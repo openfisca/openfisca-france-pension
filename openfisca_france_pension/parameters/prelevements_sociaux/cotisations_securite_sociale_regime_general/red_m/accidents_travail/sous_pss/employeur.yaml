@@ -1,0 +1,40 @@
+description: Taux employeur des cotisations de sécurité sociale (SS) des professions médicales à temps partiel, pour les accidents du travail, sous le plafond de la sécurité sociale (PSS)
+values:
+  1961-05-01:
+    value: 0.018
+  1969-01-01:
+    value: 0.017
+  1970-01-01:
+    value: 0.0161
+  1971-01-01:
+    value: 0.0154
+  1972-01-01:
+    value: 0.0108
+  1973-01-01:
+    value: 0.0147
+metadata:
+  short_label: Taux employeur
+  last_value_still_valid_on: "1974-01-01"
+  label_en: SSCs for physicians working part-time
+  ipp_csv_id: acc_m_p_0_1
+  unit: /1
+  reference:
+    1961-05-01:
+      title: Arrêté du 01/05/1961
+    1969-01-01:
+      title: Arrêté du 31/12/1968
+    1970-01-01:
+      title: Arrêté du 31/12/1969
+    1971-01-01:
+      title: Arrêté du 30/12/1970
+    1972-01-01:
+      title: Arrêté du 24/02/1972
+    1973-01-01:
+      title: Arrêté du 31/01/1973
+  official_journal_date:
+    1961-05-01: "1961-05-20"
+    1969-01-01: "1969-01-01"
+    1970-01-01: "1970-01-01"
+    1971-01-01: "1971-01-15"
+    1972-01-01: "1972-03-16"
+    1973-01-01: "1973-03-17"

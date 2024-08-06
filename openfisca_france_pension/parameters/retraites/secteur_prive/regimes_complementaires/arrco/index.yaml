@@ -1,7 +1,7 @@
 description: Régime complémentaire Arrco
 metadata:
+  label_en: Complementary scheme Arrco
   order:
   - point
   - salaire_de_reference
   - coefficient_de_minoration
-  description_en: Complementary scheme Arrco

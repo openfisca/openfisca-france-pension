@@ -1,27 +1,32 @@
 description: Salaire de référence AGIRC-ARRCO
-salaire_reference_en_euros:
-  description: Salaire de référence AGIRC-ARRCO (valeur d'achat)
-  values:
-    2020-01-01:
-      value: 17.3982
-    2019-01-01:
-      value: 17.0571
-  metadata:
-    ipp_csv_id: val_point_eur
-    unit: currency
 metadata:
-  order:
-  - salaire_reference
+  label_en: Reference wage AGIRC-ARRCO
   reference:
+    2019-01-01:
+      title: circulaire 2019-08-DRJ + ANI du 10 mai 2019 (article 2)
+      href: https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/circulaires/agirc_arrco/2019/2019-08-drj_Circulaire_ANI_10_mai_2019.pdf
     2020-01-01:
     - title: Circulaire 2019-14-DT de l'AGIRC-ARRCO
       href: https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/circulaires/agirc_arrco/2019/2019-14-DT_Parametres_regime_Agirc-Arrco_2019-2020.pdf
     - title: Circulaire 2020-22-DRJ de l'AGIRC-ARRCO
       href: https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/circulaires/agirc_arrco/2020/2020-22-DRJ_Circulaire_Parametres-2020-2021.pdf
-    2019-01-01:
-    - title: circulaire 2019-08-DRJ + ANI du 10 mai 2019 (article 2)
-      href: https://www.agirc-arrco.fr/fileadmin/agircarrco/documents/circulaires/agirc_arrco/2019/2019-08-drj_Circulaire_ANI_10_mai_2019.pdf
-  description_en: Reference wage AGIRC-ARRCO
-documentation: |
+    2022-01-01:
+      title: Circulaire 2021-06-DT de l'AGIRC-ARRCO
+      href: https://www.agirc-arrco.fr/wp-content/uploads/2021/11/2021-6-DT_circulaire_parametres_du_regime_Agirc-Arrco_2021_2022-1.pdf
+  order:
+  - salaire_reference_prix_achat_valeur_nominale
+documentation: |-
   Sources :
   Site web Agirc-Arrco, http://www.agirc-arrco.fr/.
+salaire_reference_prix_achat_valeur_nominale:
+  description: Salaire de référence AGIRC (valeur d'achat) en euros
+  values:
+    2019-01-01:
+      value: 17.0571
+    2020-01-01:
+      value: 17.3982
+    2022-01-01:
+      value: 17.4316
+  metadata:
+    ipp_csv_id: val_point_eur
+    unit: currency

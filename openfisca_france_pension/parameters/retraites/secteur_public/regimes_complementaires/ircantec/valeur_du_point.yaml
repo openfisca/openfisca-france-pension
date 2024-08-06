@@ -1,11 +1,4 @@
 description: Valeur du point IRCANTEC (en euros)
-documentation: 'Sources :
-
-  Barèmes fournis par l''Ircantec. Voir https://baseircantec.retraites.fr/docrestreint.api/2811/738e6c3ba7fddbb55a2e0aa8a0a508dc9bee8bc1/pdf/anx0901_externe_valeur_du_point.pdf
-  pour la valeur du point entre 1971 et 2021.'
-metadata:
-  description_en: Point value IRCANTEC
-  unit: currency
 values:
   1949-01-01:
     value: 0.00915
@@ -237,3 +230,9 @@ values:
     value: 0.48705
   2022-01-01:
     value: 0.49241
+metadata:
+  label_en: Point value IRCANTEC
+  unit: currency
+documentation: |-
+  Sources :
+  Barèmes fournis par l'Ircantec. Voir https://baseircantec.retraites.fr/docrestreint.api/2811/738e6c3ba7fddbb55a2e0aa8a0a508dc9bee8bc1/pdf/anx0901_externe_valeur_du_point.pdf pour la valeur du point entre 1971 et 2021.
