@@ -8,7 +8,7 @@ import numpy as np
 
 
 def mean_over_k_largest(vector, k):
-    '''Return the mean over the k largest values of a vector'''
+    """Return the mean over the k largest values of a vector"""
     if k == 0:
         return 0
 
@@ -21,7 +21,7 @@ def mean_over_k_largest(vector, k):
 
 @jit(float32(float32[:], int64), nopython=True)
 def mean_over_k_nonzero_largest(vector, k):
-    '''Return the mean over the k largest values of a vector'''
+    """Return the mean over the k largest values of a vector"""
     if k == 0:
         return 0
     nonzeros = (vector > 0.0).sum()

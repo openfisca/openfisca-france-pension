@@ -1026,7 +1026,7 @@ class RegimeGeneralCnav(AbstractRegimeEnAnnuites):
         label = "Pension maximale"
 
         def formula(individu, period, parameters):
-            # TODO: gérer les plus de 65 ans au 1er janvier 1983'''
+            # TODO: gérer les plus de 65 ans au 1er janvier 1983
             plafond_securite_sociale = parameters(period).prelevements_sociaux.pss.plafond_securite_sociale_annuel * conversion_parametre_en_euros(period.start.year)
             taux_plein = parameters(period).regime_name.taux_plein.taux_plein
             pension_plafond_hors_surcote = taux_plein * plafond_securite_sociale

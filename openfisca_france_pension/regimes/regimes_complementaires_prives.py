@@ -92,10 +92,10 @@ class AbstractRegimeAgircArrco(AbstractRegimeEnPoints):
 
         def formula(individu, period):
             """
-            Deux types de majorations pour enfants peuvent s'appliquer :
-                - pour enfant à charge au moment du départ en retraite
-                - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
-                C'est la plus avantageuse qui s'applique.
+            Deux types de majorations pour enfants peuvent s'appliquer:
+            - pour enfant à charge au moment du départ en retraite
+            - pour enfant nés et élevés en cours de carrière (majoration sur la totalité des droits acquis)
+            C'est la plus avantageuse qui s'applique.
             """
             points_enfants_a_charge = individu('regime_name_points_enfants_a_charge', period)
             points_enfants_nes_et_eleves = individu('regime_name_points_enfants_nes_et_eleves', period)
@@ -195,8 +195,8 @@ class RegimeArrco(AbstractRegimeAgircArrco):
 
 #     def pension(self, data, coefficient_age, pension_brute_b,
 #                 majoration_pension, trim_decote):
-#         ''' le régime Arrco ne tient pas compte du coefficient de
-#         minoration pour le calcul des majorations pour enfants '''
+#         """ le régime Arrco ne tient pas compte du coefficient de
+#         minoration pour le calcul des majorations pour enfants """
 
     class points_emploi_annuels(Variable):
         value_type = float
