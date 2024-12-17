@@ -1,6 +1,6 @@
 # Changelog
 
-# 0.0.4
+## 0.0.4
 
 * Modification de environment.yml afin de rendre possible l'installation dans l'environnement CASD.
 
