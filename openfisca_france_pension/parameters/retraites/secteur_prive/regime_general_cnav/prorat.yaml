@@ -44,8 +44,7 @@ metadata:
   order:
   - nombre_trimestres_maximal_pris_en_compte_proratisation_par_generation
 documentation: |-
-  Lecture :
-  Ce tableau renseigne, pour une date de législation donnée (la date d'effet, en ligne), le paramètre en fonction de la date de naissance (en ordonnée).
+  Ce tableau renseigne, pour une date de législation donnée (la date d'effet), le paramètre en fonction de la date de naissance.
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
   Note sur l' application de la loi Boulin (1971) : La hausse de 25% des taux de liquidation par âge s'est fait de manière progressive, par l'intermédiaire d'un plafonnement de la durée d'assurance prise en compte dans le coefficient de proratisation.
   Ainsi, les durées d'assurance ne peuvent excédées 128 pour les pensions dont l'entrée en jouissance se situe en 1972 , 136 pour une entrée en jouissance en 1973, 144 pour une entrée en jouissance en 1974.

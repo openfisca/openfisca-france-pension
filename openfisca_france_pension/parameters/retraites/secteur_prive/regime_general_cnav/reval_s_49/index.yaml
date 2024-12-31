@@ -1,0 +1,8 @@
+description: Revalorisation des salaires (1949-1952)
+metadata:
+  label_en: Initial values for reference wage indexation (1949-1952)
+  order:
+  - arrete_23_06_1949_jo_29_06_1949
+  - arrete_02_10_1952_jo_03_10_1952
+  - arrete_24_01_1994_jo_27_01_1994
+documentation: A partir de la série de coefficients publiés par l'arrêté du 24/01/1994, il est possible de reconstituer toutes les séries postérieures.
