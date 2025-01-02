@@ -1,0 +1,30 @@
+description: Salaire de référence RSI commerçants
+metadata:
+  ipp_csv_id: sal_ref_igrante
+  notes:
+    2013-01-01:
+    - title: A partir de 2013, les valeurs du points sont alignées avec le régime
+        complémentaire des commerçants, au sein d'un régime complémentaire des indépendants
+        (RCI)
+  unit: currency
+values:
+  2004-01-01:
+    value: 13.89
+  2005-01-01:
+    value: 14.112
+  2006-01-01:
+    value: 14.389
+  2007-01-01:
+    value: 14.648
+  2008-12-01:
+    value: 14.809
+  2009-04-01:
+    value: 15.3
+  2010-04-01:
+    value: 15.483
+  2011-04-01:
+    value: 15.808
+  2012-04-01:
+    value: 16.14
+  2013-01-01:
+    value: null

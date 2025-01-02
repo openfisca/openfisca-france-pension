@@ -1,0 +1,29 @@
+description: Valeur des points acquis depuis 1973
+metadata:
+  notes:
+    2013-01-01:
+    - title: A partir de 2013, les valeurs du points sont alignées avec le régime
+        complémentaire des artisans, au sein d'un régime complémentaire des indépendants
+        (RCI)
+  unit: currency
+values:
+  2004-01-01:
+    value: 1
+  2005-01-01:
+    value: 1.016
+  2006-01-01:
+    value: 1.036
+  2007-01-01:
+    value: 1.055
+  2008-01-01:
+    value: 1.067
+  2009-01-01:
+    value: 1.102
+  2010-01-01:
+    value: 1.11
+  2011-01-01:
+    value: 1.138
+  2012-01-01:
+    value: 1.162
+  2013-01-01:
+    value: null
