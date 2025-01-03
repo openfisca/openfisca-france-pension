@@ -1,0 +1,24 @@
+description: Valeur des points acquis avant 1979
+metadata:
+  notes:
+    2009-04-01:
+    - title: A partir de 2009, la valeur du point est différenciée selon l'année d'acquisition
+        du points.
+    2013-01-01:
+    - title: A partir de 2013, les valeurs des points sont alignées avec le régime
+        complémentaire des commerçants, au sein d'un régime complémentaire des indépendants
+        (RCI)
+  unit: currency
+values:
+  1980-01-01:
+    value: null
+  2009-04-01:
+    value: 0.30045
+  2010-04-01:
+    value: 0.30163
+  2011-04-01:
+    value: 0.30372
+  2012-04-01:
+    value: 0.30582
+  2013-01-01:
+    value: null

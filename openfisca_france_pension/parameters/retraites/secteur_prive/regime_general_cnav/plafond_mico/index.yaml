@@ -1,0 +1,5 @@
+description: Plafond du minimum contributif
+metadata:
+  label_en: Earning cap of the "minimum contributif"
+  order:
+  - minimum_contributif_plafond_mensuel

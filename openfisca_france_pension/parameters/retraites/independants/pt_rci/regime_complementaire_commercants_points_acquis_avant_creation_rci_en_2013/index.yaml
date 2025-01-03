@@ -1,0 +1,6 @@
+description: Régime complémentaire des conjoints de commerçants (points acquis avant
+  création du RCI en 2013)
+metadata:
+  order:
+  - valeur_points_acquis_entre_1973_2003
+  - valeur_points_acquis_entre_2004_2012

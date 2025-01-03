@@ -1,0 +1,14 @@
+description: Commerçants
+metadata:
+  unit: currency
+values:
+  2015-10-01:
+    value: 12.58032
+  2017-10-01:
+    value: 12.68096
+  2019-01-01:
+    value: 12.719
+  2020-01-01:
+    value: 12.82075
+  2021-01-01:
+    value: 12.89757

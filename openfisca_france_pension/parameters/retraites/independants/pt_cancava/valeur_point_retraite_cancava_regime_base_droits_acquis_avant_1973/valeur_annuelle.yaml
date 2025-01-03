@@ -1,0 +1,135 @@
+description: Valeur annuelle
+metadata:
+  ipp_csv_id: point_cancava_base
+  notes:
+    2017-10-01:
+    - title: Source secu-independants.fr/baremes/prestations-vieillesse-et-invalidite-deces.
+    2019-01-01:
+    - title: Source secu-independants.fr/baremes/prestations-vieillesse-et-invalidite-deces.
+        Pas de revalorisation en 2018 car la date est désormais fixée en janvier.
+  unit: currency
+values:
+  1973-01-01:
+    value: 7.13
+  1974-01-01:
+    value: 8.21
+  1974-07-01:
+    value: 8.76
+  1975-01-01:
+    value: 12
+  1975-07-01:
+    value: 13.34
+  1976-01-01:
+    value: 14.89
+  1976-07-01:
+    value: 16.18
+  1978-01-01:
+    value: 17.51
+  1978-07-01:
+    value: 18.28
+  1979-01-01:
+    value: 19.47
+  1979-07-01:
+    value: 20.25
+  1980-01-01:
+    value: 21.34
+  1980-07-01:
+    value: 22.7
+  1981-01-01:
+    value: 24.22
+  1981-07-01:
+    value: 25.72
+  1982-01-01:
+    value: 27.44
+  1982-07-01:
+    value: 29.47
+  1983-01-01:
+    value: 30.65
+  1983-07-01:
+    value: 31.88
+  1984-01-01:
+    value: 32.45
+  1984-07-01:
+    value: 33.16
+  1985-01-01:
+    value: 34.29
+  1985-07-01:
+    value: 35.25
+  1986-01-01:
+    value: 35.71
+  1987-01-01:
+    value: 36.54
+  1987-07-01:
+    value: 36.9
+  1988-01-01:
+    value: 37.86
+  1988-07-01:
+    value: 38.35
+  1989-01-01:
+    value: 38.85
+  1989-07-01:
+    value: 39.32
+  1990-01-01:
+    value: 40.17
+  1990-07-01:
+    value: 40.69
+  1991-01-01:
+    value: 41.382
+  1991-07-01:
+    value: 41.713
+  1992-01-01:
+    value: 42.13
+  1992-07-01:
+    value: 42.888
+  1993-01-01:
+    value: 43.446
+  1994-01-01:
+    value: 44.315
+  1995-01-01:
+    value: 44.847
+  1995-07-01:
+    value: 45.071
+  1996-01-01:
+    value: 45.972
+  1997-01-01:
+    value: 46.524
+  1998-01-01:
+    value: 47.036
+  1999-01-01:
+    value: 47.6004
+  2000-01-01:
+    value: 47.838
+  2001-01-01:
+    value: 48.8904
+  2002-01-01:
+    value: 7.6171
+  2003-01-01:
+    value: 7.7313
+  2003-07-01:
+    value: 7.8627
+  2005-01-01:
+    value: 8.0199
+  2006-01-01:
+    value: 8.1642
+  2007-01-01:
+    value: 8.3111
+  2008-01-01:
+    value: 8.4025
+  2008-09-01:
+    value: 8.4697
+  2009-04-01:
+    value: 8.5543
+  2010-04-01:
+    value: 8.6312
+  2011-04-01:
+    value: 8.8124
+  2012-04-01:
+    value: 8.9974
+  2013-04-01:
+    value: null
+  2015-10-01:
+    value: 9.1234
+  2017-10-01:
+    value: 9.1963
+  2019-01-01:
+    value: 9.2238

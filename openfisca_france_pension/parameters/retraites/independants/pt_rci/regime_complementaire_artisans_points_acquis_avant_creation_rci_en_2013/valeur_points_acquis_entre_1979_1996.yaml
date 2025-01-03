@@ -1,0 +1,23 @@
+description: Valeur des points acquis entre 1979 et 1996
+metadata:
+  notes:
+    2013-04-01:
+    - title: 'A partir du 1er janvier 2013, les artisans et commerçants bénéficient
+        d''un régime complémentaire unique commun : le Régime Complémentaire des Indépendants
+        (RCI).'
+  unit: currency
+values:
+  2013-04-01:
+    value: 1.124
+  2017-10-01:
+    value: 1.13
+  2019-01-01:
+    value: 1.132
+  2020-01-01:
+    value: 1.138
+  2021-01-01:
+    value: 1.14
+  2022-01-01:
+    value: 1.146
+  2023-01-01:
+    value: 1.174
