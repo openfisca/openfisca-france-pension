@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.1.1 [13](https://github.com/openfisca/openfisca-france-pension/pull/13)
+
+* Modification de environment.yml afin de rendre possible l'installation dans l'environnement CASD.
+
 ## 0.1.0 [14](https://github.com/openfisca/openfisca-france-pension/pull/14)
 
 * Amélioration technique.
