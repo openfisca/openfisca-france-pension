@@ -1,0 +1,5 @@
+description: Montant inférieur ou égal à 2000€
+metadata:
+  order:
+  - artisans
+  - commercants

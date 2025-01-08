@@ -1,0 +1,14 @@
+description: Coefficients de minoration et de majoration
+documentation: 'Le coefficient d''abattement (ou de majoration après 2010) constitue
+  une multiplication des droits de pension à l''Ircantec.
+
+  Le coefficient de minoration est linéaire par morceaux en nombre de trimestres entre
+  les âges charnières que sont l''AOD, l''AOD + 2 ans et l''ADD.'
+metadata:
+  label_en: Penalty or increase related to retirement age
+  order:
+  - decote_maximale
+  - decote_par_trimestre_avant_aod
+  - decote_par_trimestre_entre_aod_et_aod_plus_2_ans
+  - decote_par_trimestre_entre_aod_plus_2_ans_et_add
+  - surcote_par_trimestre

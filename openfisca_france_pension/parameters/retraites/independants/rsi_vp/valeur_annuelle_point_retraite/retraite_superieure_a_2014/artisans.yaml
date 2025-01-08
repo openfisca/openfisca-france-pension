@@ -1,0 +1,14 @@
+description: Artisans
+metadata:
+  unit: currency
+values:
+  2015-10-01:
+    value: 9.1234
+  2017-10-01:
+    value: 9.1963
+  2019-01-01:
+    value: 9.2238
+  2020-01-01:
+    value: 9.2514
+  2021-01-01:
+    value: 9.3532

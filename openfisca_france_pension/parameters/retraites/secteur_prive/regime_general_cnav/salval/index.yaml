@@ -1,0 +1,16 @@
+description: Salaire validant un trimestre d'assurance
+documentation: 'Le montant permettant une validation d''un trimestre est fonction
+  de l''AVTS jusqu''en 1971, puis d''un multiple du SMIC.
+
+  De façon importante, c''est la rémunération annuelle divisée par ce montant qui
+  donne le nombre de trimestres validés, sans considération de la durée effective
+  d''emploi.
+
+  Sources :
+
+  Assurances sociales. Régime applicable aux assurés des professions non agricoles
+  (1956).'
+metadata:
+  label_en: Earnings necessary for one quarter of insurance
+  order:
+  - salaire_validant_trimestre

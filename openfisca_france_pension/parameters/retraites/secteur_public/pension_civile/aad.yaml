@@ -11,7 +11,7 @@ metadata:
   - age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age
 documentation: |-
   NB: Pour certaines catégories (parents de trois enfants, handicapés, aidants familiaux, parents d'enfants handicapés) l'âge limite est maintenu à 65 ans.
-  Lecture : Ce tableau renseigne, pour une date de légilsation donnée (la date d'effet, en ligne), le paramètre en fonction de l'année d'ouverture des droits (en ordonnée).
+  Lecture : Ce tableau renseigne, pour une date de légilsation donnée (la date d'effet), le paramètre en fonction de l'année d'ouverture des droits.
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
 age_annulation_decote_selon_annee_ouverture_droits_en_nombre_trimestres_par_rapport_limite_age:
   description: Âge d'annulation de la décôte selon l'année d'ouverture des droits (en nombre de trimestres par rapport à la limite d'âge)

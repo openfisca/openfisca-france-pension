@@ -1,0 +1,11 @@
+description: Taux de décote par trimestres courant pendant deux à partir de l'âge
+  d'ouverture des droits
+metadata:
+  reference:
+    1971-01-01:
+      href: https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006381606/1971-02-09/#LEGIARTI000006381606
+      title: Arrêté du 30/09/1970
+  unit: /1
+values:
+  1971-01-01:
+    value: 0.0125

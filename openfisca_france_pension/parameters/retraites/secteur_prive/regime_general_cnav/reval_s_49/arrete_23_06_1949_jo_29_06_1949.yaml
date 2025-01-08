@@ -1,0 +1,26 @@
+description: Coefficient par lequel est multiplié le salaire résultant des cotisations passées selon l'arrêté du 23/06/1949(JO 29/06/1949 )
+values:
+  1930-01-01:
+    value: 24.5
+  1936-01-01:
+    value: 22
+  1937-01-01:
+    value: 17.6
+  1938-01-01:
+    value: 16
+  1939-01-01:
+    value: 14.7
+  1941-01-01:
+    value: 9.8
+  1942-01-01:
+    value: 6.3
+  1944-01-01:
+    value: 5.1
+  1945-01-01:
+    value: 2.5
+  1946-01-01:
+    value: 2.1
+  1947-01-01:
+    value: 1.6
+  1948-01-01:
+    value: null

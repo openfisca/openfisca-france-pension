@@ -1,0 +1,6 @@
+description: Salaire validant un trimestre
+metadata:
+  order:
+  - metropole
+  - guadeloupe_guyane_martinique
+  - reunion

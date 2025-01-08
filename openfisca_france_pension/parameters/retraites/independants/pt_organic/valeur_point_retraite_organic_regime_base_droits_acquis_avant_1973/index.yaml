@@ -1,0 +1,6 @@
+description: Valeur du point retraite ORGANIC - régime de base, droits acquis avant
+  1973
+metadata:
+  order:
+  - valeur_point_acquis_par_cotisations
+  - valeur_point_acquis_par_rachat_global

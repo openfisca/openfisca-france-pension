@@ -13,6 +13,12 @@ metadata:
     2022-11-01:
       title: Circulaire 2022-09-DT de l'AGIRC-ARRCO
       href: https://www.agirc-arrco.fr/wp-content/uploads/2022/10/2022-09-DT_Valeur_de_service_du_regime_Agirc-Arrco_au_1er_novembre_2022.pdf
+    2023-11-01:
+      title: Circulaire Agirc-Arrco 2024-1-DRJ
+      href: https://www.agirc-arrco.fr/wp-content/uploads/2024/09/Circulaire-AgircArrco-2024-1-drj.pdf  
+    2024-11-01:
+      title: Circulaire Agirc-Arrco 2024-12-DT
+      href: https://www.agirc-arrco.fr/wp-content/uploads/2024/10/Circulaire_Agirc-Arrco_2024_12_DT.pdf
   order:
   - valeur_point_en_euros
 documentation: |-
@@ -27,6 +33,10 @@ valeur_point_en_euros:
       value: 1.2841
     2022-11-01:
       value: 1.3498
+    2023-11-01:
+      value: 1.4159
+    2024-11-01:
+      value: 1.4386
   metadata:
     ipp_csv_id: val_point_eur
     unit: currency

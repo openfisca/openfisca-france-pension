@@ -28,7 +28,7 @@ metadata:
   - taux_surcote_par_trimestre_cotise_selon_date_cotisation
 documentation: |-
   Lecture :
-  Ce tableau renseigne, pour une date de légilsation donnée (la date d'effet, en ligne), le paramètre en fonction de la date de cotisation (en ordonnée).
+  Ce tableau renseigne, pour une date de légilsation donnée (la date d'effet), le paramètre en fonction de la date de cotisation.
   La valeur renseignée est valable à partir de la date de cotisation, jusqu'à la date suivante. Quand une date de cotisation est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
 taux_surcote_par_trimestre_cotise_selon_date_cotisation:
   description: Taux de surcote par trimestre cotisé, selon la date de cotisation

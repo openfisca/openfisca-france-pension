@@ -1,0 +1,17 @@
+description: 'Régime complémentaire des artisans : valeur de service du point'
+documentation: 'Sources :
+
+  Capital.fr
+
+  http://www.capital.fr/retraite/regimes-de-retraite/artisan/regimes-complementaires/depuis-2009-les-revalorisations-des-points-sont-differentes-selon-leur-date-d-acquisition
+
+  rsi.fr
+
+  http://www.rsi.fr/baremes/prestations-vieillesse-et-invalidite-deces.html#c5206'
+metadata:
+  label_en: 'Complementary scheme of craftmen : point value'
+  order:
+  - valeur_points_acquis
+  - valeur_points_acquis_avant_1979
+  - valeur_points_acquis_entre_1979_1996
+  - valeur_points_acquis_entre_1997_2012

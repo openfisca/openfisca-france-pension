@@ -1,0 +1,11 @@
+description: Valeur annuelle du point retraite en fonction du montant total brut mensuel
+  des retraites de base et complémentaires
+metadata:
+  label_en: Usage value of points accrued by independant workers within their main
+    pension scheme.
+  order:
+  - retraite_inferieure_a_2000
+  - retraite_sup_2000_inf_egale_2008
+  - retraite_sup_2008_inf_egale_2012
+  - retraite_sup_2012_inf_egale_2014
+  - retraite_superieure_a_2014

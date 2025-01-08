@@ -1,0 +1,7 @@
+description: Régime complémentaire des artisans(points acquis avant création du RCI
+  en 2013)
+metadata:
+  order:
+  - valeur_points_acquis_avant_1979
+  - valeur_points_acquis_entre_1979_1996
+  - valeur_points_acquis_entre_1997_2012
