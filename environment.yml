@@ -9,4 +9,4 @@ dependencies:
   - pandas >=2.0,<3.0
   - pip
   - pip:
-    - OpenFisca-Core @ git+https://github.com/openfisca/openfisca-core@pension-rebased#egg=openfisca-core",
+    - OpenFisca-Core,

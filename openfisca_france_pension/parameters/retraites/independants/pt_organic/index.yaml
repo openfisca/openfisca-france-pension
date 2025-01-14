@@ -1,0 +1,10 @@
+description: Valeur des points acquis avant 1973 - ORGANIC
+documentation: 'En 1973, la retraite de base s''aligne sur le régime général (retraite
+  calculée selon les mêmes règles que la CNAV).
+
+  Les valeurs présentées ici sont les points acquis dans le cadre du régime de base
+  des commerçants avant 1973, convertis en droits à la retraite.'
+metadata:
+  label_en: Point value before 1973 - ORGANIC
+  order:
+  - valeur_point_retraite_organic_regime_base_droits_acquis_avant_1973

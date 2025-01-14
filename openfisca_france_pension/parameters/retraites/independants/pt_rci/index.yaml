@@ -1,0 +1,18 @@
+description: 'Régime complémentaire des indépendants : valeur de service du point'
+documentation: 'Sources :
+
+  rsi.fr
+
+  https://www.legislation.cnav.fr/Pages/bareme.aspx?Nom=rci_valeur_point_bar
+
+  https://www.legislation.cnav.fr/PagesBareme/doc_communs/listes_baremes/rci_valeur_point_2013_2019.pdf
+
+  Notes:
+
+  Pas de revalorisation en octobre 2018 et janvier 2019.'
+metadata:
+  label_en: 'Complementary scheme of self-employed : point value'
+  order:
+  - valeur_point_rci_date
+  - regime_complementaire_artisans_points_acquis_avant_creation_rci_en_2013
+  - regime_complementaire_commercants_points_acquis_avant_creation_rci_en_2013

@@ -27,8 +27,7 @@ metadata:
 documentation: |-
   Entre 1946 et 1971, ce sont les 10 dernières années qui sont prises en compte, et non les 10 meilleures années.
 
-  Lecture :
-  Ce tableau renseigne, pour une date de législation donnée (la date d'effet, en ligne), le paramètre en fonction de la date de naissance (en ordonnée).
+  Ce tableau renseigne, pour une date de législation donnée (la date d'effet), le paramètre en fonction de la date de naissance.
   La valeur renseignée est valable à partir de la date de naissance, jusqu'à la date suivante. Quand une date de naissance est la dernière renseignée, la valeur du paramètre est considérée comme constante à partir de cette date.
 nombre_annees_entrant_en_jeu_dans_determination_revenu_annuel_moyen_ram:
   description: Nombre d'années entrant en jeu dans la détermination du revenu annuel moyen (RAM)

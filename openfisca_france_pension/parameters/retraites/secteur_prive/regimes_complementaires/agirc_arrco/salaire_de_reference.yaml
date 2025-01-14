@@ -13,6 +13,15 @@ metadata:
     2022-01-01:
       title: Circulaire 2021-06-DT de l'AGIRC-ARRCO
       href: https://www.agirc-arrco.fr/wp-content/uploads/2021/11/2021-6-DT_circulaire_parametres_du_regime_Agirc-Arrco_2021_2022-1.pdf
+    2023-01-01:
+      title: Accord national interprofessionnel sur la retraite complémentaire AGIRC-ARRCO du 5 octobre 2023
+      href: https://www.agirc-arrco.fr/wp-content/uploads/2023/10/ANI_Agirc-Arrco_05102023.pdf
+    2024-01-01:
+      title: Circulaire Agirc-Arrco 2024-1-DRJ
+      href: https://www.agirc-arrco.fr/wp-content/uploads/2024/09/Circulaire-AgircArrco-2024-1-drj.pdf  
+    2025-01-01:
+      title: Circulaire Agirc-Arrco 2024-12-DT
+      href: https://www.agirc-arrco.fr/wp-content/uploads/2024/10/Circulaire_Agirc-Arrco_2024_12_DT.pdf
   order:
   - salaire_reference_prix_achat_valeur_nominale
 documentation: |-
@@ -27,6 +36,12 @@ salaire_reference_prix_achat_valeur_nominale:
       value: 17.3982
     2022-01-01:
       value: 17.4316
+    2023-01-01:
+      value: 18.7669
+    2024-01-01:
+      value: 19.6321
+    2025-01-01:
+      value: 20.1877
   metadata:
     ipp_csv_id: val_point_eur
     unit: currency

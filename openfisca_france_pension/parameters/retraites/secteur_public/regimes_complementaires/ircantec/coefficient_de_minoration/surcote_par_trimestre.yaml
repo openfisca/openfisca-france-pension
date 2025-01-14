@@ -1,0 +1,12 @@
+description: Taux de surcote par trimestres après l'âge d'annulation de la décote
+metadata:
+  official_journal_date:
+    2010-01-01: '2008-09-24'
+  reference:
+    2010-01-01:
+      href: https://www.legifrance.gouv.fr/eli/arrete/2008/9/23/BCFZ0821432A/jo/texte
+      title: Arrêté du 23/09/2008
+  unit: /1
+values:
+  2010-01-01:
+    value: 0.075
