@@ -37,7 +37,7 @@ setup(
     extras_require = {
         "dev": [
             "autopep8",
-            "flake8>=3.9,<4.0",
+            "flake8>=3.9,<8.0",
             "flake8-import-order",
             "flake8-print",
             "pycodestyle >=2.6.0",
