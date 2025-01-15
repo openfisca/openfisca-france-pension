@@ -17,7 +17,7 @@ install: deps
 
 build: clean deps
 	@# `make build` allows us to be be sure tests are run against the packaged version
-	python setup.py bdist_wheel
+	python setup.py sdist bdist_wheel
 	find dist -name "*.whl" -exec pip install --upgrade {}[dev] \;
 
 check-syntax-errors:
