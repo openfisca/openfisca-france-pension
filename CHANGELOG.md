@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.1.2 [15](https://https://github.com/openfisca/openfisca-france-pension/pull/15)
+
+* Mise à jour dépendance OpenFisca-Core afin de résoudre conflit de dépendances avec OpenFisca-Survey-Manager
+
 ### 0.1.1 [13](https://github.com/openfisca/openfisca-france-pension/pull/13)
 
 * Modification de environment.yml afin de rendre possible l'installation dans l'environnement CASD.
