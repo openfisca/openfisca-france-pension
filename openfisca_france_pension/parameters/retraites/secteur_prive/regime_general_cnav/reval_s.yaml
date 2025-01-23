@@ -190,6 +190,10 @@ values:
     value: 1.011
   2023-01-01:
     value: 1.008
+  2024-01-01:
+    value: 1.053
+  2025-01-01:
+    value: 1.022
 metadata:
   label_en: Reference wage indexation
   reference:
@@ -394,16 +398,22 @@ metadata:
       title: Article 68 de la loi de financement de la sécurité sociale pour 2019
     2020-01-01:
       title: Instruction interministérielle DSS/SD3A/2019/266 du 27/12/2019
-      href: https://www.legislation.cnav.fr/Documents/instruction_ministerielle_2019_266_27122019.pdf
+      href: https://legislation.lassuranceretraite.fr/Pdf/instruction_ministerielle_2019_266_27122019.pdf
     2021-01-01:
       title: Instruction interministérielle DSS/SD3A/2020/230 du 23/12/2020
-      href: https://www.legislation.cnav.fr/Documents/instruction_ministerielle_2021_260_22122021.pdf
+      href: https://legislation.lassuranceretraite.fr/Pdf/instruction_ministerielle_2021_260_22122021.pdf
     2022-01-01:
       title: Instruction interministérielle DSS/SD3A/2021/260 du 22/12/2021
-      href: https://www.legislation.cnav.fr/Documents/instruction_ministerielle_2021_260_22122021.pdf
+      href: https://legislation.lassuranceretraite.fr/Pdf/instruction_ministerielle_2021_260_22122021.pdf
     2023-01-01:
       title: INSTRUCTION INTERMINISTÉRIELLE N° DSS/SD3A/2022/280 du 23/12/2022
-      href: https://www.legislation.cnav.fr/Documents/instruction_ministerielle_2022_280_23122022.pdf
+      href: https://legislation.lassuranceretraite.fr/Pdf/instruction_ministerielle_2022_280_23122022.pdf
+    2024-01-01:
+      title: INSTRUCTION INTERMINISTÉRIELLE N° DSS/3A/2023/189 du 28 novembre 2023
+      href: https://legislation.lassuranceretraite.fr/Pdf/instruction_ministerielle_2023_189_28112023.pdf
+    2025-01-01:
+      title: INSTRUCTION INTERMINISTÉRIELLE N° DSS/SD3A/DB/2024/176 du 13 décembre 2024
+      href: https://legislation.lassuranceretraite.fr/Pdf/instruction_ministerielle_2024_176_13122024.pdf
   official_journal_date:
     1949-01-01: "1949-06-29"
     1950-01-01: "1950-04-26"
@@ -552,4 +562,4 @@ metadata:
     - title: Circulaire CNAV 2019/4 du 09/01/2019.
     2020-01-01:
     - title: Circulaire CNAV 2020/9 du 04/02/2020. Annule et remplace la circulaire CNAV 2020/5 du 09/01/2020
-      href: https://www.legislation.cnav.fr/Documents/circulaire_cnav_2020_09_04022020.pdf
+      href: https://legislation.lassuranceretraite.fr/Pdf/circulaire_cnav_2020_09_04022020.pdf
