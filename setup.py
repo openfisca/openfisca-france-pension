@@ -30,7 +30,7 @@ setup(
         ],
     install_requires = [
         "bottleneck >=1.3.2,<=2.0.0",
-        "OpenFisca-Core >= 41.5.0,<43.5",
+        "OpenFisca-Core >= 41.5.0,<43",
         "numba>=0.54,<1.0.0",
         "pandas>=2.0,<3.0",
         ],
