@@ -1,5 +1,12 @@
 # Changelog
 
+### 0.1.3 [21](https://github.com/openfisca/openfisca-france-pension/pull/21)
+
+* Amélioration technique.
+* Détails :
+  - Met à jour la stack GitHub Actions pour débloquer la CI.
+  - Resserre temporairement la compatibilité OpenFisca-Core à `<43`.
+
 ### 0.1.2 [15](https://https://github.com/openfisca/openfisca-france-pension/pull/15)
 
 * Mise à jour dépendance OpenFisca-Core afin de résoudre conflit de dépendances avec OpenFisca-Survey-Manager
